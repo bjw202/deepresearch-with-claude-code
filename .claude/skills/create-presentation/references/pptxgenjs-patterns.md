@@ -103,15 +103,16 @@ function addTitleBar(slide, title, subtitle = '') {
     x: 0.6, y: 0.5, w: 1.2, h: 0.06,
     fill: { color: COLORS.accent_blue }
   });
-  // 제목
+  // 제목: 전체 콘텐츠 폭 사용, 2줄 허용, 넘치면 자동 축소
   slide.addText(title, {
-    x: 0.6, y: 0.65, w: 10, h: 0.6,
+    x: 0.6, y: 0.65, w: 12.13, h: 0.9,
     fontSize: 28, fontFace: FONTS.subtitle.fontFace, bold: FONTS.subtitle.bold,
-    color: COLORS.text_primary, charSpacing: -0.3
+    color: COLORS.text_primary, charSpacing: -0.3,
+    autoFit: true
   });
   if (subtitle) {
     slide.addText(subtitle, {
-      x: 0.6, y: 1.25, w: 10, h: 0.4,
+      x: 0.6, y: 1.6, w: 12.13, h: 0.4,
       fontSize: 16, fontFace: 'Pretendard',
       color: COLORS.text_tertiary
     });
@@ -172,8 +173,10 @@ function addTitledTable(slide, tableTitle, headers, dataRows, opts = {}) {
 
 ### addStyledChart — 디자인 차트
 
+주의: `pptx`는 전역 변수로 접근한다. 인자로 전달하지 않는다.
+
 ```javascript
-function addStyledChart(slide, pptx, type, chartData, opts = {}) {
+function addStyledChart(slide, type, chartData, opts = {}) {
   const typeMap = {
     BAR: pptx.charts.BAR, LINE: pptx.charts.LINE, PIE: pptx.charts.PIE,
     DOUGHNUT: pptx.charts.DOUGHNUT, AREA: pptx.charts.AREA,
@@ -221,13 +224,13 @@ function addCard(slide, { x, y, w, h, title, body, accentColor }) {
   slide.addText(title, {
     x: x + 0.2, y: y + 0.2, w: w - 0.4, h: 0.35,
     fontSize: 16, fontFace: FONTS.subtitle.fontFace, bold: FONTS.subtitle.bold,
-    color: COLORS.text_primary
+    color: COLORS.text_primary, autoFit: true
   });
   slide.addText(body, {
     x: x + 0.2, y: y + 0.55, w: w - 0.4, h: h - 0.75,
     fontSize: 13, fontFace: FONTS.body.fontFace,
     color: COLORS.text_secondary,
-    lineSpacingMultiple: 1.4, valign: 'top'
+    lineSpacingMultiple: 1.4, valign: 'top', autoFit: true
   });
 }
 ```
@@ -290,7 +293,7 @@ const slide = pptx.addSlide();
 addTitleBar(slide, '경쟁사 비교 분석');
 
 // 좌측: 차트
-addStyledChart(slide, pptx, 'BAR',
+addStyledChart(slide, 'BAR',
   [
     { name: '자사', labels: ['가격','품질','서비스','인지도'], values: [85, 92, 88, 70] },
     { name: '경쟁A', labels: ['가격','품질','서비스','인지도'], values: [90, 80, 75, 85] }
@@ -312,7 +315,7 @@ const slide = pptx.addSlide();
 addTitleBar(slide, '프로젝트 현황 대시보드', '2026년 2월 기준');
 
 // 진행률 도넛
-addStyledChart(slide, pptx, 'DOUGHNUT',
+addStyledChart(slide, 'DOUGHNUT',
   [{ name: '진행', labels: ['완료','잔여'], values: [72, 28] }],
   { x: 0.6, y: 1.6, w: 4, h: 3, showTitle: false,
     chartColors: ['00D4AA', 'E2E8F0'] }

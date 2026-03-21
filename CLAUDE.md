@@ -208,6 +208,16 @@ docs/
 4. **예상 밖 핵심 발견**: 사용자 질문의 직접 범위 밖이지만 의사결정에 영향을 주는 발견 (해당 시)
 5. **후속 탐색 질문**: 이번 리서치에서 답하지 않았지만 다음에 조사해야 할 질문 2\~3개
 
+### Repair Pass (조건부)
+
+Critic 지적 중 **핵심 결론을 바꿀 수 있는 결함**이 synthesis만으로 해소 불가능할 때, 1회에 한해 제한적 Repair Pass를 수행한다.
+
+- **트리거**: 핵심 수치의 출처가 허위이거나, 상충점 해결에 추가 조사가 필요하거나, Critic의 결함 지적이 synthesis 본문에 반영되지 않은 경우
+- **범위**: 결함 직결 보수만 허용. 새 하위 주제 추가, 분량 확대, 탐색 범위 확장은 금지
+- **담당**: 필요 시 Verifier 또는 Focused Researcher 1명만 spawn. 메인이 직접 리서치하지 않음
+- **산출물**: `98-repair-notes.md` 또는 `99-critic-review.md` 하단에 Repair Resolution 추가
+- **Hard Stop**: Repair는 1회만. 이후에도 불확실성이 크면 "현재 결론은 조건부"로 종료
+
 ---
 
 ## Failure Prevention

@@ -52,6 +52,30 @@ const MONO = {
 };
 ```
 
+### 팔레트 전환 방법
+
+다른 팔레트를 사용하려면 기본 COLORS 객체를 스프레드로 덮어쓴다:
+
+```javascript
+// 기본 팔레트
+const COLORS = {
+  bg_primary: 'FFFFFF', bg_secondary: 'F5F7FA', bg_dark: '1A1F36',
+  text_primary: '1A1F36', text_secondary: '4A5568', text_tertiary: '718096',
+  text_on_dark: 'FFFFFF',
+  accent_blue: '4A7BF7', accent_cyan: '00D4AA', accent_yellow: 'FFB020',
+  accent_red: 'FF6B6B', accent_purple: '8B5CF6',
+};
+
+// Warm Corporate로 전환
+const WARM_OVERRIDES = {
+  bg_dark: '2D1B4E', accent_blue: 'E8725A', accent_cyan: '4ECDC4',
+  accent_yellow: 'F9C74F', accent_purple: '7B68EE'
+};
+Object.assign(COLORS, WARM_OVERRIDES);
+```
+
+나머지 속성(bg_primary, text_primary 등)은 유지되므로 변경할 속성만 덮어쓰면 된다.
+
 ---
 
 ## 폰트 시스템

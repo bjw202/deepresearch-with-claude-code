@@ -7,6 +7,17 @@
 - y &lt; 0.5 금지 (풀블리드 배경 제외)
 - y + h &gt; 7.0 금지 (풀블리드 배경 제외)
 
+**콘텐츠 시작 y 기준값**: addTitleBar 사용 레이아웃은 모두 `y: 1.8`에서 콘텐츠 시작. 이 값을 일관되게 사용한다.
+
+### 테이블 overflow 방지
+
+테이블 행이 많으면 슬라이드 하단(y=7.0)을 넘어간다. 아래 규칙을 따른다:
+
+- 행 8개 이하: 한 슬라이드에 배치 가능
+- 행 9개 이상: 2개 슬라이드로 분할하거나, `rowH`를 줄여서 맞춤
+- `rowH` 최소값: 0.3" (이하는 가독성 저하)
+- 동적 계산: `rowH = Math.max(0.3, (7.0 - 1.8 - 0.4) / (rows + 1))` — 헤더 포함 총 행수로 나눔
+
 ---
 
 ## 1. Title Slide (표지)
@@ -64,7 +75,7 @@ function createSectionSlide(pptx, sectionNum, sectionTitle, description) {
 
   // 섹션 번호 (좌측): x=1.0, y=2.5, w=3.33, h=1.5
   // 우측 끝: 1.0 + 3.33 = 4.33 < 5.33 ✓
-  slide.addText(`0${sectionNum}`, {
+  slide.addText(String(sectionNum).padStart(2, '0'), {
     x: 1.0, y: 2.5, w: 3.33, h: 1.5,
     fontSize: 72, fontFace: 'Pretendard', bold: true,
     color: COLORS.accent_cyan, align: 'center'
