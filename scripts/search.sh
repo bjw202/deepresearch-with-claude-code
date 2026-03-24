@@ -16,6 +16,77 @@ fi
 CURL="$(command -v curl)"
 JQ="$(command -v jq)"
 
+# --- Stats tracking ---
+STATS_FILE="/tmp/search-stats.jsonl"
+
+log_call() {
+  local provider="$1" action="$2" cost="$3" credits="${4:-0}"
+  local ts
+  ts=$(date -u +"%Y-%m-%dT%H:%M:%S")
+  echo "{\"ts\":\"$ts\",\"provider\":\"$provider\",\"action\":\"$action\",\"cost\":$cost,\"credits\":$credits}" >> "$STATS_FILE"
+}
+
+show_stats() {
+  if [[ ! -f "$STATS_FILE" ]]; then
+    echo "=== 검색 API 사용 통계 ==="
+    echo "(기록 없음)"
+    return
+  fi
+
+  echo "=== 검색 API 사용 통계 ==="
+  echo ""
+
+  # Perplexity
+  local px_search px_research px_reason px_total_cost
+  px_search=$($JQ -s '[.[] | select(.provider=="perplexity" and .action=="search")] | length' "$STATS_FILE")
+  px_research=$($JQ -s '[.[] | select(.provider=="perplexity" and .action=="research")] | length' "$STATS_FILE")
+  px_reason=$($JQ -s '[.[] | select(.provider=="perplexity" and .action=="reason")] | length' "$STATS_FILE")
+  px_total_cost=$($JQ -s '[.[] | select(.provider=="perplexity") | .cost] | add // 0 | . * 100 | round / 100' "$STATS_FILE")
+
+  echo "Perplexity:"
+  [[ "$px_search" -gt 0 ]] && echo "  search:    ${px_search}회  (~\$$(echo "$px_search * 0.01" | bc))"
+  [[ "$px_research" -gt 0 ]] && echo "  research:  ${px_research}회"
+  [[ "$px_reason" -gt 0 ]] && echo "  reason:    ${px_reason}회"
+
+  # Tavily
+  local tv_search tv_research tv_extract tv_total_credits
+  tv_search=$($JQ -s '[.[] | select(.provider=="tavily" and .action=="search")] | length' "$STATS_FILE")
+  tv_research=$($JQ -s '[.[] | select(.provider=="tavily" and .action=="research")] | length' "$STATS_FILE")
+  tv_extract=$($JQ -s '[.[] | select(.provider=="tavily" and .action=="extract")] | length' "$STATS_FILE")
+  tv_total_credits=$($JQ -s '[.[] | select(.provider=="tavily") | .credits] | add // 0' "$STATS_FILE")
+
+  echo ""
+  echo "Tavily:"
+  [[ "$tv_search" -gt 0 ]] && echo "  search:    ${tv_search}회  ($((tv_search * 2)) 크레딧)"
+  [[ "$tv_research" -gt 0 ]] && echo "  research:  ${tv_research}회  ($((tv_research * 5)) 크레딧)"
+  [[ "$tv_extract" -gt 0 ]] && echo "  extract:   ${tv_extract}회  (${tv_extract} 크레딧)"
+
+  # Totals
+  local total_calls
+  total_calls=$($JQ -s 'length' "$STATS_FILE")
+  echo ""
+  echo "---"
+  echo "총 API 호출: ${total_calls}회"
+  echo "Perplexity 예상 비용: ~\$${px_total_cost}"
+  echo "Tavily 크레딧 사용: ${tv_total_credits} / 1,000 (월간)"
+}
+
+reset_stats() {
+  rm -f "$STATS_FILE"
+  echo "검색 통계가 초기화되었습니다."
+}
+
+# --- Handle stats command early ---
+if [[ "${1:-}" == "stats" ]]; then
+  if [[ "${2:-}" == "--reset" ]]; then
+    reset_stats
+  else
+    show_stats
+  fi
+  exit 0
+fi
+
+# --- Usage ---
 usage() {
   cat <<'USAGE'
 Usage: search.sh <provider> <command> <query> [options]
@@ -27,6 +98,10 @@ Providers & Commands:
   perplexity search   "query"  [--model sonar|sonar-pro]
   perplexity research "query"  [--model sonar-deep-research]
   perplexity reason   "query"  [--model sonar-reasoning-pro]
+
+Statistics:
+  stats            Show API usage statistics for current session
+  stats --reset    Reset statistics
 
 Options:
   --depth    Search depth for tavily search (default: advanced)
@@ -89,9 +164,14 @@ tavily_search() {
     body=$($JQ --argjson days "$DAYS" '. + {days: $days}' <<< "$body")
   fi
 
+  local credits=2
+  [[ "$DEPTH" == "basic" ]] && credits=1
+
   $CURL -s -X POST "https://api.tavily.com/search" \
     -H "Content-Type: application/json" \
     -d "$body"
+
+  log_call "tavily" "search" 0 "$credits"
 }
 
 tavily_research() {
@@ -112,6 +192,8 @@ tavily_research() {
   $CURL -s -X POST "https://api.tavily.com/search" \
     -H "Content-Type: application/json" \
     -d "$body"
+
+  log_call "tavily" "research" 0 5
 }
 
 tavily_extract() {
@@ -120,6 +202,8 @@ tavily_extract() {
   # QUERY contains comma-separated URLs
   local urls_json
   urls_json=$($JQ -n --arg urls "$QUERY" '$urls | split(",") | map(gsub("^\\s+|\\s+$";""))')
+  local url_count
+  url_count=$(echo "$urls_json" | $JQ 'length')
   local body
   body=$($JQ -n \
     --arg api_key "$key" \
@@ -129,6 +213,8 @@ tavily_extract() {
   $CURL -s -X POST "https://api.tavily.com/extract" \
     -H "Content-Type: application/json" \
     -d "$body"
+
+  log_call "tavily" "extract" 0 "$url_count"
 }
 
 # --- Perplexity ---
@@ -151,10 +237,18 @@ perplexity_chat() {
     --arg query "$QUERY" \
     '{model: $model, messages: [{role: "user", content: $query}]}')
 
-  $CURL -s -X POST "https://api.perplexity.ai/chat/completions" \
+  local result
+  result=$($CURL -s -X POST "https://api.perplexity.ai/chat/completions" \
     -H "Authorization: Bearer $key" \
     -H "Content-Type: application/json" \
-    -d "$body"
+    -d "$body")
+
+  echo "$result"
+
+  # Extract cost from response if available
+  local cost
+  cost=$(echo "$result" | $JQ -r '.usage.cost.total_cost // 0.01' 2>/dev/null || echo "0.01")
+  log_call "perplexity" "$COMMAND" "$cost" 0
 }
 
 # --- Dispatch ---

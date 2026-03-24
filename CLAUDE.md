@@ -127,6 +127,20 @@ docs/
 6. 문제 재정의: 조사 후 원래 질문보다 더 적절한 핵심 질문이 보이면 한 문장으로 제시
 ```
 
+### Sub-Agent Model Policy
+
+서브 에이전트는 역할별로 적합한 모델을 사용하여 비용을 최적화한다:
+
+| 역할 | 모델 | 이유 |
+| --- | --- | --- |
+| Researcher | sonnet | 검색→정리→구조화 중심. 프롬프트 지침으로 품질 확보 |
+| Critic | opus | 상충점 발견, 확신도 교정 등 높은 추론력 필수 |
+| Verifier | sonnet | 원문 대조 중심 작업 |
+| Synthesizer | opus | 최종 통합 판단은 품질의 마지막 방어선 |
+| Journal | sonnet | 구조화된 기록 |
+
+메인 에이전트(오케스트레이터)는 항상 현재 모델을 유지한다. Agent 호출 시 `model` 파라미터로 지정한다: `model: "sonnet"` 또는 `model: "opus"`
+
 ### Multi-Agent Shared Convention
 
 복수의 서브 에이전트가 동일 도메인의 산출물을 각각 작성할 때, 에이전트 발사 전에 공유 컨벤션(네임스페이스, 용어, 포맷)을 정의하여 각 에이전트 프롬프트에 포함한다.
@@ -197,6 +211,10 @@ docs/
   - 후속 액션 제안
 
 최종 결과는 단순 요약이 아니라, 검토와 통합을 거친 판단이어야 한다.
+
+### 검색 비용 보고
+
+리서치 완료 시 `./scripts/search.sh stats`를 실행하여 검색 API 사용 통계를 synthesis 보고서 하단 또는 사용자 보고에 포함한다. 보고 항목: 도구별 호출 수, Perplexity 예상 비용, Tavily 크레딧 사용량. 세션 시작 시 `./scripts/search.sh stats --reset`으로 초기화한다.
 
 ### Synthesis 필수 섹션
 

@@ -29,6 +29,7 @@ const COLORS = {
 ### 추가 팔레트 옵션
 
 #### "Warm Corporate" (따뜻한 기업 톤)
+
 ```javascript
 const WARM = {
   bg_dark: '2D1B4E', accent_blue: 'E8725A', accent_cyan: '4ECDC4',
@@ -37,6 +38,7 @@ const WARM = {
 ```
 
 #### "Nature Green" (친환경/ESG)
+
 ```javascript
 const GREEN = {
   bg_dark: '1B3A2D', accent_blue: '2D9CDB', accent_cyan: '27AE60',
@@ -45,6 +47,7 @@ const GREEN = {
 ```
 
 #### "Minimal Mono" (미니멀)
+
 ```javascript
 const MONO = {
   bg_dark: '111111', accent_blue: '333333', accent_cyan: '666666',
@@ -83,14 +86,14 @@ Object.assign(COLORS, WARM_OVERRIDES);
 ### 기본 폰트
 
 | 폰트 | 용도 | 파일명 | Weight |
-|-------|------|--------|--------|
-| Pretendard | 고딕 (제목/본문/캡션) | Pretendard-{Weight}.otf | 9종: Thin(100)~Black(900) |
+| --- | --- | --- | --- |
+| Pretendard | 고딕 (제목/본문/캡션) | Pretendard-{Weight}.otf | 9종: Thin(100)\~Black(900) |
 | 조선일보명조 | 명조 (인용/강조/격식) | ChosunNm.ttf | Regular |
 
 ### Pretendard 9종 Weight 가이드
 
 | Weight | 파일명 | 용도 |
-|--------|--------|------|
+| --- | --- | --- |
 | Thin (100) | Pretendard-Thin.otf | 장식용 대형 텍스트, 워터마크 |
 | ExtraLight (200) | Pretendard-ExtraLight.otf | 부제목(라이트 테마), 배경 텍스트 |
 | Light (300) | Pretendard-Light.otf | 긴 본문, 설명 텍스트 |
@@ -116,10 +119,10 @@ Object.assign(COLORS, WARM_OVERRIDES);
 ### 자간(Letter Spacing) & 줄간격(Line Height)
 
 | 요소 | 자간 | 줄간격 | PptxGenJS 속성 |
-|------|------|--------|----------------|
-| 제목 | -0.5pt ~ 0pt | 1.1배 | `charSpacing: -0.5, lineSpacingMultiple: 1.1` |
+| --- | --- | --- | --- |
+| 제목 | \-0.5pt \~ 0pt | 1.1배 | `charSpacing: -0.5, lineSpacingMultiple: 1.1` |
 | 소제목 | 0pt | 1.2배 | `lineSpacingMultiple: 1.2` |
-| 본문 | 0.5pt ~ 1pt | 1.4~1.5배 | `charSpacing: 0.5, lineSpacingMultiple: 1.4` |
+| 본문 | 0.5pt \~ 1pt | 1.4\~1.5배 | `charSpacing: 0.5, lineSpacingMultiple: 1.4` |
 | 캡션 | 0.5pt | 1.3배 | `charSpacing: 0.5, lineSpacingMultiple: 1.3` |
 
 ---
@@ -127,6 +130,7 @@ Object.assign(COLORS, WARM_OVERRIDES);
 ## 레이아웃 시스템
 
 ### 슬라이드 크기
+
 - **발표용**: 16:9 (기본값, 가로 13.33" x 세로 7.5")
 - **인쇄/보고서용**: A4 (가로 11.69" x 세로 8.27")
 
@@ -145,17 +149,17 @@ Object.assign(COLORS, WARM_OVERRIDES);
 ```
 
 | 영역 | 시작 좌표 | 크기 |
-|------|-----------|------|
-| 콘텐츠 좌측 | x=0.6 | - |
+| --- | --- | --- |
+| 콘텐츠 좌측 | x=0.6 | \- |
 | 콘텐츠 우측 끝 | x+w ≤ 12.73 | w=12.13 |
-| 콘텐츠 상단 | y=0.5 | - |
+| 콘텐츠 상단 | y=0.5 | \- |
 | 콘텐츠 하단 끝 | y+h ≤ 7.0 | h=6.5 |
 | 페이지 번호 | x=12.0, y=7.05 | w=1.0, h=0.3 |
 
 ### 6x6 콘텐츠 규칙
 
 - 슬라이드 당 글머리 기호 최대 6개
-- 글머리 당 단어 6개 이내 (한글 기준 15~18자)
+- 글머리 당 단어 6개 이내 (한글 기준 15\~18자)
 - 한 슬라이드에 핵심 메시지 1개
 - 텍스트가 많으면 2장으로 분할
 
@@ -164,28 +168,33 @@ Object.assign(COLORS, WARM_OVERRIDES);
 ## 2025-2026 한국형 PPT 디자인 트렌드
 
 ### 기능적 미니멀리즘
+
 - 불필요한 장식 요소 배제, 콘텐츠 중심 디자인
 - 넓은 여백(White Space) 적극 활용
 - 한 슬라이드 = 한 메시지 원칙 강화
-- 배경: 순백(#FFFFFF) 또는 연한 회색(#F5F7FA~#F8FAFC) 기본
+- 배경: 순백(#FFFFFF) 또는 연한 회색(#F5F7FA\~#F8FAFC) 기본
 
 ### 모듈형 레이아웃
+
 - 카드 기반 그리드 시스템 (2x2, 2x3, 1+2 변형)
 - 각 모듈에 독립적 정보 단위 배치
-- 모듈 간 일관된 간격(0.3"~0.4") 유지
+- 모듈 간 일관된 간격(0.3"\~0.4") 유지
 
 ### 포인트 컬러 전략
+
 - 6:3:1 법칙: 배경 60% + 텍스트 30% + 강조 10%
 - 그라데이션보다 단색(Flat) 선호
-- 포인트: 네이비(#1A1F36) + 1~2가지 악센트 컬러
+- 포인트: 네이비(#1A1F36) + 1\~2가지 악센트 컬러
 
 ### 타이포그래피
+
 - Pretendard — 한국 비즈니스 PPT 표준 폰트
-- 제목은 ExtraBold~Black, 본문은 Regular~Medium
+- 제목은 ExtraBold\~Black, 본문은 Regular\~Medium
 - 자간: 제목 타이트(-0.5pt), 본문 약간 넓게(+0.5pt)
 - 명조체(조선일보명조)는 인용구/강조에만 포인트 사용
 
 ### 데이터 시각화 강화
+
 - 숫자 중심 KPI 카드 레이아웃 인기
 - 복잡한 3D 차트 대신 2D 플랫 차트
 - 아이콘 + 숫자 조합의 인포그래픽 스타일
