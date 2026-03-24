@@ -167,7 +167,7 @@ tavily_search() {
   local credits=2
   [[ "$DEPTH" == "basic" ]] && credits=1
 
-  $CURL -s -X POST "https://api.tavily.com/search" \
+  $CURL --max-time 60 --connect-timeout 10 -s -X POST "https://api.tavily.com/search" \
     -H "Content-Type: application/json" \
     -d "$body"
 
@@ -189,7 +189,7 @@ tavily_research() {
     body=$($JQ --argjson days "$DAYS" '. + {days: $days}' <<< "$body")
   fi
 
-  $CURL -s -X POST "https://api.tavily.com/search" \
+  $CURL --max-time 120 --connect-timeout 10 -s -X POST "https://api.tavily.com/search" \
     -H "Content-Type: application/json" \
     -d "$body"
 
@@ -210,7 +210,7 @@ tavily_extract() {
     --argjson urls "$urls_json" \
     '{api_key: $api_key, urls: $urls}')
 
-  $CURL -s -X POST "https://api.tavily.com/extract" \
+  $CURL --max-time 60 --connect-timeout 10 -s -X POST "https://api.tavily.com/extract" \
     -H "Content-Type: application/json" \
     -d "$body"
 
@@ -238,7 +238,7 @@ perplexity_chat() {
     '{model: $model, messages: [{role: "user", content: $query}]}')
 
   local result
-  result=$($CURL -s -X POST "https://api.perplexity.ai/chat/completions" \
+  result=$($CURL --max-time 120 --connect-timeout 10 -s -X POST "https://api.perplexity.ai/chat/completions" \
     -H "Authorization: Bearer $key" \
     -H "Content-Type: application/json" \
     -d "$body")
