@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/zsh
 set -euo pipefail
 
 export PATH="/usr/bin:/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Load .env
