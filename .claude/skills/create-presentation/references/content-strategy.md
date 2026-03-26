@@ -82,6 +82,21 @@
 
 ---
 
+## 서사 비트 시스템 연동
+
+위 4가지 구조는 서사 비트 시스템의 구체적 구현이다. 각 구조를 비트 시퀀스로 매핑하면 감정 흐름을 체계적으로 설계할 수 있다. 상세 비트 정의와 청중별 매핑은 `references/narrative-beats.md` 참조.
+
+| 기존 구조 | 비트 시퀀스 |
+| --- | --- |
+| SCQA | hook → problem → insight → proof → close |
+| 피치덱 | hook → problem → insight → comparison → proof → close |
+| 교육 | hook → framework(×N, 섹션별 insight 반복) → proof → close |
+| 학술 | hook → problem → framework → proof → insight → close |
+
+**사용법:** 청중 유형이 명확하면 `narrative-beats.md`의 청중별 비트 순서를 우선 적용. 목적이 명확하면 위 구조별 비트 매핑을 적용. 아웃라인 작성 시 각 슬라이드에 `[비트]` 주석을 추가하여 감정 흐름을 시각화한다.
+
+---
+
 ## 피라미드 원칙
 
 맥킨지 MECE 원칙 적용:

@@ -198,3 +198,153 @@ Object.assign(COLORS, WARM_OVERRIDES);
 - 숫자 중심 KPI 카드 레이아웃 인기
 - 복잡한 3D 차트 대신 2D 플랫 차트
 - 아이콘 + 숫자 조합의 인포그래픽 스타일
+
+---
+
+## ★ 디자인 가드레일 (절대 규칙)
+
+아래 규칙은 슬라이드 코드 생성 시 **반드시 준수**해야 한다. 위반 시 시각적 품질이 심각하게 저하된다.
+
+### 색상 용도 매핑 (Color Usage Map)
+
+| 색상 | ✅ 허용 용도 | ❌ 금지 용도 |
+|------|------------|------------|
+| `bg_dark` (1A1F36) | 표지 전체 배경, 섹션 디바이더 좌측 패널, 테이블 헤더 행 | 카드 배경, 일반 도형 fill, 콘텐츠 슬라이드 배경 |
+| `bg_primary` (FFFFFF) | 슬라이드 기본 배경, 카드 배경 | — |
+| `bg_secondary` (F5F7FA) | 카드 배경(대안), 교대 테이블 행, 인사이트 패널, Quote 배경 | — |
+| `accent_*` (blue/cyan/yellow/red/purple) | 타이틀바 악센트 라인(h≤0.06), 카드 상단 바(h≤0.06), KPI 숫자, 차트 색상, 원형 뱃지(w≤0.5), Funnel/Pyramid tier fill | 대면적(w>3 AND h>1) 도형 배경 fill |
+| `text_primary` (1A1F36) | 제목, 강조 텍스트 | — |
+| `text_secondary` (4A5568) | 본문, 테이블 데이터 셀 | — |
+| `text_on_dark` (FFFFFF) | bg_dark 위의 텍스트, accent 색상 fill 위의 텍스트 | 밝은 배경 위 텍스트 |
+
+**핵심 원칙**: 밝은 배경(FFFFFF/F5F7FA) 위에 어두운 텍스트(1A1F36/4A5568)가 기본. 다크 배경은 표지/섹션 좌측패널/테이블 헤더에만 사용.
+
+### ★ 조색 레시피 (Color Recipe) — 요소별 정확한 색상 조합
+
+금지/허용만으로는 부족하다. 아래는 **각 요소에 정확히 어떤 색 조합을 쓰라**는 레시피이다.
+
+**슬라이드 배경**: 항상 `FFFFFF` (흰색). 예외 없음. (표지만 bg_dark 허용)
+
+**섹션 디바이더**:
+- 좌측 40%: `fill bg_dark(1A1F36)` + 섹션 번호 `accent_cyan(00D4AA)` + 설명 `text_on_dark(FFFFFF)`
+- **우측 60%: 배경 없음(기본 흰색)** + 제목 `text_primary(1A1F36)` + 부제 `text_secondary(4A5568)`
+- ❌ 우측을 dark로 채우면 안 됨
+
+**타이틀바**:
+- accent 라인: `accent_blue(4A7BF7)`, h=0.06
+- 제목: `text_primary(1A1F36)`, 28pt
+- 부제: `text_tertiary(718096)`, 14pt
+
+**카드**:
+- 배경: `fill FFFFFF` + `line { color: 'E2E8F0', width: 0.5 }`
+- 상단 accent 바: `accent_*(각 카드마다 다른 색)`, h=0.06
+- 제목: `text_primary(1A1F36)`, 16pt bold
+- 본문: `text_secondary(4A5568)`, 13pt
+
+**번호 뱃지 (Process Flow, 공정 단계 등)**:
+- 원형/roundRect: `fill accent_blue(4A7BF7)` 또는 다른 accent 색
+- 번호 텍스트: `text_on_dark(FFFFFF)`, 14~16pt bold
+- ❌ bg_dark로 뱃지를 채우면 검은 사각형으로 보임
+
+**테이블**:
+- 헤더 행: `fill bg_dark(1A1F36)` + `color text_on_dark(FFFFFF)`
+- 홀수 데이터 행: 배경 없음(흰색) + `color text_secondary(4A5568)`
+- 짝수 데이터 행: `fill bg_secondary(F5F7FA)` + `color text_secondary(4A5568)`
+- ❌ 데이터 행에 bg_dark 사용 절대 금지
+
+**강조 정보 박스 (인사이트, 핵심 포인트)**:
+- 배경: `fill bg_secondary(F5F7FA)` 또는 연한 accent 톤
+- 연한 파랑: `EBF0FF` (accent_blue의 연한 버전)
+- 연한 초록: `E6FAF5` (accent_cyan의 연한 버전)
+- 연한 노랑: `FFF8E6` (accent_yellow의 연한 버전)
+- 연한 분홍: `FFF0F0` (경고/위험 표시용)
+- 텍스트: `text_primary(1A1F36)` 또는 해당 accent 진한 색
+
+**KPI/통계 강조 숫자**:
+- 숫자: `accent_blue(4A7BF7)` 또는 `accent_cyan(00D4AA)`, 48~72pt
+- 라벨: `text_primary(1A1F36)`, 18~20pt bold
+- 설명: `text_secondary(4A5568)`, 14~16pt
+
+**Funnel/Pyramid tier**:
+- 각 tier fill: `CHART_STYLE.colors[i]` (4A7BF7, 00D4AA, FFB020, FF6B6B, 8B5CF6)
+- 텍스트: `text_on_dark(FFFFFF)`, autoFit true
+
+**위험/경고 슬라이드 (HF 등)**:
+- 슬라이드 배경: `FFFFFF` (흰색!) — 절대 다크 배경 사용 금지
+- 경고 배너: `fill FFF0F0` (연한 분홍) + `accent_red(FF6B6B)` 텍스트
+- 위험 라벨: `accent_red(FF6B6B)`, bold
+- 본문: `text_primary(1A1F36)`
+
+### 부드러운 톤을 위한 연한 accent 색상 팔레트
+
+딱딱한 느낌을 피하기 위해, 정보 박스나 배경 강조에 아래 연한 색상을 활용한다:
+
+```javascript
+const LIGHT_ACCENTS = {
+  light_blue:   'EBF0FF',  // accent_blue의 연한 버전 (정보/팁)
+  light_cyan:   'E6FAF5',  // accent_cyan의 연한 버전 (성공/완료)
+  light_yellow: 'FFF8E6',  // accent_yellow의 연한 버전 (주의/참고)
+  light_red:    'FFF0F0',  // accent_red의 연한 버전 (위험/경고)
+  light_purple: 'F3EEFF',  // accent_purple의 연한 버전 (심화/선택)
+};
+```
+
+이 연한 색상은 addShape roundRect의 fill로 사용하여 정보 박스, 강조 영역, 교대 배경에 활용한다.
+
+### 레이아웃 절대 규칙
+
+1. **콘텐츠 폭**: 모든 콘텐츠 요소의 w는 **12.13"** 사용 (x=0.6 → 우측 끝 12.73). w < 11.0은 절대 금지 (카드 그리드의 개별 카드 제외)
+2. **콘텐츠 시작 y**: addTitleBar 사용 시 **y=1.8**, addTitleBar 없는 슬라이드는 **y=0.5**
+3. **하단 한계**: y+h ≤ **7.0** (페이지 번호 영역 확보)
+4. **테이블 행 제한**: 최대 **8행**. 초과 시 슬라이드 분할 또는 rowH 축소 (최소 0.3")
+
+### 텍스트 속성 필수 규칙
+
+1. 모든 addText에 `color` 속성 **필수** — 빈 문자열(`''`) 절대 금지
+2. 모든 addText에 `fontFace` 속성 **필수** — FONTS 객체의 .fontFace만 사용
+3. 본문 fontSize **최소 9pt** — 9 미만 금지 (가독성)
+4. 제목 fontSize: 24~28pt / 본문: 14~18pt / 캡션: 11~13pt / KPI: 36~72pt
+
+### 카드 디자인 규칙
+
+```
+올바른 카드:                    잘못된 카드:
+┌─────────────────┐           ┌─────────────────┐
+│■■■■ accent bar ■│ h=0.06    │█████████████████│ ← bg_dark 전체 fill
+│                 │           │  흰 텍스트      │
+│ 제목 (16pt)     │           │  흰 텍스트      │
+│ 본문 (13pt)     │           │  흰 텍스트      │
+│ bg: FFFFFF      │           │  bg: 1A1F36     │ ← 검은 덩어리!
+└─────────────────┘           └─────────────────┘
+```
+
+- 배경: `fill FFFFFF` + `line { color: 'E2E8F0', width: 0.5 }`
+- 상단 accent 바: `h: 0.06`, `fill accent_*`
+- 제목: `color text_primary`, `fontSize 16`, `bold true`
+- 본문: `color text_secondary`, `fontSize 13`
+
+### Funnel / Pyramid / Process Flow 색상 규칙
+
+- 각 tier/step의 fill: `CHART_STYLE.colors` 배열에서 순서대로 사용 (4A7BF7, 00D4AA, FFB020, FF6B6B, 8B5CF6, 38BDF8)
+- 텍스트: `color text_on_dark` (FFFFFF) — accent 색상 위의 흰 텍스트
+- **bg_dark로 tier를 채우면 안 됨** — 검은 블록으로 보임
+
+### 일러스트/다이어그램 금지 규칙
+
+PptxGenJS의 addShape로 공정 일러스트, 장비 구조도, 물리 현상 시각화 등을 시도하면 **검은 블록 참사**가 발생한다. 도형 조합으로 복잡한 그림을 그리는 것은 절대 금지.
+
+| ❌ 금지 (도형 조합 일러스트) | ✅ 대안 |
+|--------------------------|--------|
+| 장비 구조도 (챔버, 스핀들 등) | 텍스트로 구성요소 설명 + 표로 사양 정리 |
+| 물리 현상 시각화 (이온 충돌, 열전달) | 비유 텍스트 + 핵심 수치 강조 |
+| 화학 반응 시뮬레이션 | 반응식을 addText로 크게 표시 |
+| 상태 변화도 (고체→액체→기체) | Process Flow 헬퍼로 단계 표현 (텍스트 기반) |
+| 단면도, 층 구조 | Layered Stack 헬퍼 또는 표로 정리 |
+
+**원칙**: addShape는 **기하학적 장식**(accent 바, 배경 rect, 원형 뱃지)에만 사용한다. 공정/과학 일러스트는 **텍스트 + 표 + 기존 헬퍼 함수**로 대체한다. 그림이 필요하면 addImage로 외부 이미지를 삽입하라.
+
+### 시각적 다양성 규칙
+
+- **연속 3장 이상 같은 슬라이드 타입 금지** — Content 3장 연속 대신 Content + Table + Cards 교대
+- **테이블만 5장 이상 연속 금지** — 중간에 Content, Cards, Process Flow 등으로 변주
+- 같은 accent 색상을 3장 연속 사용 금지 — CHART_STYLE.colors를 순환 활용

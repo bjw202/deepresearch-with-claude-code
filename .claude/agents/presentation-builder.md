@@ -11,7 +11,7 @@
 ## 입력
 
 | 항목 | 필수 | 설명 |
-|------|------|------|
+| --- | --- | --- |
 | 리서치 폴더 경로 | 필수 | `docs/research/{date}-{topic}/` |
 | 저장 위치 | 필수 | `presentation-build/{date}-{topic}/` |
 | 슬라이드 수 목표 | 선택 | 기본: Researcher 2명↓ → 30+, 3명↑ → 50+ |
@@ -25,12 +25,14 @@
 리서치 보고서를 읽고 프레젠테이션 콘텐츠 전략을 수립한다.
 
 **서브에이전트 설정:**
+
 ```
 model: opus
 mode: bypassPermissions
 ```
 
 **프롬프트 템플릿:**
+
 ```
 # 역할: Content Strategist — 프레젠테이션 콘텐츠 전략 수립
 
@@ -63,6 +65,7 @@ mode: bypassPermissions
 - 보고: SCQA (상황→문제→질문→답변)
 - 제안: 피치덱 (문제→해결→근거→다음 단계)
 - 학술: 배경→방법→결과→결론
+- 서사 비트 기반: `references/narrative-beats.md` 참조하여 청중 유형(C-level/실무자/투자자/교육)에 따라 비트 순서를 자동 설계. 각 슬라이드에 `[비트]` 주석 추가
 
 ### 4. 파트별 스토리라인 설계
 - 각 파트의 목적 (독자가 이 파트를 지나면 무엇을 알게 되는가)
@@ -72,8 +75,9 @@ mode: bypassPermissions
 ### 5. 슬라이드 아웃라인 작성
 각 슬라이드에 대해:
 ```
-[슬라이드번호] [타입] "액션 타이틀" — 콘텐츠 요약
-  소스: {참조할 보고서 파일:섹션}
+
+\[슬라이드번호\] \[타입\] "액션 타이틀" — 콘텐츠 요약 소스: {참조할 보고서 파일:섹션}
+
 ```
 
 **사용 가능한 슬라이드 타입:**
@@ -106,22 +110,25 @@ mode: bypassPermissions
 ### Phase 2: 사용자 승인 게이트
 
 메인 에이전트가 Content Strategist의 아웃라인을 사용자에게 제시한다.
+
 - 승인 → Phase 3
 - 수정 요청 → 아웃라인 수정 후 재제시
 
-### Phase 3: Slide Builders (sonnet × 2~3, 병렬)
+### Phase 3: Slide Builders (sonnet × 2\~3, 병렬)
 
 승인된 아웃라인을 기반으로 PptxGenJS 코드를 병렬 생성한다.
 
 **파트 역할:**
+
 - 첫 번째 파트 (Part 1): 헤더(PptxGenJS 초기화 + 모든 상수 + 모든 헬퍼) + 해당 범위 슬라이드 함수
 - 후속 파트 (Part 2, 3, ...N): 슬라이드 함수만
 
-**파트 수 결정:** 총 슬라이드 수 / 10~15 (각 파트 10~15장). 예: 28장 → 3파트, 45장 → 4파트
+**파트 수 결정:** 총 슬라이드 수 / 10\~15 (각 파트 10\~15장). 예: 28장 → 3파트, 45장 → 4파트
 
 **파트 파일 네이밍:** part-1.js, part-2.js, ..., part-N.js
 
 **서브에이전트 설정:**
+
 ```
 model: sonnet
 mode: bypassPermissions
@@ -134,6 +141,7 @@ run_in_background: true
 - 파일 경로는 산출물 저장 경로만 전달 (읽기용 경로 전달 금지)
 
 **Slide Builder 프롬프트 템플릿:**
+
 ```
 # 역할: Slide Builder — PptxGenJS 코드 생성
 
@@ -165,7 +173,7 @@ run_in_background: true
 
 ### ⚠️ 후속 파트 금지사항 (위반 시 합치기 실패)
 1. 상수 재정의 금지 — `const COLORS`, `const FONTS`, `const TABLE_STYLE`, `const TOTAL_SLIDES` 등 선언 금지
-2. 헬퍼 함수 재정의 금지 — `function addTitleBar`, `function addCard` 등 선언 금지
+2. 헬퍼 함수 재정의 금지 — `function addTitleBar`, `function addCard`, `function addProcessFlow`, `function addFunnel`, `function addMatrix`, `function addPyramid`, `function addVenn`, `function addBeforeAfter`, `function addRoadmap`, `function addStatHighlight`, `function addIconGrid`, `function addLayeredStack`, `function addComparisonTable`, `function calcTierCoords` 등 선언 금지
 3. 축약 상수명 금지 — 아래 "사용 가능한 상수 키" 목록의 정확한 이름만 사용
 4. 함수 호출문 금지 — `slideNN_name();` 같은 실행문을 파일에 넣지 않음. 합치기 단계에서 자동 생성
 5. `pptx.writeFile()` 금지 — 합치기 단계에서 추가
@@ -190,10 +198,24 @@ addTitledTable(slide, tableTitle, headers, dataRows, opts)
 addStyledChart(slide, type, chartData, opts)    // type: 'BAR'|'LINE'|'PIE' 등 문자열
 addCard(slide, { x, y, w, h, title, body, accentColor })  // ⚠️ 반드시 객체 패턴
 addPageNumber(slide, num, total)
+calcTierCoords(tierCount, opts)               // Funnel/Pyramid 좌표 계산 유틸리티
+addProcessFlow(slide, steps)                  // steps: [{title, body, accentColor?}]
+addFunnel(slide, tiers)                       // tiers: [{label, value?}]
+addMatrix(slide, quadrants, axisLabels)       // quadrants: [{title, body}] × 4, axisLabels: {x, y}
+addPyramid(slide, tiers)                      // tiers: [{label, description?}]
+addVenn(slide, circles, intersection)         // circles: [{label}], intersection: {label}
+addBeforeAfter(slide, before, after)          // before/after: {title, bullets[]}
+addRoadmap(slide, milestones)                 // milestones: [{date, title, description?}]
+addStatHighlight(slide, { number, label, context, trend })
+addIconGrid(slide, items, layout)             // items: [{icon, title, body}], layout: '2x3'|'3x3'
+addLayeredStack(slide, layers)                // layers: [{title, body}]
+addComparisonTable(slide, features, options)  // features: string[], options: [{name, checks: bool[]}]
 ```
 
 ### 슬라이드 함수 패턴
+
 각 슬라이드는 독립 함수로 작성:
+
 ```javascript
 function slideNN_name() {
   const slide = pptx.addSlide();
@@ -203,7 +225,26 @@ function slideNN_name() {
 }
 ```
 
+### ★ 시각적 품질 절대 규칙 (위반 시 검은 블록·레이아웃 쏠림 발생)
+
+ 1. **bg_dark 사용 제한**: bg_dark(1A1F36)는 표지 전체 배경, 섹션 디바이더 좌측 패널, 테이블 헤더 행에만 사용. 카드 배경, 일반 도형 fill에 bg_dark 사용 금지
+ 2. **콘텐츠 폭 필수**: 모든 콘텐츠 요소의 w는 12.13" (x=0.6 기준). w &lt; 11.0 절대 금지 (카드 그리드 개별 카드 제외)
+ 3. **color 속성 필수**: 모든 addText에 color 속성 명시. 빈 문자열('') 절대 금지. 밝은 배경 위: text_primary 또는 text_secondary. 어두운 배경 위: text_on_dark
+ 4. **카드 패턴 고수**: 카드 배경은 fill FFFFFF + line E2E8F0. 상단 accent 바만 색상. bg_dark fill 카드 금지
+ 5. **Funnel/Pyramid tier**: CHART_STYLE.colors 사용 + text_on_dark 텍스트. bg_dark tier 금지
+ 6. **대면적 accent fill 금지**: w&gt;3 AND h&gt;1인 도형에 accent 색상 fill 금지. accent는 accent 바(h≤0.06), 뱃지(w≤0.5), KPI 숫자에만
+ 7. **fontSize 최소 9pt**: 9pt 미만 금지. 테이블 데이터: 10\~11pt. 본문: 14\~18pt
+ 8. **연속 동일 타입 3장 금지**: Content 3장 연속 대신 Content + Table + Cards 등으로 교대
+ 9. **도형 일러스트 금지**: addShape로 장비 구조도, 물리 현상 시각화, 공정 일러스트를 그리지 마라. 검은 블록 참사 발생. 대신 텍스트 + 표 + 기존 헬퍼(Process Flow, Layered Stack 등)로 대체
+10. **섹션 디바이더**: 좌측 40%만 bg_dark. **우측 60%는 반드시 흰 배경** + text_primary 제목. 우측을 dark로 채우면 안 됨
+11. **번호 뱃지**: accent 색상(4A7BF7 등)으로 fill. bg_dark 뱃지 금지 (검은 사각형으로 보임)
+12. **테이블 교대 행**: 흰색/bg_secondary(F5F7FA)만 교대. bg_dark 데이터 행 절대 금지
+13. **부드러운 톤**: 정보 박스에 연한 accent 톤 활용 (EBF0FF=연파랑, E6FAF5=연초록, FFF8E6=연노랑, FFF0F0=연분홍)
+14. **경고 슬라이드**: 배경 흰색 + 연분홍(FFF0F0) 경고 배너. 전체 다크 배경 금지
+15. **상세 규칙**: `references/design-system.md`의 "조색 레시피" 섹션 참조
+
 ### OOXML 호환성 절대 규칙 (위반 시 PowerPoint 복구 다이얼로그)
+
 1. 모든 color 값은 6자리 hex만 (8자리 금지)
 2. 투명도는 transparency 속성으로 분리 (color에 포함 금지)
 3. shadow 사용 금지 — 대신 line border 사용
@@ -214,6 +255,7 @@ function slideNN_name() {
 8. rotate 속성 사용 금지
 
 ### 네이티브 요소 매핑 (절대 규칙)
+
 - 행×열 데이터 → addTable()
 - 수치 추이/비교 → addChart()
 - 텍스트 → addText()
@@ -221,31 +263,35 @@ function slideNN_name() {
 - 도형으로 표/차트 시뮬레이션 금지
 
 ### 테이블 규칙
+
 - 행 8개 초과 시 슬라이드 분할
 - addStyledTable() 헬퍼 사용
 - rowH 최소 0.3"
 
 ### 좌표 규칙
+
 - 콘텐츠 시작: x=0.6, y=1.8 (addTitleBar 사용 시)
 - 콘텐츠 끝: x+w ≤ 12.73, y+h ≤ 7.0
 - 페이지 번호: x=12.0, y=7.05
 
 ### 카드 좌표 (2x2)
-TL: x=0.6, y=1.8, w=5.915, h=2.45
-TR: x=6.815, y=1.8
-BL: x=0.6, y=4.55
-BR: x=6.815, y=4.55
+
+TL: x=0.6, y=1.8, w=5.915, h=2.45 TR: x=6.815, y=1.8 BL: x=0.6, y=4.55 BR: x=6.815, y=4.55
 
 ### 표지/섹션 디바이더
+
 - 페이지 번호 없음
 - 표지: 풀블리드 다크 배경 (x=0, y=0, w=13.33, h=7.5)
 - 섹션: 좌 40% 다크 (w=5.33) + 우 60% (x=6.0)
 
 ## 산출물
+
 파일: {프레젠테이션 폴더}/part-{N}.js
+
 - 첫 줄: `// === Part {N} 시작 ===`
 - 마지막 줄: `// === Part {N} 끝 ===`
 - 후속 파트는 첫 줄과 마지막 줄 사이에 슬라이드 함수만 포함
+
 ```
 
 ### Phase 4: Assembler + Validator
@@ -258,9 +304,7 @@ BR: x=6.815, y=4.55
 grep -l "const COLORS\|const FONTS\|const TABLE_STYLE\|const TOTAL_SLIDES" part-2.js part-3.js ... && echo "ERROR: 후속 파트에서 상수 재정의 발견"
 ```
 
-**Step 2: 마커 기반 합치기**
-각 파트 파일에서 `// === Part N 시작 ===`과 `// === Part N 끝 ===` 사이의 내용만 추출하여 합침.
-**sed 줄번호 기반 절삭 금지.** Part 1에서 module.exports 블록이 있으면 제거.
+**Step 2: 마커 기반 합치기**각 파트 파일에서 `// === Part N 시작 ===`과 `// === Part N 끝 ===` 사이의 내용만 추출하여 합침. **sed 줄번호 기반 절삭 금지.** Part 1에서 module.exports 블록이 있으면 제거.
 
 ```bash
 # Part 1: module.exports 직전까지
@@ -270,24 +314,36 @@ awk 'NR==1 && /Part 2/{next} /Part 2 끝/{next} {print}' part-2.js >> generate-p
 # ... 반복
 ```
 
-**Step 3: 실행 블록 자동 생성**
-모든 파트 파일에서 함수명을 grep으로 추출하여 호출 코드 + writeFile 자동 생성:
+**Step 3: 실행 블록 자동 생성**모든 파트 파일에서 함수명을 grep으로 추출하여 호출 코드 + writeFile 자동 생성:
+
 ```bash
 grep -ohE 'function (slide[0-9]+_[a-zA-Z0-9_]+)' generate-presentation.js | awk '{print $2"();"}' >> generate-presentation.js
 echo "pptx.writeFile({ fileName: 'output.pptx' })..." >> generate-presentation.js
 ```
 
-**Step 4: 자동 검증**
+**Step 4: 디자인 규칙 검증 + 자동 수정**
+
 ```bash
+# 먼저 검증만 실행하여 위반 리포트 확인
+node scripts/validate-pptx-code.js generate-presentation.js
+
+# 위반 발견 시 자동 수정 (미정의 상수→유사 상수, FONTS.body→FONTS.body.fontFace 등)
+node scripts/validate-pptx-code.js generate-presentation.js --fix
+
+# 수정 후 재검증 (CLEAN 확인)
 node scripts/validate-pptx-code.js generate-presentation.js
 ```
 
+검증 규칙: 미정의 COLORS/LIGHT 키, FONTS 객체 직접 사용, addShape('line'), shadow, 빈 color, rotate
+
 **Step 5: 실행**
+
 ```bash
 node --check generate-presentation.js && node generate-presentation.js
 ```
 
 **Step 6: 오류 시**
+
 - 검증 실패 → 해당 파트의 Slide Builder 재실행 (오류 내용 포함)
 - node 실행 실패 → 함수명 불일치 등 수정
 - 최대 2회 재시도 후 수동 개입
@@ -295,6 +351,7 @@ node --check generate-presentation.js && node generate-presentation.js
 ## 디자인 레퍼런스 참조
 
 Slide Builder 에이전트는 아래 레퍼런스를 참조한다:
+
 - `.claude/skills/create-presentation/references/pptxgenjs-patterns.md` — 상수/헬퍼
 - `.claude/skills/create-presentation/references/slide-layouts.md` — 좌표 (필요한 타입만)
 - `.claude/skills/create-presentation/references/design-system.md` — 색상 팔레트 (변경 시만)
