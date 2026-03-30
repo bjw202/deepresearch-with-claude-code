@@ -116,11 +116,17 @@ Researcher  Researcher  Journal      ← 병렬 발사
    ```bash
    npm install
    ```
-3. `.env` 파일에 API 키 설정:
+3. `.env.example`을 복사하여 API 키 설정:
+   ```bash
+   cp .env.example .env
    ```
-   PERPLEXITY_API_KEY=your_key
-   TAVILY_API_KEY=your_key
+   `.env` 파일을 열고 실제 API 키를 입력한다:
    ```
+   PERPLEXITY_API_KEY="pplx-your-api-key-here"
+   TAVILY_API_KEY="tvly-your-api-key-here"
+   ```
+   - Perplexity API 키: https://docs.perplexity.ai 에서 발급
+   - Tavily API 키: https://tavily.com 에서 발급 (월 1,000크레딧 무료)
 
 ### 리서치 실행
 
