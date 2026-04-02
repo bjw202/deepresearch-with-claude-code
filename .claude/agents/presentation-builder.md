@@ -171,12 +171,17 @@ run_in_background: true
 
 **후속 파트는 슬라이드 함수만 작성한다.**
 
-### ⚠️ 후속 파트 금지사항 (위반 시 합치기 실패)
+### ⚠️ 모든 파트 공통 금지사항 (위반 시 합치기 실패)
+
+아래 규칙은 **첫 번째 파트와 후속 파트 모두에 적용**된다. 합치기 단계에서 함수 호출과 writeFile을 자동 생성하므로, 개별 파트에서 직접 실행하면 슬라이드가 중복 생성된다.
+
+1. **함수 호출문 금지** — `slideNN_name();` 같은 실행문을 파일에 넣지 않음. `// ===== 슬라이드 실행 =====` 같은 블록도 금지. 합치기 단계에서 자동 생성
+2. **`pptx.writeFile()` 금지** — 합치기 단계에서 추가
+
+### ⚠️ 후속 파트 추가 금지사항
 1. 상수 재정의 금지 — `const COLORS`, `const FONTS`, `const TABLE_STYLE`, `const TOTAL_SLIDES` 등 선언 금지
 2. 헬퍼 함수 재정의 금지 — `function addTitleBar`, `function addCard`, `function addProcessFlow`, `function addFunnel`, `function addMatrix`, `function addPyramid`, `function addVenn`, `function addBeforeAfter`, `function addRoadmap`, `function addStatHighlight`, `function addIconGrid`, `function addLayeredStack`, `function addComparisonTable`, `function calcTierCoords` 등 선언 금지
 3. 축약 상수명 금지 — 아래 "사용 가능한 상수 키" 목록의 정확한 이름만 사용
-4. 함수 호출문 금지 — `slideNN_name();` 같은 실행문을 파일에 넣지 않음. 합치기 단계에서 자동 생성
-5. `pptx.writeFile()` 금지 — 합치기 단계에서 추가
 
 ### 사용 가능한 상수 키 (이 이름만 사용)
 
@@ -191,6 +196,9 @@ FONTS: title (.fontFace, .bold), subtitle, body, caption, serif, kpi, deco
 
 ### 헬퍼 함수 시그니처 (정확히 이 형태로만 호출)
 
+각 헬퍼가 기대하는 **정확한 프로퍼티명**을 지켜야 한다. 프로퍼티명이 다르면 텍스트가 빈 채로 렌더링된다.
+예: addProcessFlow는 `{title, body}`를 기대한다. `{label, description}`으로 전달하면 빈 카드가 생성된다.
+
 ```javascript
 addTitleBar(slide, title, subtitle)           // subtitle은 선택
 addStyledTable(slide, headers, dataRows, opts)  // headers: string[], dataRows: string[][]
@@ -199,7 +207,7 @@ addStyledChart(slide, type, chartData, opts)    // type: 'BAR'|'LINE'|'PIE' 등 
 addCard(slide, { x, y, w, h, title, body, accentColor })  // ⚠️ 반드시 객체 패턴
 addPageNumber(slide, num, total)
 calcTierCoords(tierCount, opts)               // Funnel/Pyramid 좌표 계산 유틸리티
-addProcessFlow(slide, steps)                  // steps: [{title, body, accentColor?}]
+addProcessFlow(slide, steps)                  // steps: [{title, body, accentColor?}]  ⚠️ label/description 아님!
 addFunnel(slide, tiers)                       // tiers: [{label, value?}]
 addMatrix(slide, quadrants, axisLabels)       // quadrants: [{title, body}] × 4, axisLabels: {x, y}
 addPyramid(slide, tiers)                      // tiers: [{label, description?}]
@@ -208,9 +216,25 @@ addBeforeAfter(slide, before, after)          // before/after: {title, bullets[]
 addRoadmap(slide, milestones)                 // milestones: [{date, title, description?}]
 addStatHighlight(slide, { number, label, context, trend })
 addIconGrid(slide, items, layout)             // items: [{icon, title, body}], layout: '2x3'|'3x3'
-addLayeredStack(slide, layers)                // layers: [{title, body}]
+addLayeredStack(slide, layers)                // layers: [{title, body}]  ⚠️ label/description 아님!
 addComparisonTable(slide, features, options)  // features: string[], options: [{name, checks: bool[]}]
 ```
+
+### ⚠️ 프로퍼티명 혼동 주의 (빈 슬라이드 원인 #1)
+
+헬퍼마다 기대하는 프로퍼티명이 다르다. **틀린 이름을 쓰면 텍스트가 안 보인다.**
+
+| 헬퍼 | ✅ 올바른 프로퍼티 | ❌ 흔한 실수 |
+|------|-------------------|-------------|
+| addProcessFlow | `{title, body}` | `{label, description}` |
+| addLayeredStack | `{title, body}` | `{label, description}` |
+| addCard | `{title, body}` | `{label, description}` |
+| addIconGrid | `{icon, title, body}` | `{icon, label, description}` |
+| addMatrix quadrants | `{title, body}` | `{label, description}` |
+| addFunnel | `{label, value}` | `{title, body}` |
+| addPyramid | `{label, description}` | `{title, body}` |
+| addRoadmap | `{date, title, description}` | `{date, label, body}` |
+| addStatHighlight | `{number, label, context, trend}` | `{number, title, body}` |
 
 ### 슬라이드 함수 패턴
 
@@ -290,7 +314,8 @@ TL: x=0.6, y=1.8, w=5.915, h=2.45 TR: x=6.815, y=1.8 BL: x=0.6, y=4.55 BR: x=6.8
 
 - 첫 줄: `// === Part {N} 시작 ===`
 - 마지막 줄: `// === Part {N} 끝 ===`
-- 후속 파트는 첫 줄과 마지막 줄 사이에 슬라이드 함수만 포함
+- **모든 파트**: 함수 정의만 포함. `slideNN_name();` 호출문, `pptx.writeFile()` 포함 금지
+- 후속 파트는 슬라이드 함수만 포함 (상수/헬퍼 금지)
 
 ```
 
@@ -299,16 +324,26 @@ TL: x=0.6, y=1.8, w=5.915, h=2.45 TR: x=6.815, y=1.8 BL: x=0.6, y=4.55 BR: x=6.8
 메인 에이전트가 직접 수행:
 
 **Step 1: 합치기 전 검증**
-각 후속 파트에서 상수/헬퍼 재정의가 없는지 확인:
+
+(a) 후속 파트에서 상수/헬퍼 재정의가 없는지 확인:
 ```bash
 grep -l "const COLORS\|const FONTS\|const TABLE_STYLE\|const TOTAL_SLIDES" part-2.js part-3.js ... && echo "ERROR: 후속 파트에서 상수 재정의 발견"
 ```
 
-**Step 2: 마커 기반 합치기**각 파트 파일에서 `// === Part N 시작 ===`과 `// === Part N 끝 ===` 사이의 내용만 추출하여 합침. **sed 줄번호 기반 절삭 금지.** Part 1에서 module.exports 블록이 있으면 제거.
+(b) **모든 파트**(Part 1 포함)에서 함수 호출문이 없는지 확인:
+```bash
+grep -nE '^slide[0-9]+_[a-zA-Z0-9_]+\(\);' part-*.js && echo "ERROR: 파트에서 함수 호출문 발견 — 제거 필요"
+```
+발견 시 해당 호출 블록을 제거한다. Part 1이 "슬라이드 실행" 블록을 포함하는 것은 흔한 실수이다.
+
+**Step 2: 마커 기반 합치기**
+
+각 파트 파일에서 `// === Part N 시작 ===`과 `// === Part N 끝 ===` 사이의 내용만 추출하여 합침. **sed 줄번호 기반 절삭 금지.** Part 1에서 module.exports 블록 또는 함수 호출 블록이 있으면 제거.
 
 ```bash
-# Part 1: module.exports 직전까지
-awk '/^module\.exports/{exit} {print}' part-1.js > generate-presentation.js
+# Part 1: module.exports 또는 함수 호출 블록 직전까지
+# slideNN_name(); 패턴의 호출문도 제거
+awk '/^module\.exports/{exit} /^slide[0-9]+_[a-zA-Z0-9_]+\(\);/{next} /슬라이드 실행/{next} {print}' part-1.js > generate-presentation.js
 # Part 2~N: 시작/끝 마커 제외, 함수 본체만
 awk 'NR==1 && /Part 2/{next} /Part 2 끝/{next} {print}' part-2.js >> generate-presentation.js
 # ... 반복
