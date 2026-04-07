@@ -4,7 +4,7 @@
 
 # Web Research — 웹 검색 리서치 방법론
 
-researcher.md 에이전트가 `web` 모드로 지정되었을 때 이 스킬을 Read하여 참조한다.
+메인(Team Lead)이 Researcher를 `web` 모드로 발사할 때, 이 스킬 전문을 프롬프트의 `[모드별 상세 지침]` 섹션에 삽입한다.
 
 ## Step 1: 검색 전략 수립
 

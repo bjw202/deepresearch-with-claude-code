@@ -93,51 +93,18 @@ WebFetch로 부족하면:
 
 ## 검색 전략 모드별 지침
 
-메인이 지정한 모드에 따라 아래 전략을 적용한다. 상세 방법론은 해당 스킬 파일을 Read하여 참조한다.
+메인(Team Lead)이 Researcher를 발사할 때, 해당 모드의 스킬 내용을 **프롬프트의 [모드별 상세 지침] 섹션에 직접 삽입**한다. Researcher가 별도로 스킬 파일을 Read할 필요가 없다.
 
-### academic 모드
+### 모드별 스킬 매핑
 
-**스킬 참조**: `.claude/skills/academic-research/SKILL.md`를 Read하라.
+| 모드 | 스킬 파일 (메인이 Read하여 삽입) | 핵심 특성 |
+|------|-------------------------------|----------|
+| `academic` | `.claude/skills/academic-research/SKILL.md` | 학술 DB 타겟팅, Tier 분류, 논문 분석 |
+| `web` | `.claude/skills/web-research/SKILL.md` | 공식 사이트 우선, Fact/Claim 분류 |
+| `community` | `.claude/skills/community-analysis/SKILL.md` | Layer 1 주력 (크롤러 차단), 정서 분석 |
+| `mixed` | 삽입 불필요 | 위 3가지를 종합. 주제 특성에 따라 비중 자율 조절 |
 
-**Layer 0 핵심**:
-```
-WebSearch(query: "학술용어 영어", allowed_domains: ["scholar.google.com", "arxiv.org", "ieee.org", "pubmed.ncbi.nlm.nih.gov", "semanticscholar.org", "dl.acm.org"])
-```
-
-**핵심 요소**: Tier 1/2/3 신뢰도 분류, 논문 분석 프레임워크, 합의 수준 판단
-
-### web 모드
-
-**스킬 참조**: `.claude/skills/web-research/SKILL.md`를 Read하라.
-
-**Layer 0 핵심**:
-```
-WebSearch(query: "주제 최신 동향 2026")
-WebSearch(query: "주제", allowed_domains: ["공식사이트.com"])
-```
-
-**핵심 요소**: official/reliable/unverified 출처 등급, Fact/Claim/Unverified 분류
-
-### community 모드
-
-**스킬 참조**: `.claude/skills/community-analysis/SKILL.md`를 Read하라.
-
-**Layer 0 제한사항**: reddit.com, news.ycombinator.com 등 주요 커뮤니티 사이트가 Anthropic 크롤러를 차단하므로 **WebSearch allowed_domains 필터가 작동하지 않는다.** community 모드에서는 **Layer 1(search.sh)을 주력으로 사용**한다.
-
-```bash
-# Layer 1 직행 (community 모드 기본)
-./scripts/search.sh perplexity search "주제 reddit hacker news 반응"
-./scripts/search.sh tavily search "site:reddit.com 주제" --depth advanced
-```
-
-**WebFetch는 사용 가능**: Tavily/Perplexity에서 발견한 스레드 URL을 WebFetch로 확인 시도. 차단 시 `tavily extract`로 대체.
-
-**핵심 요소**: 정서 분석, 편향 보정, 조작 감지
-
-### mixed 모드 (기본)
-
-위 3가지를 균형 있게 혼합. 주제 특성에 따라 비중 자율 조절.
-별도 스킬 파일 참조 불필요 — 위 모드 지침을 종합 적용.
+프롬프트에 `[모드별 상세 지침]` 섹션이 있으면 그 내용을 따르고, 없으면 (mixed 모드) 위 표의 핵심 특성을 참고하여 자율적으로 검색 전략을 수립한다.
 
 ---
 

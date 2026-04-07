@@ -4,7 +4,7 @@
 
 # Academic Research — 학술 검색 방법론
 
-researcher.md 에이전트가 `academic` 모드로 지정되었을 때 이 스킬을 Read하여 참조한다.
+메인(Team Lead)이 Researcher를 `academic` 모드로 발사할 때, 이 스킬 전문을 프롬프트의 `[모드별 상세 지침]` 섹션에 삽입한다.
 
 ## Step 1: 학술 키워드 추출
 
@@ -17,10 +17,27 @@ researcher.md 에이전트가 `academic` 모드로 지정되었을 때 이 스�
 
 ### Layer 0: WebSearch (빌트인, 우선 사용)
 
-학술 데이터베이스를 `allowed_domains`로 타겟팅:
+학술 데이터베이스를 `allowed_domains`로 타겟팅한다. **주제 분야에 따라 적절한 도메인을 선택**한다:
 
+**범분야 (모든 주제에 공통)**:
 ```
-WebSearch(query: "involute gear parametric equation", allowed_domains: ["scholar.google.com", "arxiv.org", "ieee.org", "pubmed.ncbi.nlm.nih.gov", "semanticscholar.org", "dl.acm.org", "link.springer.com", "sciencedirect.com"])
+WebSearch(query: "{학술용어 영어}", allowed_domains: ["scholar.google.com", "semanticscholar.org"])
+```
+
+**분야별 추가 도메인 (주제에 맞는 것만 선택)**:
+
+| 분야 | 도메인 | 비고 |
+|------|--------|------|
+| CS/IT/공학 | `arxiv.org`, `ieee.org`, `dl.acm.org` | 프리프린트 + 컨퍼런스 |
+| 의학/생명과학 | `pubmed.ncbi.nlm.nih.gov`, `nature.com`, `thelancet.com` | 피어리뷰 중심 |
+| 물리/수학 | `arxiv.org`, `aps.org`, `ams.org` | 프리프린트 + 학회지 |
+| 사회과학/경제 | `ssrn.com`, `nber.org`, `jstor.org` | 워킹페이퍼 + 아카이브 |
+| 화학/재료 | `acs.org`, `rsc.org`, `sciencedirect.com` | 저널 중심 |
+| 종합/학제간 | `link.springer.com`, `sciencedirect.com`, `wiley.com` | 대형 출판사 |
+
+**사용 예시** (공학 주제):
+```
+WebSearch(query: "involute gear parametric equation", allowed_domains: ["scholar.google.com", "ieee.org", "dl.acm.org", "link.springer.com"])
 ```
 
 발견된 논문/보고서의 내용 확인:
@@ -63,11 +80,13 @@ WebFetch가 불충분하면:
 
 ## Step 3: 자료 신뢰도 평가
 
-| 등급 | 기준 | 예시 |
+| 등급 | 기준 | 예시 (분야별로 상이) |
 | --- | --- | --- |
-| **Tier 1** | 피어리뷰 저널, 주요 학회 | Nature, Science, ACM/IEEE 컨퍼런스, ASME 저널 |
-| **Tier 2** | 프리프린트, 기관 보고서, 컨퍼런스 | arXiv, NBER working papers, 석/박사 논문 |
-| **Tier 3** | 백서, 기술 블로그, 포럼 | 기업 백서, 전문가 블로그, Eng-Tips |
+| **Tier 1** | 피어리뷰 저널, 해당 분야 주요 학회 | 분야 Top 저널 (Impact Factor 상위), 해당 학회 flagship 컨퍼런스 |
+| **Tier 2** | 프리프린트, 기관 보고서, 일반 컨퍼런스, 학위논문 | arXiv/SSRN (미피어리뷰), 정부/국제기구 보고서, 석/박사 논문 |
+| **Tier 3** | 백서, 기술 블로그, 포럼, 미검증 소스 | 기업 백서, 전문가 블로그, 커뮤니티 포럼 |
+
+**주의**: Tier 1의 "주요 학회/저널"은 분야마다 다르다. CS에서 Top 컨퍼런스(NeurIPS, ICML)가 Tier 1이지만, 의학에서는 피어리뷰 저널(NEJM, Lancet)이 Tier 1이다. **주제 분야의 학술 관행에 맞춰 판단**한다.
 
 ## Step 4: 논문 분석 프레임워크
 
