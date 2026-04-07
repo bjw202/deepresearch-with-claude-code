@@ -205,6 +205,7 @@ Agent(
            산출물 완료: {파일 경로}
            관점: {관점명}
            모드: {검색 전략 모드}
+           핵심 수치: {핵심 수치 1~3개, "수치명: 값 [출처]" 형식}
            ---
            journal의 처리 완료 응답을 기다리지 말고 즉시 작업을 마무리하라.",
   subagent_type: "researcher",
@@ -222,7 +223,19 @@ Agent(
 모든 Researcher가 완료되면:
 
 1. Journal에게 SendMessage로 "모든 Researcher 완료. 사전 상충점 보고를 Team Lead에게 전달하라" 지시
-2. Journal이 사전 상충점 감지 결과를 Team Lead에게 SendMessage
+2. Journal이 사전 상충점 감지 결과를 Team Lead에게 아래 형식으로 SendMessage:
+
+```
+사전 상충점 보고
+상충 건수: {N}건
+---
+| 항목 | 관련 Researcher | 상충 내용 요약 |
+|------|----------------|---------------|
+| {수치/주장} | R1 vs R2 | {한줄 설명} |
+---
+Critic 초점 제안: {상충이 집중된 영역}
+```
+
 3. Team Lead는 이 보고를 바탕으로 Critic 발사 여부 및 초점을 결정
 
 ### 3.5 스톨 감지
@@ -426,11 +439,9 @@ Agent(
 ## 모드 자동 선택
 
 ```
-Agent Teams 환경변수 설정됨?
+CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS 환경변수가 "1"?
   NO -> Solo 모드
-  YES -> workflow.yaml의 team.enabled가 true?
-    NO -> Solo 모드
-    YES -> Agent Teams 모드
+  YES -> Agent Teams 모드
 ```
 
 ---
@@ -449,5 +460,7 @@ Agent Teams 환경변수 설정됨?
 - **메인이 Researcher 산출물을 직접 전문 읽는 것** (Journal 요약을 먼저 읽을 것)
 - **Journal에게 판단을 시키는 것** (Journal은 기록만, 판단은 Critic)
 - **Researcher에게 Journal 완료를 기다리게 하는 것** (비동기 통신, 기다리지 않고 즉시 종료)
+- **차단 커뮤니티 소스 사용** (DC인사이드, 에펨코리아, 일베 등 — 어떤 주제에서도 예외 없음)
+- **검색 예산 초과** (Researcher당 22회, Verifier 9회 — 초과 시 수집 자료로 마무리)
 
 품질 우선은 느려도 된다는 뜻이지, 불필요하게 비효율적이어도 된다는 뜻은 아니다.

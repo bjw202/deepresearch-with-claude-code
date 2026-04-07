@@ -34,6 +34,9 @@ WebSearch(query: "{학술용어 영어}", allowed_domains: ["scholar.google.com"
 | 사회과학/경제 | `ssrn.com`, `nber.org`, `jstor.org` | 워킹페이퍼 + 아카이브 |
 | 화학/재료 | `acs.org`, `rsc.org`, `sciencedirect.com` | 저널 중심 |
 | 종합/학제간 | `link.springer.com`, `sciencedirect.com`, `wiley.com` | 대형 출판사 |
+| 인문학 | `jstor.org`, `muse.jhu.edu`, `philpapers.org` | 아카이브 + 학회지 |
+| 심리학/교육 | `apa.org`, `eric.ed.gov`, `tandfonline.com` | APA + ERIC DB |
+| 법학 | `ssrn.com`, `heinonline.org`, `scholar.google.com` | 법학 리뷰 + 판례 |
 
 **사용 예시** (공학 주제):
 ```
@@ -87,6 +90,8 @@ WebFetch가 불충분하면:
 | **Tier 3** | 백서, 기술 블로그, 포럼, 미검증 소스 | 기업 백서, 전문가 블로그, 커뮤니티 포럼 |
 
 **주의**: Tier 1의 "주요 학회/저널"은 분야마다 다르다. CS에서 Top 컨퍼런스(NeurIPS, ICML)가 Tier 1이지만, 의학에서는 피어리뷰 저널(NEJM, Lancet)이 Tier 1이다. **주제 분야의 학술 관행에 맞춰 판단**한다.
+
+**확신도 매핑**: Tier 1 → ★★★, Tier 2 → ★★☆, Tier 3 → ★☆☆. 산출물의 출처 목록에 확신도를 표기할 때 이 매핑을 따른다.
 
 ## Step 4: 논문 분석 프레임워크
 
