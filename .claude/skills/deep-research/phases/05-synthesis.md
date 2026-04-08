@@ -1,0 +1,62 @@
+# Step 6: 통합 (Synthesis)
+
+## 6.1 Journal 마감 (Agent Teams 모드만)
+
+Critic 완료 후 (또는 Repair Pass 완료 후):
+
+```
+SendMessage(
+  to: "journal",
+  content: "저널 마감하고 최종본을 저장하라.
+            Repair Pass 수행 여부: {예/아니오}
+            최종 저널 완성 후 Team Lead에게 완료 보고하라."
+)
+```
+
+Journal 완료 보고를 수신한 후:
+
+```
+TeamDelete(team_name: "research-{topic-slug}")
+```
+
+## 6.2 읽기 순서
+
+메인이 직접 수행한다. Researcher 산출물 전문 대신 **Journal 요약본을 먼저** 읽는다.
+
+1. `97-journal.md` — Journal 요약본 (핵심 요약, 상충점, 메타 분석)
+2. `99-critic-review.md` — Critic 리뷰 (결함, 교차 검증 등급, 권고사항)
+3. 필요 시에만 개별 Researcher 산출물의 특정 섹션을 Read
+
+Solo 모드에서는 Journal이 없으므로, Researcher 산출물을 직접 읽되 Critic 리뷰를 먼저 참조한다.
+
+## 6.3 필수 작업
+
+1. **중복 제거** — Researcher 간 중복 수집된 정보 통합
+2. **상충점 정리** — Critic이 지적한 상충점 해결
+3. **근거 강도 평가** — 교차 검증 등급 반영
+4. **결론 우선순위화** — 핵심 발견 순위 결정
+5. **불확실성 명시** — 조건부 결론 표시
+
+## 6.4 Synthesis 필수 섹션
+
+1. **근거 신뢰도 매트릭스**: 핵심 주장별 출처, 도메인 일치도, 확신도, 검증 필요 여부 (표)
+2. **상충점 해결 테이블**: 상충 시 각 측 주장 + 판단 근거 (표, 해당 시)
+3. **역방향 의사결정 가이드**: "결과가 X이면 → Y를 조정하라" (해당 시)
+4. **예상 밖 핵심 발견**: 사용자 질문 범위 밖이지만 의사결정 영향 (해당 시)
+5. **후속 탐색 질문**: 다음에 조사해야 할 질문 2~3개
+
+해당 없으면 "해당 없음, 이유: ..." 명시. 억지로 채우지 않는다.
+
+## 6.5 검색 비용 보고
+
+Journal의 메타 분석 섹션에서 검색 비용 집계를 가져온다 (Agent Teams 모드).
+Solo 모드에서는 `./scripts/search.sh stats`를 실행한다.
+
+synthesis 보고서 하단에 포함: 도구별 호출 수, Perplexity 예상 비용, Tavily 크레딧 사용량.
+
+## 6.6 프레젠테이션 제안
+
+Researcher 2명 이상이고, "리서치만" 요청이 아닌 경우 프레젠테이션 생성을 제안한다.
+
+- 16장 이상: `.claude/agents/presentation-builder.md` 파이프라인
+- 15장 이하: `.claude/skills/create-presentation/SKILL.md`
