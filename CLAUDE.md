@@ -28,7 +28,7 @@
 | academic-research | `.claude/skills/academic-research/` | 학술 검색 모드 (분야별 DB, Tier 분류) |
 | community-analysis | `.claude/skills/community-analysis/` | 커뮤니티 분석 모드 (정서 분석, 편향 보정) |
 | web-research | `.claude/skills/web-research/` | 웹 검색 모드 (출처 등급, Fact/Claim 분류) |
-| create-presentation | `.claude/skills/create-presentation/` | 리서치 결과 프레젠테이션 생성 |
+| create-presentation | `.claude/skills/create-presentation/` | 프레젠테이션 생성 (소규모 직접 + 대규모 phases/ 파이프라인) |
 
 ## Core Rules
 

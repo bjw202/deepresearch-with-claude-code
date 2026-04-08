@@ -1,7 +1,6 @@
 # Obsidian + AI: 지식관리의 새로운 패러다임
 
-**통합 보고서** | 2026-04-07
-**리서치 구성**: Researcher 3명 (web/community/mixed) + Critic 1명
+**통합 보고서** | 2026-04-07 **리서치 구성**: Researcher 3명 (web/community/mixed) + Critic 1명
 
 ---
 
@@ -22,13 +21,13 @@ Obsidian은 2020년에 나온 **노트 앱**이다. 특별한 점은 세 가지:
 ### 핵심 기능 요약
 
 | 기능 | 설명 |
-|------|------|
+| --- | --- |
 | **Vault** | 폴더 하나 = 작업공간. 특별한 데이터베이스 없이 그냥 폴더 |
 | **백링크** | "이 노트를 누가 링크했는지" 자동 추적 |
 | **그래프 뷰** | 노트 연결 관계를 네트워크 그래프로 시각화 |
 | **Canvas** | 무한 화이트보드. 노트, 이미지, PDF를 자유롭게 배치 |
 | **Bases** (2025 신기능) | 노트를 데이터베이스 테이블처럼 보는 공식 기능 |
-| **CLI** (2026 신기능) | 명령줄에서 Obsidian 조작 가능 -> 자동화의 문을 열다 |
+| **CLI** (2026 신기능) | 명령줄에서 Obsidian 조작 가능 -&gt; 자동화의 문을 열다 |
 
 ### Vault 구조는 이렇게 생겼다
 
@@ -53,9 +52,7 @@ Obsidian은 2020년에 나온 **노트 앱**이다. 특별한 점은 세 가지:
 
 이유는 놀라울 정도로 단순하다:
 
-> **Obsidian = 마크다운 파일 폴더**
-> **AI(Claude Code 등) = 파일을 읽고 쓰는 도구**
-> **따라서 아무런 특별한 연결 없이 자연스럽게 통합된다.**
+> **Obsidian = 마크다운 파일 폴더AI(Claude Code 등) = 파일을 읽고 쓰는 도구따라서 아무런 특별한 연결 없이 자연스럽게 통합된다.**
 
 Notion은 데이터가 Notion 서버에 있어서 AI가 접근하려면 API를 거쳐야 한다. Obsidian은 파일이 내 컴퓨터에 있으므로 AI가 바로 읽는다.
 
@@ -89,7 +86,7 @@ vault 루트에 `CLAUDE.md`를 두면 Claude Code가 매번 자동으로 읽어�
 Obsidian 안에서 직접 AI를 쓰는 방식. 주요 플러그인:
 
 | 플러그인 | 하는 일 | 특징 |
-|---------|---------|------|
+| --- | --- | --- |
 | **Smart Composer** | 노트 맥락을 이해하고 글쓰기 보조 | 커뮤니티에서 "현재 최고" 평가 |
 | **Smart Connections** | 비슷한 노트를 AI가 자동 발견 | 대규모 vault에 강함, 일부 유료화 |
 | **Copilot for Obsidian** | vault 전체와 AI 채팅 | 가장 깔끔한 인터페이스 |
@@ -119,7 +116,7 @@ MCP(Model Context Protocol)를 통해 Claude Desktop 등의 AI 도구가 Obsidia
 
 소프트웨어 개발자 Damian Galarza의 워크플로우:
 
-- Linear 이슈 -> Obsidian에 프로젝트 노트 작성 -> Claude Code가 노트를 읽고 구현 계획 수립
+- Linear 이슈 -&gt; Obsidian에 프로젝트 노트 작성 -&gt; Claude Code가 노트를 읽고 구현 계획 수립
 - **핵심 통찰**: 노트가 쌓일수록 Claude Code가 더 정확해진다. 컨텍스트의 복리 효과.
 
 #### 사례 4: 완전 로컬 AI (프라이버시 우선)
@@ -131,10 +128,10 @@ Copilot 플러그인 + Ollama를 연결하면 노트가 외부 서버로 전송�
 ## 3. 경쟁 도구와 비교
 
 | 항목 | Obsidian + AI | Notion AI | Logseq | Roam Research |
-|------|--------------|-----------|--------|---------------|
+| --- | --- | --- | --- | --- |
 | **데이터 위치** | 내 컴퓨터 | Notion 서버 | 내 컴퓨터 | Roam 서버 |
 | **AI 연결** | 자유 선택 (플러그인/CLI) | 내장 (사용자 모델 선택 불가) | 제한적 | 제한적 |
-| **AI 비용** | 무료~가변 | $20/월/사용자 | 무료 | 없음 |
+| **AI 비용** | 무료\~가변 | $20/월/사용자 | 무료 | 없음 |
 | **프라이버시** | 높음 | 낮음 (서버 처리) | 높음 | 낮음 |
 | **협업** | 약함 | 강함 | 제한적 | 약함 |
 | **학습 곡선** | 높음 | 낮음 | 중간 | 높음 |
@@ -142,8 +139,7 @@ Copilot 플러그인 + Ollama를 연결하면 노트가 외부 서버로 전송�
 
 ### 핵심 차이
 
-**Notion AI**: "AI를 쉽게 쓰는 대신 데이터와 비용을 지불"하는 모델
-**Obsidian + AI**: "AI를 직접 연결하는 대신 데이터와 제어권을 보유"하는 모델
+**Notion AI**: "AI를 쉽게 쓰는 대신 데이터와 비용을 지불"하는 모델 **Obsidian + AI**: "AI를 직접 연결하는 대신 데이터와 제어권을 보유"하는 모델
 
 2025년 Notion은 AI를 Business 플랜 전용($20/월/사용자)으로 이동시켰다. 같은 시기 Obsidian은 상업용 라이센스를 **완전 무료화**했다. 정반대 방향이다.
 
@@ -181,7 +177,7 @@ PKM의 진화 경로:
 메모장 -> Evernote(클라우드) -> Notion(데이터베이스) -> Obsidian(그래프) -> Agentic PKM(AI 에이전트)
 ```
 
-2025~2026년의 핵심 명제: **"지식 베이스는 나의 제2의 뇌일 뿐 아니라, AI의 뇌이기도 해야 한다."**
+2025\~2026년의 핵심 명제: **"지식 베이스는 나의 제2의 뇌일 뿐 아니라, AI의 뇌이기도 해야 한다."**
 
 Obsidian의 로컬 마크다운 vault는 AI 에이전트가 읽고, 쓰고, 수정할 수 있는 **공유 작업 공간**으로 작동한다. 이것이 "에이전틱 PKM(Agentic Knowledge Management)"이라는 새로운 카테고리를 만들고 있다.
 
@@ -196,7 +192,7 @@ Obsidian의 로컬 마크다운 vault는 AI 에이전트가 읽고, 쓰고, 수�
 ### 5-3. 지식 노동의 변화
 
 | 이전 | 이후 (Obsidian + AI) |
-|------|---------------------|
+| --- | --- |
 | 정보를 **찾는** 것이 핵심 | 정보를 **걸러내고 연결**하는 것이 핵심 |
 | 노트는 보관용 | 노트는 AI의 컨텍스트이자 의사결정 보조 |
 | 단순 키워드 검색 | "지난해 내가 배운 것은?" 같은 추론형 질문 |
@@ -206,13 +202,13 @@ Obsidian의 로컬 마크다운 vault는 AI 에이전트가 읽고, 쓰고, 수�
 
 - **코드 + 지식의 통합**: 프로젝트 결정 기록(ADR), 미팅 노트, 기술 메모가 Claude Code의 컨텍스트가 됨
 - **Git으로 버전 관리**: vault 자체를 Git 저장소로 관리 가능
-- **온보딩 자동화**: 팀 위키를 Obsidian으로 -> AI가 신입 질문에 답변
+- **온보딩 자동화**: 팀 위키를 Obsidian으로 -&gt; AI가 신입 질문에 답변
 
 ### 5-5. 교육/연구에서의 가능성
 
-- 논문 PDF -> 로컬 LLM으로 요약 -> Obsidian 노트로 자동 삽입
+- 논문 PDF -&gt; 로컬 LLM으로 요약 -&gt; Obsidian 노트로 자동 삽입
 - 인용 관리(Zotero 플러그인) + AI 문헌 합성
-- 강의 노트 -> AI로 퀴즈 자동 생성
+- 강의 노트 -&gt; AI로 퀴즈 자동 생성
 
 ---
 
@@ -221,7 +217,7 @@ Obsidian의 로컬 마크다운 vault는 AI 에이전트가 읽고, 쓰고, 수�
 ### 현실적 한계
 
 | 한계 | 설명 |
-|------|------|
+| --- | --- |
 | **학습 곡선** | Obsidian 자체만도 적응에 수주 필요. AI 연결까지 하면 더 |
 | **설정 늪** | 실제 글쓰기보다 설정에 시간을 더 쓰는 함정 |
 | **팀 협업** | 실시간 공동 편집 미지원. Notion이 훨씬 강함 |
@@ -232,8 +228,8 @@ Obsidian의 로컬 마크다운 vault는 AI 에이전트가 읽고, 쓰고, 수�
 ### 비용 시나리오 (참고용 추정)
 
 | 구성 | 월 비용 추정 |
-|------|-------------|
-| Obsidian + Claude API (중간 사용) | $20~50 |
+| --- | --- |
+| Obsidian + Claude API (중간 사용) | $20\~50 |
 | Obsidian + 로컬 LLM (Ollama) | $0 (초기 GPU 투자 별도) |
 | Notion AI (Business 플랜) | $20/사용자 (고정) |
 
@@ -242,7 +238,7 @@ Obsidian의 로컬 마크다운 vault는 AI 에이전트가 읽고, 쓰고, 수�
 1. **CLAUDE.md를 대충 쓰면** AI가 vault를 제대로 이해 못 한다
 2. **한 번에 모든 것을 자동화하려 하면** 실패. "일일 노트 하나부터" 시작
 3. **바이너리 파일(PDF, 이미지)이 섞이면** AI가 불필요한 파일까지 처리. `.claudeignore`로 제외 필요
-4. **폴더가 너무 깊으면** AI 탐색이 비효율적. 2~3단계 이내 권장
+4. **폴더가 너무 깊으면** AI 탐색이 비효율적. 2\~3단계 이내 권장
 
 ---
 
@@ -258,8 +254,8 @@ Obsidian의 로컬 마크다운 vault는 AI 에이전트가 읽고, 쓰고, 수�
 
 ### Obsidian + AI가 안 맞는 경우
 
-- 팀 협업이 핵심 (-> Notion 추천)
-- 설정 없이 바로 쓰고 싶다 (-> Notion AI, Apple Notes)
+- 팀 협업이 핵심 (-&gt; Notion 추천)
+- 설정 없이 바로 쓰고 싶다 (-&gt; Notion AI, Apple Notes)
 - 모바일 중심 사용자
 - 기술적 설정에 시간 쓸 여유가 없다
 
@@ -276,14 +272,14 @@ Obsidian의 로컬 마크다운 vault는 AI 에이전트가 읽고, 쓰고, 수�
 ## 근거 신뢰도 매트릭스
 
 | 핵심 주장 | 출처 수 | 교차 검증 | 확신도 |
-|-----------|---------|-----------|--------|
-| Obsidian은 로컬 마크다운 기반 | 12+ | 3개 보고서 모두 확인 | [확인됨] |
-| 커뮤니티 플러그인 2,700개+ | 공식 사이트 | 확인됨 | [확인됨] |
-| Claude Code + vault 직접 연동 | 다수 사례 | 3개 보고서 확인 | [확인됨] |
-| 마크다운이 LLM 최적 포맷 | 구조적 분석 | 2개 보고서 확인 | [높은 신뢰] |
-| 로컬 LLM 연동 가능 | 복수 사례 | 2개 보고서 확인 | [높은 신뢰] |
-| CLAUDE.md 컨텍스트 관리 | 복수 사례 | 커뮤니티 보고서만 | [단일 출처] |
-| Notion AI 프리미엄 전환 | 복수 출처 | 비교 보고서만 | [단일 출처] |
+| --- | --- | --- | --- |
+| Obsidian은 로컬 마크다운 기반 | 12+ | 3개 보고서 모두 확인 | \[확인됨\] |
+| 커뮤니티 플러그인 2,700개+ | 공식 사이트 | 확인됨 | \[확인됨\] |
+| Claude Code + vault 직접 연동 | 다수 사례 | 3개 보고서 확인 | \[확인됨\] |
+| 마크다운이 LLM 최적 포맷 | 구조적 분석 | 2개 보고서 확인 | \[높은 신뢰\] |
+| 로컬 LLM 연동 가능 | 복수 사례 | 2개 보고서 확인 | \[높은 신뢰\] |
+| CLAUDE.md 컨텍스트 관리 | 복수 사례 | 커뮤니티 보고서만 | \[단일 출처\] |
+| Notion AI 프리미엄 전환 | 복수 출처 | 비교 보고서만 | \[단일 출처\] |
 
 **주의**: "Obsidian이 AI 시대에 기술적으로 유리한 구조"라는 것과 "모든 사용자에게 최선"이라는 것은 다르다. 기술적 최적성보다 편의성을 선택하는 대다수 사용자에게는 Notion AI가 더 나은 선택일 수 있다.
 
@@ -300,11 +296,13 @@ Obsidian의 로컬 마크다운 vault는 AI 에이전트가 읽고, 쓰고, 수�
 ## 출처
 
 ### Obsidian 공식
+
 - [Obsidian Changelog](https://obsidian.md/changelog/)
 - [Obsidian Help - Graph View](https://help.obsidian.md/plugins/graph)
 - [Obsidian API Architecture](https://www.mintlify.com/obsidianmd/obsidian-api/concepts/app-architecture)
 
 ### AI 통합 사례
+
 - [dev.to - Claude Code Inside Obsidian](https://dev.to/numbpill3d/claude-code-inside-obsidian-the-setup-that-10xd-my-thinking-20e8)
 - [Damian Galarza - How I Use Claude Code](https://www.damiangalarza.com/posts/2025-11-25-how-i-use-claude-code/)
 - [Stefan Imhoff - Agentic Note-Taking](https://www.stefanimhoff.de/agentic-note-taking-obsidian-claude-code/)
@@ -312,32 +310,35 @@ Obsidian의 로컬 마크다운 vault는 AI 에이전트가 읽고, 쓰고, 수�
 - [MindStudio - AI Second Brain Guide](https://www.mindstudio.ai/blog/build-ai-second-brain-claude-code-obsidian-2/)
 
 ### 경쟁 비교 및 시사점
+
 - [dasroot.net - PKM Systems Compared 2026](https://dasroot.net/posts/2026/03/obsidian-logseq-notion-pkm-systems-compared-2026/)
 - [flowith.io - Notion AI vs Obsidian AI](https://flowith.io/blog/notion-ai-vs-obsidian-ai-local-intelligence-pkm)
 - [dsebastien.net - Agentic Knowledge Management](https://www.dsebastien.net/agentic-knowledge-management-the-next-evolution-of-pkm/)
 - [NICE / KMWorld 2025 Insights](https://www.nice.com/blog/top-10-insights-from-kmworld-2025-ai-knowledge-management-and-the-agentic-future-of-customer-experience)
 
 ### 커뮤니티
+
 - [Obsidian Forum - Alternatives to Smart Connections](https://forum.obsidian.md/t/alternatives-to-smart-connections/108886)
 - [Obsidian Forum - MCP Servers](https://forum.obsidian.md/t/obsidian-mcp-servers-experiences-and-recommendations/99936)
 - [mcpservers.org - Obsidian Claude Code MCP](https://mcpservers.org/servers/iansinnott/obsidian-claude-code-mcp)
 
 ### 리뷰 및 가이드
+
 - [Lindy - Obsidian Review 2026](https://www.lindy.ai/blog/obsidian-review)
 - [eesel AI - Complete Obsidian Overview 2025](https://www.eesel.ai/blog/obsidian-overview)
-- [Wikipedia - Obsidian (software)](https://en.wikipedia.org/wiki/Obsidian_(software))
+- [Wikipedia - Obsidian (software)](https://en.wikipedia.org/wiki/Obsidian_\(software\))
 
 ---
 
 ## 검색 비용 보고
 
 | 에이전트 | 도구 | 호출 수 |
-|---------|------|--------|
+| --- | --- | --- |
 | Researcher 1 (web) | WebSearch 4 + WebFetch 4 | 8회 |
 | Researcher 2 (community) | Perplexity 4 + Tavily 3 | 7회 |
 | Researcher 3 (mixed) | WebSearch 5 + WebFetch 2 + Perplexity 2 | 9회 |
 | Critic | Read 4 (파일 읽기만) | 4회 |
-| **합계** | | **28회** |
+| **합계** |  | **28회** |
 
 ---
 

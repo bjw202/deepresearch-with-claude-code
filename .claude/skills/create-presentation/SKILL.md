@@ -1,15 +1,6 @@
 ---
 
-name: create-presentation description: &gt; PPT/프레젠테이션을 디자인하고 생성합니다. 주제·파일·텍스트를 입력받아 한국형 디자인 시스템(Pretendard + 6:3:1 색상)으로 프로페셔널한 .pptx를 생성합니다. PptxGenJS 기반 코드 생성 시 네이티브 요소(테이블·차트·이미지·도형·텍스트)를 목적에 맞게 매핑하여 최적 품질의 PPTX를 생성합니다. MANDATORY TRIGGERS: PPT 만들어, PPT 생성, 프레젠테이션 만들어, 슬라이드 만들어, 발표자료 만들어, 발표 자료, 보고서 PPT, 결과 보고 PPT, 요약 PPT, 피치덱, pitch deck, presentation, PPT 디자인, 슬라이드 디자인, 프레젠테이션 디자인, PPT 템플릿, PPT 폰트, 슬라이드 레이아웃, 프레젠테이션을 생성할까요 allowed-tools:
-
-- Bash
-- Write
-- Read
-- Edit
-- Glob
-- Grep
-
----
+## name: create-presentation description: "프레젠테이션 생성 스킬. PPT/프레젠테이션을 디자인하고 생성한다. 주제/파일/텍스트를 입력받아 한국형 디자인 시스템(Pretendard + 6:3:1 색상)으로 프로페셔널한 .pptx를 생성한다. PptxGenJS 기반 코드 생성 시 네이티브 요소(테이블/차트/이미지/도형/텍스트)를 목적에 맞게 매핑하여 최적 품질의 PPTX를 생성한다. 소규모(15장 이하)부터 대규모(16장+, 병렬 에이전트 파이프라인)까지 단일 스킬로 처리한다. MANDATORY TRIGGERS: PPT 만들어, PPT 생성, 프레젠테이션 만들어, 슬라이드 만들어, 발표자료 만들어, 발표 자료, 보고서 PPT, 결과 보고 PPT, 요약 PPT, 피치덱, pitch deck, presentation, PPT 디자인, 슬라이드 디자인, 프레젠테이션 디자인, PPT 템플릿, PPT 폰트, 슬라이드 레이아웃, 프레젠테이션을 생성할까요"
 
 # 프레젠테이션 생성 스킬
 
@@ -21,19 +12,18 @@ name: create-presentation description: &gt; PPT/프레젠테이션을 디자인�
 - 리서치 폴더(`docs/research/`)가 입력 소스
 - 사용자가 "방대한", "교육자료", "전체 내용" 등 대규모를 암시
 
-**에이전트 파이프라인 전환 시:**`.claude/agents/presentation-builder.md`의 4단계 파이프라인을 따른다:
+**에이전트 파이프라인 전환 시**, 아래 3개 phase 파일을 순서대로 Read하여 따른다:
 
-1. Content Strategist (opus) → 콘텐츠 전략 + 아웃라인
-2. 사용자 승인
-3. Slide Builders (sonnet × 2\~N, 병렬) → 코드 생성
-4. Assembler + Validator → 합치기 + `scripts/validate-pptx-code.js` 검증 + 실행
+1. Read `phases/01-content-strategy.md` → Content Strategist (opus) 발사 + 사용자 승인
+2. Read `phases/02-slide-build.md` → Slide Builders (sonnet x N, 병렬) 발사
+3. Read `phases/03-assemble.md` → 합치기 + `scripts/validate-pptx-code.js` 검증 + 실행
 
 **에이전트 파이프라인 핵심 원칙:**
 
 - 첫 번째 파트만 상수/헬퍼를 정의한다. 후속 파트는 슬라이드 함수만 작성한다.
-- **모든 파트(Part 1 포함)에서 함수 호출문(`slideNN_name();`)과 `pptx.writeFile()` 금지.** 합치기 단계에서 자동 생성한다. Part 1이 함수 호출 블록을 포함하면 슬라이드가 중복 생성된다.
-- **헬퍼 프로퍼티명 주의:** addProcessFlow/addLayeredStack/addCard/addIconGrid는 `{title, body}`, addFunnel은 `{label, value}`, addPyramid는 `{label, description}`. 잘못된 프로퍼티명은 빈 슬라이드의 원인이다.
-- 상세 규칙은 `.claude/agents/presentation-builder.md` Phase 3\~4 참조.
+- 모든 파트(Part 1 포함)에서 함수 호출문(`slideNN_name();`)과 `pptx.writeFile()` 금지. 합치기 단계에서 자동 생성한다.
+- 헬퍼 프로퍼티명 주의: addProcessFlow/addLayeredStack/addCard/addIconGrid는 `{title, body}`, addFunnel은 `{label, value}`, addPyramid는 `{label, description}`. 잘못된 프로퍼티명은 빈 슬라이드의 원인이다.
+- Slide Builder 프롬프트에 이 SKILL.md의 "시각적 품질 가드레일" + "OOXML 호환성" + "네이티브 요소 매핑" 섹션을 삽입한다 (단일 소스 원칙).
 
 **15장 이하 소규모 프레젠테이션**은 아래 기존 Step 1\~5를 그대로 사용한다.
 
@@ -50,15 +40,10 @@ name: create-presentation description: &gt; PPT/프레젠테이션을 디자인�
 
 ### 프레젠테이션 구조 자동 선택
 
-사용자의 목적에 따라 아래 구조 패턴을 선택한다. 상세 구조는 `references/content-strategy.md` 참조.
+사용자의 목적에 따라 구조 패턴을 선택한다. **반드시 아래 2개 파일을 Read한 후** 아웃라인을 작성한다:
 
-| 목적 | 구조 패턴 |
-| --- | --- |
-| 업무 보고, 분석 결과 | SCQA (상황→문제→질문→답변) |
-| 투자 유치, 사업 제안 | 피치덱 (문제→해결→시장→팀) |
-| 교육, 강의, 워크숍 | 교육 (학습목표→섹션→요약) |
-| 연구 발표, 논문 | 학술 (배경→방법→결과→결론) |
-| 청중 맞춤형 설득 | 서사 비트 기반 (`references/narrative-beats.md` 참조) |
+1. `references/content-strategy.md` — 구조 패턴(SCQA/피치덱/교육/학술), 피라미드 원칙(MECE), 콘텐츠 밀도 제어(6x6 규칙), 슬라이드별 콘텐츠 가이드
+2. `references/narrative-beats.md` — 7가지 서사 비트(hook/problem/insight/comparison/framework/proof/close), 청중별 비트 순서
 
 ## Step 2: 아웃라인 생성 및 승인
 
@@ -91,7 +76,7 @@ name: create-presentation description: &gt; PPT/프레젠테이션을 디자인�
 
 **15장 이하**: 단일 파일에 순차적으로 작성해도 무방.
 
-**16장 이상 (에이전트 파이프라인)**: `.claude/agents/presentation-builder.md`로 자동 분기.
+**16장 이상 (에이전트 파이프라인)**: Step 0에서 `phases/` 파일로 자동 분기.
 
 파트 분할 시 역할:
 
@@ -100,7 +85,7 @@ name: create-presentation description: &gt; PPT/프레젠테이션을 디자인�
 | 첫 번째 파트 | PptxGenJS 초기화 + 상수 + 헬퍼 + 슬라이드 함수 | 없음 |
 | 후속 파트 (2\~N) | 슬라이드 함수만 | 상수/헬퍼 재정의, 축약 상수명, 함수 호출문, writeFile |
 
-합치기는 메인 에이전트가 수행: 마커 주석 기반 추출 + grep으로 함수명 자동 추출 + writeFile 추가. 상세 규칙은 `.claude/agents/presentation-builder.md` Phase 3\~4 참조.
+합치기는 메인이 수행: 마커 주석 기반 추출 + grep으로 함수명 자동 추출 + writeFile 추가. 상세: `phases/03-assemble.md`
 
 ## Step 4: 실행 및 전달
 
@@ -150,12 +135,14 @@ node generate-presentation.js
  5. **Funnel/Pyramid = CHART_STYLE.colors**: bg_dark tier 금지
  6. **fontSize ≥ 9pt**: 9 미만 금지
  7. **연속 동일 타입 3장 금지**: 시각적 다양성 확보
- 8. **도형 일러스트 금지**: addShape로 장비/공정/물리현상 그림 그리기 금지. 텍스트+표+헬퍼로 대체
- 9. **섹션 디바이더 우측은 흰 배경**: 좌측만 dark, 우측은 반드시 흰색
-10. **번호 뱃지는 accent 색상**: bg_dark 뱃지 금지 → accent_blue 등 사용
-11. **테이블 교대 행**: 흰색/F5F7FA만 교대. bg_dark 행 금지
-12. **부드러운 톤**: 정보 박스에 연한 accent (EBF0FF, E6FAF5, FFF8E6, FFF0F0) 활용
-13. **조색 레시피**: `references/design-system.md`의 "조색 레시피(Color Recipe)" 참조
+ 8. **대면적 accent fill 금지**: w&gt;3 AND h&gt;1인 도형에 accent 색상 fill 금지. accent는 accent 바(h&lt;=0.06), 뱃지(w&lt;=0.5), KPI 숫자에만
+ 9. **도형 일러스트 금지**: addShape로 장비/공정/물리현상 그림 그리기 금지. 텍스트+표+헬퍼로 대체
+10. **섹션 디바이더 우측은 흰 배경**: 좌측만 dark, 우측은 반드시 흰색
+11. **번호 뱃지는 accent 색상**: bg_dark 뱃지 금지 → accent_blue 등 사용
+12. **테이블 교대 행**: 흰색/F5F7FA만 교대. bg_dark 행 금지
+13. **부드러운 톤**: 정보 박스에 연한 accent (EBF0FF, E6FAF5, FFF8E6, FFF0F0) 활용
+14. **경고 슬라이드**: 배경 흰색 + 연분홍(FFF0F0) 경고 배너. 전체 다크 배경 금지
+15. **조색 레시피**: `references/design-system.md`의 "조색 레시피(Color Recipe)" 참조
 
 ---
 

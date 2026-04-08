@@ -102,7 +102,7 @@ WebFetch로 부족하면:
 | `academic` | `.claude/skills/academic-research/SKILL.md` | 학술 DB 타겟팅, Tier 분류, 논문 분석 |
 | `web` | `.claude/skills/web-research/SKILL.md` | 공식 사이트 우선, Fact/Claim 분류 |
 | `community` | `.claude/skills/community-analysis/SKILL.md` | Layer 1 주력 (크롤러 차단), 정서 분석 |
-| `mixed` | 삽입 불필요 | 위 3가지를 종합. 주제 특성에 따라 비중 자율 조절 |
+| `mixed` | 삽입 불필요 | 위 3가지를 종합. 기본: Layer 0 우선, 학술 수치는 `allowed_domains`로 학술 DB 타겟팅, 커뮤니티 반응은 Layer 1 Perplexity 활용. 확신도는 출처 유형에 따라 web/academic/community 기준 중 적절한 것 적용 |
 
 프롬프트에 `[모드별 상세 지침]` 섹션이 있으면 그 내용을 따르고, 없으면 (mixed 모드) 위 표의 핵심 특성을 참고하여 자율적으로 검색 전략을 수립한다.
 

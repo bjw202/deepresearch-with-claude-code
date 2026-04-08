@@ -51,7 +51,8 @@ Agent Teams 모드가 결정되면 Step 3~5에서 반드시 TeamCreate/SendMessa
 3. 공유 컨벤션 정의 (핵심 질문, 범위, 확신도 표기법, 저장 경로)
 4. **Preflight Check [HARD]**: 4개 에이전트 파일 존재 확인
    - `researcher.md` 없음 → 중단
-   - `critic.md` 없음 → 중단
+   - `critic.md` 없음 + Researcher 2명 이상 → 중단
+   - `critic.md` 없음 + Researcher 1명 → Critic 생략 (경고 출력)
    - `journal.md` 없음 → Solo 폴백
    - `verifier.md` 없음 → Repair Pass 비활성화
 
@@ -96,5 +97,5 @@ Agent Teams 모드가 결정되면 Step 3~5에서 반드시 TeamCreate/SendMessa
 - Journal에게 판단을 시키는 것 (Journal은 기록만, 판단은 Critic)
 - Researcher에게 Journal 완료를 기다리게 하는 것 (비동기 통신)
 - **차단 커뮤니티 소스 사용** (DC인사이드, 에펨코리아, 일베 — 예외 없음)
-- **검색 예산 초과** (Researcher당 22회, Verifier 9회)
+- **검색 예산 초과** (각 Researcher 개별 상한 22회, Verifier 9회. 전체 합산 상한은 없으나 Synthesis에서 총 사용량을 명시한다)
 - **Step 0 모드 결정을 건너뛰거나 자의적으로 Solo 선택하는 것**
