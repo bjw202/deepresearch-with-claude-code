@@ -1,6 +1,7 @@
 ---
-
-## name: web-research description: "웹 검색 기반 리서치 방법론. researcher.md의 web 모드에서 참조하는 검색 전략 스킬."
+name: web-research
+description: "웹 검색 전략 참조 스킬. deep-research 스킬의 Researcher가 web 모드일 때 메인이 Read하여 프롬프트에 삽입한다. 이 스킬은 단독으로 트리거하지 않는다."
+---
 
 # Web Research — 웹 검색 리서치 방법론
 

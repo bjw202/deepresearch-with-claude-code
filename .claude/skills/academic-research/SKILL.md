@@ -1,6 +1,7 @@
 ---
-
-## name: academic-research description: "학술 자료 기반 리서치 방법론. researcher.md의 academic 모드에서 참조하는 검색 전략 스킬."
+name: academic-research
+description: "학술 검색 전략 참조 스킬. deep-research 스킬의 Researcher가 academic 모드일 때 메인이 Read하여 프롬프트에 삽입한다. 이 스킬은 단독으로 트리거하지 않는다."
+---
 
 # Academic Research — 학술 검색 방법론
 

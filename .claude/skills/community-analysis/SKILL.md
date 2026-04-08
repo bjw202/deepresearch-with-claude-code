@@ -1,6 +1,7 @@
 ---
-
-## name: community-analysis description: "커뮤니티 반응 분석 방법론. researcher.md의 community 모드에서 참조하는 검색 전략 스킬. 기술 동향/전략/비즈니스 주제에서 활성화. 순수 기술 수학에서는 생략."
+name: community-analysis
+description: "커뮤니티 반응 분석 참조 스킬. deep-research 스킬의 Researcher가 community 모드일 때 메인이 Read하여 프롬프트에 삽입한다. 이 스킬은 단독으로 트리거하지 않는다."
+---
 
 # Community Analysis — 커뮤니티 반응 분석 방법론
 
