@@ -1,6 +1,6 @@
 # Deep-Research System Architecture Report
 
-**버전**: v2.2 (2026-04-08 기준) **작성 배경**: v2.1 성능 개선 + create-presentation 리팩토링(presentation-builder 에이전트 통합) 완료. 향후 업그레이드 히스토리의 기준선(baseline)으로 현재 시스템 상태를 기록한다.
+**버전**: v2.3 (2026-04-08 기준) **작성 배경**: v2.2 + Step 1 팀 구성 재설계(조사 패턴 기반, 관점-모드 독립 차원, R1~5 유연 규모). 향후 업그레이드 히스토리의 기준선(baseline)으로 현재 시스템 상태를 기록한다.
 
 ---
 
@@ -532,7 +532,8 @@ timeline
 | `7b44ea0` | 파이프라인 15건 점검 결과 반영 | 안정화 |
 | `bbeacf9` | 3개 모드별 스킬 YAML frontmatter 수정 | 메타데이터 정규화 |
 | *(미커밋)* | v2.1 개선 7건 적용 | 이해당사자 등급, 리마인더, 예산 명확화 등 |
-| *(미커밋)* | v2.2 presentation 리팩토링 | builder 에이전트 삭제, 스킬 phases/ 통합, frontmatter 수정 |
+| `50bb629` | v2.2 presentation 리팩토링 | builder 에이전트 삭제, 스킬 phases/ 통합, frontmatter 수정 |
+| *(미커밋)* | v2.3 Step 1 팀 구성 재설계 | 조사 패턴 기반 분류, 관점-모드 독립, R1~5 유연, content-strategy 참조 갭 수정 |
 
 ---
 
@@ -557,6 +558,17 @@ timeline
 | P3 | YAML frontmatter 정상화 (쌍따옴표 감싸기) | `create-presentation/SKILL.md` | linter 내성 + 트리거링 정상화 |
 | P4 | 시각적 규칙 15개로 통합 (2개 추가) | `create-presentation/SKILL.md` | 대면적 accent fill 금지, 경고 슬라이드 |
 | P5 | presentation-builder.md 삭제 | `.claude/agents/` | 394줄 중복 에이전트 제거 |
+
+### v2.3 추가 변경 (Step 1 팀 구성 재설계 + content-strategy 갭 수정)
+
+| # | 개선 | 대상 파일 | 해결 문제 |
+|---|------|---------|---------|
+| T1 | Type A~D → 조사 패턴(단일/다관점/다차원/간단) 재분류 | `deep-research/SKILL.md` | 도메인 편향 제거, 범용화 |
+| T2 | 관점과 모드를 독립 차원으로 명시 | `deep-research/SKILL.md` | 같은 web 모드에서 다른 관점 병렬 가능 |
+| T3 | R1~5 유연 규모 + 5명 초과 시 2라운드 분할 | `deep-research/SKILL.md` | 복잡 주제 커버 |
+| T4 | 소규모 경로에 content-strategy + narrative-beats Read 지시 | `create-presentation/SKILL.md` | 참조 갭 수정 |
+| T5 | 대규모 Phase 1에 content-strategy.md Read 추가 | `phases/01-content-strategy.md` | 피라미드 원칙/6x6 규칙 누락 수정 |
+| T6 | Phase 2에 pptxgenjs-patterns/slide-layouts 주입 지시 | `phases/02-slide-build.md` | Slide Builder references 갭 수정 |
 
 ---
 
@@ -655,8 +667,9 @@ scripts/
 
 ---
 
-*이 문서는 deep-research 시스템의 v2.2 기준선이다. 향후 업그레이드 시 이 문서를 기준으로 변경 사항을 추적한다.*
+*이 문서는 deep-research 시스템의 v2.3 기준선이다. 향후 업그레이드 시 이 문서를 기준으로 변경 사항을 추적한다.*
 
 **변경 로그:**
 - v2.1 (2026-04-08): 성능 분석 후 7건 개선 (C1~C7)
-- v2.2 (2026-04-08): create-presentation 리팩토링 — presentation-builder 에이전트 삭제, phases/ 통합, frontmatter 정상화
+- v2.2 (2026-04-08): create-presentation 리팩토링 — builder 에이전트 삭제, phases/ 통합, frontmatter 정상화
+- v2.3 (2026-04-08): Step 1 팀 구성 재설계 — 조사 패턴 기반 분류, 관점-모드 독립 차원, R1~5 유연 규모, content-strategy 참조 갭 수정
