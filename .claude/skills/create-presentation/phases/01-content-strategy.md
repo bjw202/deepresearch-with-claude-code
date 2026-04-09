@@ -63,15 +63,16 @@ Read 후 목적에 따라 서사 구조 결정:
 [슬라이드번호] [타입] "액션 타이틀" — 콘텐츠 요약
 소스: {참조할 보고서 파일:섹션}
 
-**사용 가능한 슬라이드 타입:**
-- [Title] 표지
-- [Section] 섹션 구분
+**사용 가능한 슬라이드 타입 (Pencil 노드 구조 포함):**
+- [Title] 표지 (다크 전체 배경)
+- [Section] 섹션 구분 (좌 40% 다크 + 우 60% 밝음)
 - [Content] 글머리 목록 (3~5개)
 - [Table] 데이터 테이블
 - [Cards] 카드 그리드 (2x2 또는 2x3)
 - [TwoColumn] 2단 비교
 - [Timeline] 순차적 단계
 - [KPI] 핵심 지표
+- [ChartInsight] 차트 + 인사이트 (좌 60% 차트 + 우 40% 텍스트)
 - [ProcessFlow] 프로세스 플로우
 - [Funnel] 깔때기
 - [Matrix] 2x2 사분면
@@ -83,7 +84,7 @@ Read 후 목적에 따라 서사 구조 결정:
 - [IconGrid] 아이콘 그리드
 - [LayeredStack] 레이어 스택
 - [ComparisonTable] 비교 체크리스트
-- [Quote] 인용구
+- [Quote] 인용구 (명조체)
 - [Closing] 마무리
 
 ### 6. 액션 타이틀 규칙
@@ -103,5 +104,5 @@ Read 후 목적에 따라 서사 구조 결정:
 
 메인이 Content Strategist의 아웃라인을 사용자에게 제시한다.
 
-- 승인 → Phase 2 (02-slide-build.md)
+- 승인 → 아웃라인에 Pencil 경로 슬라이드(`[Architecture]`, `[SystemDiagram]` 등)가 포함된 경우 `02-pencil-design.md` Read 후 Pencil Designer 실행, 그 외 직접 `03-html-assembly.md`로 이동
 - 수정 요청 → 아웃라인 수정 후 재제시

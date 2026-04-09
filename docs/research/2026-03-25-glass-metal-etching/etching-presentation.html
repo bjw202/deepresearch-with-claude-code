@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>에칭 기술의 모든 것 — 기술 세미나</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg-primary:#FFFFFF;--bg-secondary:#F5F7FA;--bg-dark:#1A1F36;
+  --text-primary:#1A1F36;--text-secondary:#4A5568;--text-tertiary:#718096;--text-on-dark:#FFFFFF;
+  --accent-blue:#4A7BF7;--accent-cyan:#00D4AA;--accent-yellow:#FFB020;--accent-red:#FF6B6B;--accent-purple:#8B5CF6;
+  --light-blue:#EBF0FF;--light-cyan:#E6FAF5;--light-yellow:#FFF8E6;--light-red:#FFF0F0;--light-purple:#F3EEFF;
+  --border-light:#E2E8F0;
+  --font-sans:'Pretendard',-apple-system,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+  --font-serif:'Nanum Myeongjo',Georgia,serif;
+  --sw:1280;--sh:720;--scale:1;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#111;font-family:var(--font-sans);}
+.deck{position:relative;width:100%;height:100%;}
+.slide{
+  position:absolute;width:1280px;height:720px;left:50%;top:50%;
+  transform:translate(-50%,-50%) scale(var(--scale));transform-origin:center center;
+  background:var(--bg-primary);opacity:0;pointer-events:none;transition:opacity .3s ease;overflow:hidden;
+}
+.slide.active{opacity:1;pointer-events:auto;}
+.slide-counter{position:fixed;bottom:16px;right:24px;font-family:var(--font-sans);font-size:13px;color:rgba(255,255,255,.5);z-index:100;}
+@media print{
+  html,body{width:auto;height:auto;overflow:visible;background:#fff;}
+  .deck{position:static;width:auto;height:auto;}
+  .slide{position:relative;opacity:1!important;pointer-events:auto;page-break-after:always;transform:none!important;width:100%;height:auto;aspect-ratio:16/9;}
+  .slide-counter{display:none;}
+}
+.tb{margin-bottom:24px;}
+.tb-line{height:4px;width:48px;border-radius:2px;margin-bottom:12px;}
+.tb-text{font-size:32px;font-weight:700;color:var(--text-primary);line-height:1.2;}
+.bi{display:flex;gap:12px;margin-bottom:14px;}
+.bd{width:8px;height:8px;border-radius:4px;margin-top:9px;flex-shrink:0;}
+.bt{font-size:20px;color:var(--text-secondary);line-height:1.5;}
+.card{background:var(--bg-primary);border:1px solid var(--border-light);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;}
+.card-bar{height:4px;}
+.card-body{padding:20px;flex:1;}
+.card-title{font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:8px;}
+.card-desc{font-size:16px;color:var(--text-secondary);line-height:1.5;}
+.tbl{width:100%;border-collapse:collapse;font-size:15px;}
+.tbl th{background:var(--bg-dark);color:#fff;padding:10px 12px;text-align:left;font-weight:600;}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border-light);color:var(--text-secondary);}
+.tbl tr:last-child td{border-bottom:none;}
+.badge{width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:18px;font-weight:900;color:#fff;}
+.step-t{font-size:16px;font-weight:700;color:var(--text-primary);text-align:center;margin-bottom:4px;}
+.step-d{font-size:16px;color:var(--text-secondary);text-align:center;}
+.code{background:#2D3748;border-radius:8px;padding:14px 16px;font-family:'SF Mono','Monaco','Consolas',monospace;font-size:14px;color:#E2E8F0;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- S1: Title -->
+<div class="slide active" id="s1" style="background:var(--bg-dark);display:flex;align-items:center;justify-content:center;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;padding:0 80px;">
+    <span style="font-size:18px;font-weight:500;color:var(--accent-cyan);">기술 세미나 2026</span>
+    <h1 style="font-size:52px;font-weight:900;color:#fff;line-height:1.15;">칼 대신 화학과 빛으로 깎는다:<br/>에칭 기술의 모든 것</h1>
+    <p style="font-size:20px;font-weight:300;color:#A0AEC0;">화학적 / 반도체 / 물리적 에칭의 통합 이해</p>
+    <div style="display:flex;gap:24px;padding-top:32px;">
+      <span style="font-size:14px;color:#718096;">2026년 4월 9일</span>
+    </div>
+  </div>
+</div>
+
+<!-- S2: Quote -->
+<div class="slide" id="s2" style="background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;padding:96px;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:24px;">
+    <p style="font-family:var(--font-serif);font-size:96px;color:var(--text-tertiary);opacity:0.15;line-height:1;">"</p>
+    <p style="font-family:var(--font-serif);font-size:28px;font-style:italic;color:var(--text-primary);text-align:center;line-height:1.5;">모든 반도체 칩의 99%는<br/>에칭 없이 존재할 수 없다</p>
+    <p style="font-size:16px;font-weight:500;color:var(--text-tertiary);">에칭은 현대 제조업의 보이지 않는 기반 기술입니다</p>
+  </div>
+</div>
+
+<!-- S3: Content - Learning Objectives -->
+<div class="slide" id="s3" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">이 세미나에서 배울 3가지를 가져갈 수 있습니다</h2>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="bi">
+      <div class="bd" style="background:var(--accent-blue);"></div>
+      <p class="bt"><strong>에칭 기술의 전체 지도</strong> — 화학/반도체/물리적 에칭이 어떻게 연결되는 연속 스펙트럼인지</p>
+    </div>
+    <div class="bi">
+      <div class="bd" style="background:var(--accent-cyan);"></div>
+      <p class="bt"><strong>소재별 에칭 방식 선택법</strong> — 유리, 금속, 반도체 웨이퍼에 어떤 방식이 최적인지</p>
+    </div>
+    <div class="bi">
+      <div class="bd" style="background:var(--accent-purple);"></div>
+      <p class="bt"><strong>실무 실패 패턴과 예방법</strong> — 방식별 Top-3 실패 모드를 미리 알고 대응하는 법</p>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- S4: Section 01 -->
+<div class="slide" id="s4" style="display:flex;">
+  <div style="width:40%;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <span style="font-size:72px;font-weight:900;color:var(--accent-cyan);opacity:0.3;">01</span>
+    <h2 style="font-size:36px;font-weight:800;color:#fff;">에칭이란 무엇인가</h2>
+    <p style="font-size:16px;color:#A0AEC0;margin-top:16px;">기초 개념과 전체 스펙트럼</p>
+  </div>
+  <div style="width:60%;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <p style="font-size:18px;color:var(--text-secondary);">• 에칭의 정의와 핵심 비유</p>
+      <p style="font-size:18px;color:var(--text-secondary);">• 순수 화학 ~ 순수 물리 스펙트럼</p>
+      <p style="font-size:18px;color:var(--text-secondary);">• 4가지 핵심 개념 (선택비, 등방성, 속도, 언더컷)</p>
+    </div>
+  </div>
+</div>
+
+<!-- S5: Content - Definition -->
+<div class="slide" id="s5" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">에칭은 재료 표면을 선택적으로 제거하는 가공 기술입니다</h2>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div style="display:flex;gap:48px;align-items:flex-start;">
+    <div style="flex:1;">
+      <div class="bi">
+        <div class="bd" style="background:var(--accent-blue);"></div>
+        <p class="bt">도장을 찍기 위해 고무판을 칼로 파듯, 원하는 부분만 깎아냄</p>
+      </div>
+      <div class="bi">
+        <div class="bd" style="background:var(--accent-cyan);"></div>
+        <p class="bt">칼 대신 <strong>화학물질, 이온, 레이저</strong>를 사용</p>
+      </div>
+      <div class="bi">
+        <div class="bd" style="background:var(--accent-purple);"></div>
+        <p class="bt">PCB 회로, 반도체 칩, 유리 마이크로채널, 금속 부품 등 모든 제조 분야에 적용</p>
+      </div>
+    </div>
+    <div style="width:380px;">
+      <div style="background:var(--light-blue);border-radius:8px;padding:20px;border-left:4px solid var(--accent-blue);">
+        <p style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">핵심 원리</p>
+        <p style="font-size:16px;color:var(--text-secondary);">마스크로 보호한 영역은 남기고,<br/>노출된 영역만 에칭제로 제거한다.</p>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- S6: ProcessFlow - Spectrum (2-row for 7 items) -->
+<div class="slide" id="s6" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">에칭은 순수 화학에서 순수 물리까지 연속 스펙트럼입니다</h2>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:24px;flex:1;justify-content:center;">
+    <!-- Row 1: Chemical side -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;">
+      <div style="flex:1;text-align:center;">
+        <div class="badge" style="background:#3498db;">1</div>
+        <p class="step-t">습식 에칭</p>
+        <p class="step-d" style="font-size:14px;">HF, FeCl3 등<br/>액체에 담가 녹임</p>
+      </div>
+      <span style="font-size:20px;color:var(--text-tertiary);">→</span>
+      <div style="flex:1;text-align:center;">
+        <div class="badge" style="background:#5dade2;">2</div>
+        <p class="step-t">플라즈마 화학</p>
+        <p class="step-d" style="font-size:14px;">반응 가스 라디칼<br/>화학 반응 주도</p>
+      </div>
+      <span style="font-size:20px;color:var(--text-tertiary);">→</span>
+      <div style="flex:1;text-align:center;">
+        <div class="badge" style="background:#af7ac5;">3</div>
+        <p class="step-t">RIE</p>
+        <p class="step-d" style="font-size:14px;">이온 폭격 +<br/>화학 반응</p>
+      </div>
+      <span style="font-size:20px;color:var(--text-tertiary);">→</span>
+      <div style="flex:1;text-align:center;">
+        <div class="badge" style="background:#c39bd3;">4</div>
+        <p class="step-t">CAIBE</p>
+        <p class="step-d" style="font-size:14px;">이온빔 +<br/>반응 가스</p>
+      </div>
+    </div>
+    <!-- Row 2: Physical side -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;">
+      <div style="flex:1;text-align:center;">
+        <div class="badge" style="background:#e74c3c;">5</div>
+        <p class="step-t">스퍼터 에칭</p>
+        <p class="step-d" style="font-size:14px;">Ar+ 이온 충돌<br/>운동에너지 제거</p>
+      </div>
+      <span style="font-size:20px;color:var(--text-tertiary);">→</span>
+      <div style="flex:1;text-align:center;">
+        <div class="badge" style="background:#ec7063;">6</div>
+        <p class="step-t">FIB / 레이저</p>
+        <p class="step-d" style="font-size:14px;">집속이온빔 조각<br/>광 에너지 기화</p>
+      </div>
+      <span style="font-size:20px;color:var(--text-tertiary);">→</span>
+      <div style="flex:1;text-align:center;">
+        <div class="badge" style="background:#f5b7b1;">7</div>
+        <p class="step-t">샌드블라스팅</p>
+        <p class="step-d" style="font-size:14px;">물리적 연마 입자<br/>순수 물리</p>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:0 40px;">
+      <span style="font-size:14px;font-weight:700;color:#3498db;">← 순수 화학</span>
+      <span style="font-size:14px;font-weight:700;color:#e74c3c;">순수 물리 →</span>
+    </div>
+  </div>
+</div>
+
+<!-- S7: Cards - 4 Core Concepts -->
+<div class="slide" id="s7" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">에칭을 이해하려면 이 4가지 개념이 필수입니다</h2>
+  </div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;flex:1;align-content:center;">
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-blue);"></div>
+      <div class="card-body">
+        <h3 class="card-title">선택비 (Selectivity)</h3>
+        <p class="card-desc">에칭 대상 / 보호 재료의 속도 비율. "손톱만 깎고 손가락은 안 다치게 하는 능력". 습식 10:1, RIE 20:1, 스퍼터 ~1:1</p>
+      </div>
+    </div>
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-cyan);"></div>
+      <div class="card-body">
+        <h3 class="card-title">등방성 / 이방성</h3>
+        <p class="card-desc">등방성 = 모든 방향 균일 에칭 (사과를 설탕물에). 이방성 = 수직 방향만 (나무를 결 따라 쪼개기). RIE/스퍼터는 이방성.</p>
+      </div>
+    </div>
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-purple);"></div>
+      <div class="card-body">
+        <h3 class="card-title">에칭 속도 (Etch Rate)</h3>
+        <p class="card-desc">단위 시간당 제거 깊이. 습식 FeCl3(Cu) 25~50 um/min, RIE 수백 nm/min, ALE ~0.1 nm/사이클. 습식이 압도적으로 빠름.</p>
+      </div>
+    </div>
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-yellow);"></div>
+      <div class="card-body">
+        <h3 class="card-title">언더컷 (Undercut)</h3>
+        <p class="card-desc">마스크 아래로 에칭이 파고드는 현상. 등방성의 필연적 부산물. 에칭 팩터(EF) = 깊이/언더컷으로 관리. EF 3.0 이상이 고정밀.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8: Section 02 -->
+<div class="slide" id="s8" style="display:flex;">
+  <div style="width:40%;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <span style="font-size:72px;font-weight:900;color:var(--accent-cyan);opacity:0.3;">02</span>
+    <h2 style="font-size:36px;font-weight:800;color:#fff;">화학적 에칭</h2>
+    <p style="font-size:16px;color:#A0AEC0;margin-top:16px;">액체에 담가 녹인다</p>
+  </div>
+  <div style="width:60%;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <p style="font-size:18px;color:var(--text-secondary);">• 유리 에칭 (HF, BOE) vs 금속 에칭 (FeCl3, NaOH)</p>
+      <p style="font-size:18px;color:var(--text-secondary);">• 마스킹, 패터닝, 안전 관리</p>
+      <p style="font-size:18px;color:var(--text-secondary);">• 습식 에칭의 한계와 건식으로의 전환</p>
+    </div>
+  </div>
+</div>
+
+<!-- S9: TwoColumn - Glass vs Metal -->
+<div class="slide" id="s9" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">유리 에칭과 금속 에칭은 화학물질과 원리가 다릅니다</h2>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div style="display:flex;gap:32px;">
+    <div style="flex:1;background:var(--light-blue);border-radius:8px;padding:24px;">
+      <p style="font-size:16px;font-weight:700;color:var(--accent-blue);margin-bottom:16px;">유리 에칭</p>
+      <div class="bi"><div class="bd" style="background:var(--accent-blue);"></div><p style="font-size:16px;color:var(--text-secondary);">에칭액: <strong>HF (불산)</strong> 또는 BOE</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-blue);"></div><p style="font-size:16px;color:var(--text-secondary);">원리: SiO2 + 6HF → H2SiF6 + 2H2O</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-blue);"></div><p style="font-size:16px;color:var(--text-secondary);">속도: 0.1~8 um/min (농도/유리 의존)</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-blue);"></div><p style="font-size:16px;color:var(--text-secondary);">용도: 마이크로채널, 광학 부품, 장식</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-red);"></div><p style="font-size:16px;color:var(--accent-red);font-weight:600;">HF는 극도로 위험 — 전용 안전 장비 필수</p></div>
+    </div>
+    <div style="flex:1;background:var(--light-cyan);border-radius:8px;padding:24px;">
+      <p style="font-size:16px;font-weight:700;color:var(--accent-cyan);margin-bottom:16px;">금속 에칭</p>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:16px;color:var(--text-secondary);">에칭액: <strong>FeCl3</strong> (구리), NaOH (알루미늄)</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:16px;color:var(--text-secondary);">원리: 산화-환원 반응으로 금속 용해</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:16px;color:var(--text-secondary);">속도: 25~50 um/min (Cu, 30~45도C)</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:16px;color:var(--text-secondary);">용도: PCB 회로, 리드프레임, 정밀 부품</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:16px;color:var(--text-secondary);">CuCl2 재생 시스템으로 친환경 전환 중</p></div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- S10: Content - Wet Etch Limitations -->
+<div class="slide" id="s10" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-red);"></div>
+    <h2 class="tb-text">습식 에칭의 3가지 한계가 건식 에칭을 탄생시켰습니다</h2>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="bi">
+      <div class="bd" style="background:var(--accent-red);"></div>
+      <p class="bt"><strong>등방성 한계:</strong> 모든 방향으로 에칭되어 언더컷 불가피 → 미세 패턴(수 um 이하)에서 치명적</p>
+    </div>
+    <div class="bi">
+      <div class="bd" style="background:var(--accent-yellow);"></div>
+      <p class="bt"><strong>해상도 한계:</strong> 에칭 깊이 ≈ 언더컷 거리이므로 종횡비 1:1이 사실상 한계</p>
+    </div>
+    <div class="bi">
+      <div class="bd" style="background:var(--accent-blue);"></div>
+      <p class="bt"><strong>재료 한계:</strong> 구리(Cu) 등 일부 금속은 에칭 부산물이 비휘발성 → 건식에서도 난제 → 다마신 공정 발명</p>
+    </div>
+  </div>
+  <p style="font-size:14px;color:var(--text-tertiary);margin-top:24px;">이 한계들이 1970년대 플라즈마/RIE 기반 건식 에칭의 탄생을 이끌었습니다</p>
+  </div>
+</div>
+
+<!-- S11: Section 03 -->
+<div class="slide" id="s11" style="display:flex;">
+  <div style="width:40%;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <span style="font-size:72px;font-weight:900;color:var(--accent-cyan);opacity:0.3;">03</span>
+    <h2 style="font-size:36px;font-weight:800;color:#fff;">반도체 에칭</h2>
+    <p style="font-size:16px;color:#A0AEC0;margin-top:16px;">건식으로 진화하다</p>
+  </div>
+  <div style="width:60%;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <p style="font-size:18px;color:var(--text-secondary);">• RIE: 화학 + 물리 하이브리드의 핵심</p>
+      <p style="font-size:18px;color:var(--text-secondary);">• RIE → DRIE → ICP → ALE 진화 경로</p>
+      <p style="font-size:18px;color:var(--text-secondary);">• 첨단 응용: FinFET, 3D NAND, MEMS, TSV</p>
+    </div>
+  </div>
+</div>
+
+<!-- S12: Content - RIE -->
+<div class="slide" id="s12" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">RIE는 화학과 물리의 하이브리드입니다</h2>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div style="display:flex;gap:48px;">
+    <div style="flex:1;">
+      <div class="bi">
+        <div class="bd" style="background:var(--accent-blue);"></div>
+        <p class="bt"><strong>화학 요소:</strong> 반응 가스(CF4, Cl2 등)가 표면과 화학 반응 → 휘발성 부산물 생성</p>
+      </div>
+      <div class="bi">
+        <div class="bd" style="background:var(--accent-purple);"></div>
+        <p class="bt"><strong>물리 요소:</strong> 이온이 전기장으로 가속되어 표면을 수직으로 폭격 → 이방성 에칭</p>
+      </div>
+      <div class="bi">
+        <div class="bd" style="background:var(--accent-cyan);"></div>
+        <p class="bt"><strong>시너지 효과:</strong> 이온 폭격이 화학 반응을 10~20배 가속 (이온 에너지가 결합 약화)</p>
+      </div>
+    </div>
+    <div style="width:360px;">
+      <div style="background:var(--light-purple);border-radius:8px;padding:20px;border-left:4px solid var(--accent-purple);">
+        <p style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">가스 조합이 핵심</p>
+        <p style="font-size:16px;color:var(--text-secondary);line-height:1.5;">Si → SF6, CF4<br/>SiO2 → C4F8, CHF3<br/>Al → Cl2, BCl3<br/>GaN → Cl2/BCl3/Ar</p>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- S13: ProcessFlow - Evolution -->
+<div class="slide" id="s13" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">반도체 에칭은 RIE → DRIE → ICP → ALE로 진화했습니다</h2>
+  </div>
+  <div style="display:flex;align-items:center;gap:0;flex:1;justify-content:center;">
+    <div style="flex:1;text-align:center;">
+      <div class="badge" style="background:var(--accent-blue);">1</div>
+      <p class="step-t">RIE</p>
+      <p class="step-d">기본 반응성 이온 에칭<br/>1970s~</p>
+    </div>
+    <span style="font-size:24px;color:var(--text-tertiary);">→</span>
+    <div style="flex:1;text-align:center;">
+      <div class="badge" style="background:var(--accent-cyan);">2</div>
+      <p class="step-t">DRIE (보쉬)</p>
+      <p class="step-d">에칭/보호 교대 사이클<br/>고종횡비 1990s~</p>
+    </div>
+    <span style="font-size:24px;color:var(--text-tertiary);">→</span>
+    <div style="flex:1;text-align:center;">
+      <div class="badge" style="background:var(--accent-purple);">3</div>
+      <p class="step-t">ICP-RIE</p>
+      <p class="step-d">고밀도 플라즈마<br/>독립 제어</p>
+    </div>
+    <span style="font-size:24px;color:var(--text-tertiary);">→</span>
+    <div style="flex:1;text-align:center;">
+      <div class="badge" style="background:var(--accent-yellow);">4</div>
+      <p class="step-t">ALE</p>
+      <p class="step-d">원자층 에칭<br/>~0.1nm/사이클</p>
+    </div>
+  </div>
+</div>
+
+<!-- S14: Cards - Applications -->
+<div class="slide" id="s14" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">첨단 응용: FinFET, 3D NAND, MEMS, TSV</h2>
+  </div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;flex:1;align-content:center;">
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-blue);"></div>
+      <div class="card-body">
+        <h3 class="card-title">FinFET / GAA</h3>
+        <p class="card-desc">3D 트랜지스터 구조의 수직 측벽을 원자 수준으로 제어. ALE가 핵심 역할. 3nm 이하 노드에서 필수.</p>
+      </div>
+    </div>
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-cyan);"></div>
+      <div class="card-body">
+        <h3 class="card-title">3D NAND</h3>
+        <p class="card-desc">종횡비 100:1 이상의 고종횡비 에칭 필요. DRIE와 ICP-RIE 조합으로 수백 층 메모리 적층.</p>
+      </div>
+    </div>
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-purple);"></div>
+      <div class="card-body">
+        <h3 class="card-title">MEMS</h3>
+        <p class="card-desc">가속도 센서, 마이크로미러 등 3D 미세 구조물. DRIE 보쉬 프로세스가 업계 표준.</p>
+      </div>
+    </div>
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-yellow);"></div>
+      <div class="card-body">
+        <h3 class="card-title">TSV (관통 비아)</h3>
+        <p class="card-desc">3D 칩 적층 연결용. 실리콘을 관통하는 비아를 DRIE로 형성. HBM 메모리에 필수.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S15: Section 04 -->
+<div class="slide" id="s15" style="display:flex;">
+  <div style="width:40%;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <span style="font-size:72px;font-weight:900;color:var(--accent-cyan);opacity:0.3;">04</span>
+    <h2 style="font-size:36px;font-weight:800;color:#fff;">물리적 에칭</h2>
+    <p style="font-size:16px;color:#A0AEC0;margin-top:16px;">이온과 빛으로 깎는다</p>
+  </div>
+  <div style="width:60%;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <p style="font-size:18px;color:var(--text-secondary);">• 스퍼터 에칭 / FIB (집속이온빔)</p>
+      <p style="font-size:18px;color:var(--text-secondary);">• 레이저 에칭 (CO2, 파이버, 펨토초)</p>
+      <p style="font-size:18px;color:var(--text-secondary);">• 샌드블라스팅 / 워터젯 / ECM</p>
+    </div>
+  </div>
+</div>
+
+<!-- S16: Cards - Physical Methods -->
+<div class="slide" id="s16" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">물리적 에칭의 4가지 핵심 기술</h2>
+  </div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;flex:1;align-content:center;">
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-blue);"></div>
+      <div class="card-body">
+        <h3 class="card-title">스퍼터 에칭</h3>
+        <p class="card-desc">Ar+ 이온 충돌로 원자를 물리적 제거. 선택비 낮지만 강한 이방성. 귀금속(Pt, Au) 에칭에 최적.</p>
+      </div>
+    </div>
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-cyan);"></div>
+      <div class="card-body">
+        <h3 class="card-title">FIB (집속이온빔)</h3>
+        <p class="card-desc">Ga+ 또는 Xe+ 이온을 나노미터 바늘처럼 조준. 반도체 단면 분석, 회로 수정에 사용. 수억원대 장비.</p>
+      </div>
+    </div>
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-purple);"></div>
+      <div class="card-body">
+        <h3 class="card-title">레이저 에칭</h3>
+        <p class="card-desc">CO2 (비금속 마킹), 파이버 (금속 ns), 펨토초 (Cold Ablation). 마스크 불필요, 유연한 패턴 변경.</p>
+      </div>
+    </div>
+    <div class="card" style="width:calc((100% - 24px) / 2);">
+      <div class="card-bar" style="background:var(--accent-yellow);"></div>
+      <div class="card-body">
+        <h3 class="card-title">샌드블라스팅</h3>
+        <p class="card-desc">연마 입자를 고압 분사. 가장 저비용(수백만원). 유리 텍스처, 석재 가공, 장식에 최적. 정밀도는 낮음.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S17: BeforeAfter - ns vs fs -->
+<div class="slide" id="s17" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">나노초 vs 펨토초: 같은 레이저, 완전히 다른 결과</h2>
+  </div>
+  <div style="flex:1;display:flex;gap:24px;">
+    <div style="flex:1;background:var(--light-red);border:1px solid var(--accent-red);border-radius:8px;padding:24px;">
+      <p style="font-size:14px;font-weight:700;color:var(--accent-red);margin-bottom:16px;">나노초 레이저 (ns)</p>
+      <div class="bi"><div class="bd" style="background:var(--accent-red);"></div><p style="font-size:16px;color:var(--text-secondary);">열 전도 시간 > 펄스 폭</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-red);"></div><p style="font-size:16px;color:var(--text-secondary);">HAZ (열 영향부) 발생</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-red);"></div><p style="font-size:16px;color:var(--text-secondary);">재주조층, 미세균열 가능</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-red);"></div><p style="font-size:16px;color:var(--text-secondary);">장비 수천만원 — 비용 효율적</p></div>
+    </div>
+    <div style="flex:1;background:var(--light-cyan);border:1px solid var(--accent-cyan);border-radius:8px;padding:24px;">
+      <p style="font-size:14px;font-weight:700;color:var(--accent-cyan);margin-bottom:16px;">펨토초 레이저 (fs)</p>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:16px;color:var(--text-secondary);">열 전도 시간 ≪ 펄스 폭</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:16px;color:var(--text-secondary);">HAZ 거의 없음 (Cold Ablation)</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:16px;color:var(--text-secondary);">나노 수준 정밀 가공 가능</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:16px;color:var(--text-secondary);">장비 수억원+ — 고비용</p></div>
+      <p style="font-size:14px;color:var(--text-tertiary);margin-top:12px;font-style:italic;">주의: 고반복률(>MHz)에서 열 축적 가능</p>
+    </div>
+  </div>
+</div>
+
+<!-- S18: Table - Material Matrix -->
+<div class="slide" id="s18" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text" style="font-size:28px;">소재별 최적 에칭 방식을 한눈에 파악할 수 있습니다</h2>
+  </div>
+  <div style="flex:1;overflow:auto;">
+    <table class="tbl">
+      <tr><th>소재</th><th>습식 화학</th><th>RIE/건식</th><th>스퍼터/FIB</th><th>레이저</th><th>샌드블라스팅</th></tr>
+      <tr><td><strong>소다라임 유리</strong></td><td style="color:var(--accent-blue);font-weight:700;">최적 HF</td><td>제한적</td><td>제한적</td><td>가능 CO2</td><td style="color:var(--accent-blue);font-weight:700;">최적</td></tr>
+      <tr><td><strong>구리 (Cu)</strong></td><td style="color:var(--accent-blue);font-weight:700;">최적 FeCl3</td><td>제한적</td><td>가능</td><td>가능 파이버</td><td>제한적</td></tr>
+      <tr><td><strong>알루미늄</strong></td><td style="color:var(--accent-blue);font-weight:700;">최적 NaOH</td><td style="color:var(--accent-blue);font-weight:700;">최적 Cl2</td><td>가능</td><td>가능 파이버</td><td>가능</td></tr>
+      <tr><td><strong>Si (반도체)</strong></td><td>가능 KOH</td><td style="color:var(--accent-blue);font-weight:700;">최적 RIE</td><td style="color:var(--accent-blue);font-weight:700;">최적</td><td>제한적</td><td>부적합</td></tr>
+      <tr><td><strong>귀금속 (Pt, Au)</strong></td><td>부적합</td><td>부적합</td><td style="color:var(--accent-blue);font-weight:700;">최적 스퍼터</td><td>가능 펨토초</td><td>제한적</td></tr>
+      <tr><td><strong>퓨즈드 실리카</strong></td><td style="color:var(--accent-blue);font-weight:700;">최적 HF</td><td>가능</td><td>제한적</td><td style="color:var(--accent-blue);font-weight:700;">최적 펨토초</td><td>가능</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- S19: Table - Cost -->
+<div class="slide" id="s19" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-yellow);"></div>
+    <h2 class="tb-text" style="font-size:28px;">비용 규모는 수백만원에서 수십억원까지 천차만별입니다</h2>
+  </div>
+  <div style="flex:1;overflow:auto;">
+    <table class="tbl">
+      <tr><th>방식</th><th>장비 투자</th><th>운영 (월)</th><th>폐수 처리</th></tr>
+      <tr><td><strong>습식 (소규모)</strong></td><td>수백만원</td><td>수십만원</td><td>수십~수백만원/년</td></tr>
+      <tr><td><strong>습식 (산업)</strong></td><td>수천만원</td><td>수백만원</td><td>수천만원/년</td></tr>
+      <tr><td><strong>RIE (연구용)</strong></td><td>수천만~1억</td><td>수백만원</td><td>최소</td></tr>
+      <tr><td><strong>ICP-RIE (산업)</strong></td><td>수억~수십억</td><td>수천만원</td><td>중간</td></tr>
+      <tr><td><strong>ALE</strong></td><td>수십억+</td><td>높음</td><td>중간</td></tr>
+      <tr><td><strong>파이버 레이저</strong></td><td>수천만~1억</td><td>수십만원</td><td>없음</td></tr>
+      <tr><td><strong>펨토초 레이저</strong></td><td>수억~수십억</td><td>수백만원</td><td>없음</td></tr>
+      <tr><td><strong>샌드블라스팅</strong></td><td>수백만원</td><td>수십만원</td><td>분진 처리</td></tr>
+    </table>
+  </div>
+  <p style="font-size:14px;color:var(--text-tertiary);margin-top:12px;">한국 시장 기준 대략적 범위. 실제 도입 시 벤더 견적 필수.</p>
+</div>
+
+<!-- S20: Content - Failure Modes -->
+<div class="slide" id="s20" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-red);"></div>
+    <h2 class="tb-text">방식별 Top-3 실패 모드를 미리 알면 실수를 예방합니다</h2>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div style="display:flex;gap:24px;">
+    <div style="flex:1;background:var(--light-blue);border-radius:8px;padding:20px;">
+      <p style="font-size:16px;font-weight:700;color:var(--accent-blue);margin-bottom:12px;">습식 화학</p>
+      <p style="font-size:16px;color:var(--text-secondary);line-height:1.6;">1. 과에칭 (시간/온도 초과)<br/>2. 언더컷 과다 (마스크 접착 불량)<br/>3. 마스크 박리/손상</p>
+    </div>
+    <div style="flex:1;background:var(--light-purple);border-radius:8px;padding:20px;">
+      <p style="font-size:16px;font-weight:700;color:var(--accent-purple);margin-bottom:12px;">RIE/건식</p>
+      <p style="font-size:16px;color:var(--text-secondary);line-height:1.6;">1. 보잉 (측벽 보호막 부족)<br/>2. 노칭 (바닥 이온 반사)<br/>3. ARDE (종횡비 의존 에칭)</p>
+    </div>
+    <div style="flex:1;background:var(--light-red);border-radius:8px;padding:20px;">
+      <p style="font-size:16px;font-weight:700;color:var(--accent-red);margin-bottom:12px;">물리적 에칭</p>
+      <p style="font-size:16px;color:var(--text-secondary);line-height:1.6;">1. 재증착 (측벽 재부착)<br/>2. HAZ (나노초 레이저 열확산)<br/>3. Ga 오염 (FIB 이온 주입)</p>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- S21: Content - Post-etch -->
+<div class="slide" id="s21" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">에칭 후 검사와 클리닝이 품질의 마지막 방어선입니다</h2>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div style="display:flex;gap:32px;">
+    <div style="flex:1;">
+      <p style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:12px;">검사 항목</p>
+      <div class="bi"><div class="bd" style="background:var(--accent-blue);"></div><p style="font-size:18px;color:var(--text-secondary);"><strong>에칭 깊이</strong> — 프로파일로미터</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:18px;color:var(--text-secondary);"><strong>측벽 프로파일</strong> — SEM 단면</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-purple);"></div><p style="font-size:18px;color:var(--text-secondary);"><strong>표면 거칠기</strong> — AFM, 백색광 간섭계</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-yellow);"></div><p style="font-size:18px;color:var(--text-secondary);"><strong>잔류 오염</strong> — EDS, XPS, SIMS</p></div>
+    </div>
+    <div style="flex:1;">
+      <p style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:12px;">클리닝 방법</p>
+      <div class="bi"><div class="bd" style="background:var(--accent-blue);"></div><p style="font-size:18px;color:var(--text-secondary);">습식 → DI water 수세 → N2 건조</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-cyan);"></div><p style="font-size:18px;color:var(--text-secondary);">RIE → O2 플라즈마 애싱 + 습식 스트립</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-purple);"></div><p style="font-size:18px;color:var(--text-secondary);">스퍼터/FIB → 저에너지 마무리 패스</p></div>
+      <div class="bi"><div class="bd" style="background:var(--accent-yellow);"></div><p style="font-size:18px;color:var(--text-secondary);">레이저 → 초음파 + 화학 세정</p></div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- S22: ProcessFlow - Decision -->
+<div class="slide" id="s22" style="display:flex;flex-direction:column;padding:64px;">
+  <div class="tb">
+    <div class="tb-line" style="background:var(--accent-blue);"></div>
+    <h2 class="tb-text">에칭 방식 선택: 소재 → 목적 → 정밀도 → 비용</h2>
+  </div>
+  <div style="display:flex;align-items:center;gap:0;flex:1;justify-content:center;">
+    <div style="flex:1;text-align:center;">
+      <div class="badge" style="background:var(--accent-blue);">1</div>
+      <p class="step-t">소재 확인</p>
+      <p class="step-d">유리/금속/반도체?<br/>소재별 제약 파악</p>
+    </div>
+    <span style="font-size:24px;color:var(--text-tertiary);">→</span>
+    <div style="flex:1;text-align:center;">
+      <div class="badge" style="background:var(--accent-cyan);">2</div>
+      <p class="step-t">목적 정의</p>
+      <p class="step-d">대면적 텍스처?<br/>나노 패터닝?</p>
+    </div>
+    <span style="font-size:24px;color:var(--text-tertiary);">→</span>
+    <div style="flex:1;text-align:center;">
+      <div class="badge" style="background:var(--accent-purple);">3</div>
+      <p class="step-t">정밀도 결정</p>
+      <p class="step-d">> 1um: 습식/RIE<br/>< 10nm: ALE</p>
+    </div>
+    <span style="font-size:24px;color:var(--text-tertiary);">→</span>
+    <div style="flex:1;text-align:center;">
+      <div class="badge" style="background:var(--accent-yellow);">4</div>
+      <p class="step-t">비용 검토</p>
+      <p class="step-d">장비 투자 vs<br/>운영비 vs 폐수</p>
+    </div>
+  </div>
+</div>
+
+<!-- S23: Closing -->
+<div class="slide" id="s23" style="background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:64px;">
+  <h1 style="font-size:44px;font-weight:900;color:#fff;text-align:center;margin-bottom:32px;">에칭은 하나의 기술이 아니라,<br/>연속된 스펙트럼입니다</h1>
+  <div style="display:flex;flex-direction:column;gap:16px;max-width:800px;margin:0 auto;">
+    <div style="display:flex;gap:12px;align-items:center;">
+      <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:3px;flex-shrink:0;"></div>
+      <p style="font-size:20px;font-weight:500;color:#E2E8F0;">순수 화학(습식)에서 순수 물리(스퍼터)까지, 방식은 목적에 따라 선택합니다</p>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:3px;flex-shrink:0;"></div>
+      <p style="font-size:20px;font-weight:500;color:#E2E8F0;">소재 → 목적 → 정밀도 → 비용의 4단계 의사결정 프레임워크를 기억하세요</p>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:3px;flex-shrink:0;"></div>
+      <p style="font-size:20px;font-weight:500;color:#E2E8F0;">실패 모드를 미리 알면, 첫 번째 시도에서 80%의 문제를 예방할 수 있습니다</p>
+    </div>
+  </div>
+  <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.1);">
+    <p style="font-size:18px;font-weight:700;color:var(--accent-cyan);text-align:center;">상세 보고서 3편 + Critic Review를 참고 자료로 활용하세요</p>
+    <p style="font-size:14px;color:#718096;text-align:center;margin-top:12px;">docs/research/2026-03-25-glass-metal-etching/ (00-synthesis ~ 03-physical-etching)</p>
+  </div>
+</div>
+
+</div>
+<div class="slide-counter"><span id="cur">1</span> / <span id="tot">23</span></div>
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide');
+  var cur=0,tot=slides.length;
+  document.getElementById('tot').textContent=tot;
+  function scale(){
+    var sx=window.innerWidth/1280,sy=window.innerHeight/720;
+    document.documentElement.style.setProperty('--scale',Math.min(sx,sy));
+  }
+  function go(n){
+    if(n<0||n>=tot)return;
+    slides[cur].classList.remove('active');
+    cur=n;
+    slides[cur].classList.add('active');
+    document.getElementById('cur').textContent=cur+1;
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter')go(cur+1);
+    else if(e.key==='ArrowLeft')go(cur-1);
+    else if(e.key==='Home')go(0);
+    else if(e.key==='End')go(tot-1);
+  });
+  document.addEventListener('click',function(e){
+    if(e.clientX>window.innerWidth/2)go(cur+1);else go(cur-1);
+  });
+  slides[0].classList.add('active');
+  window.addEventListener('resize',scale);
+  scale();
+})();
+</script>
+</body>
+</html>

@@ -14,4 +14,4 @@
 - Pretendard-Black.otf
 - ChosunNm.ttf
 
-PptxGenJS는 시스템 폰트를 사용합니다. macOS에서 OTF/TTF 파일을 더블클릭하여 설치하세요.
+HTML 슬라이드는 CDN(Pretendard)을 우선 사용하며, 오프라인 환경에서는 시스템 폰트로 폴백합니다. 오프라인 발표가 필요한 경우 macOS에서 OTF/TTF 파일을 더블클릭하여 설치하세요.

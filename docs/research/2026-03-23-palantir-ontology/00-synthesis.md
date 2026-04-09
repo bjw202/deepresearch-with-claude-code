@@ -1,10 +1,6 @@
 # 팔란티어 온톨로지 종합 보고서 (보강판)
 
-> **역할**: Synthesizer
-> **작성일**: 2026-03-24 (보강)
-> **통합 대상**: R1(기술 아키텍처), R2(산업별 사례), R3(AIP 진화와 한계), DR1(Airbus 심층), DR2(AML 심층), DR3(설계 패턴), Critic 1차+2차
-> **사용자 질문**: "팔란티어에서 내세우는 온톨로지로 어떤 문제들을 해결하고 어떻게 운영하고 있는지 실제적인 사례들을 상세하게 리서치해줘. 단순히 결과가 아니라 어떤 방식으로 온톨로지를 구축하고 운영하는지가 기술적으로 그리고 원리적으로 잘 나타나야 한다."
-> **보강 초점**: 역설계 가능 수준의 상세 사례, 인과 체인 명시, 쉬운 언어
+> **역할**: Synthesizer **작성일**: 2026-03-24 (보강) **통합 대상**: R1(기술 아키텍처), R2(산업별 사례), R3(AIP 진화와 한계), DR1(Airbus 심층), DR2(AML 심층), DR3(설계 패턴), Critic 1차+2차 **사용자 질문**: "팔란티어에서 내세우는 온톨로지로 어떤 문제들을 해결하고 어떻게 운영하고 있는지 실제적인 사례들을 상세하게 리서치해줘. 단순히 결과가 아니라 어떤 방식으로 온톨로지를 구축하고 운영하는지가 기술적으로 그리고 원리적으로 잘 나타나야 한다." **보강 초점**: 역설계 가능 수준의 상세 사례, 인과 체인 명시, 쉬운 언어
 
 ---
 
@@ -28,15 +24,14 @@
 
 팔란티어 공식 문서는 온톨로지를 이렇게 정의한다:
 
-> "The Ontology is designed to represent the complex, interconnected *decisions* of an enterprise, not simply the data."
-> — [Palantir Foundry 공식 문서](https://palantir.com/docs/foundry/architecture-center/ontology-system/)
+> "The Ontology is designed to represent the complex, interconnected *decisions* of an enterprise, not simply the data." — [Palantir Foundry 공식 문서](https://palantir.com/docs/foundry/architecture-center/ontology-system/)
 
-이 정의에서 핵심은 **"데이터가 아니라 의사결정을 표현한다"**는 부분이다. 기존 데이터베이스가 "무엇이 있는가"를 저장한다면, 팔란티어 온톨로지는 "이 데이터로 무엇을 해야 하는가"까지 포함한다. 이를 위해 온톨로지는 **시맨틱 요소**(명사: Objects, Properties, Links)와 **키네틱 요소**(동사: Actions, Functions, 동적 보안)로 이분화된다.
+이 정의에서 핵심은 \*\*"데이터가 아니라 의사결정을 표현한다"\*\*는 부분이다. 기존 데이터베이스가 "무엇이 있는가"를 저장한다면, 팔란티어 온톨로지는 "이 데이터로 무엇을 해야 하는가"까지 포함한다. 이를 위해 온톨로지는 **시맨틱 요소**(명사: Objects, Properties, Links)와 **키네틱 요소**(동사: Actions, Functions, 동적 보안)로 이분화된다.
 
 ### 1.2 4개 핵심 프리미티브와 DB 모델링의 관계
 
 | 팔란티어 용어 | DB 유사 개념 | 추가된 차원 | 쉬운 비유 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Object Type | Table / Class | GUI 기반 생성, 비즈니스 컨텍스트 내장 | 엑셀 시트의 컬럼 템플릿. "항공기 시트에는 기체번호, 기종, 항공사 컬럼이 있다" |
 | Property | Column / Field | Value Types로 도메인 특화 타입 캡슐화 | 엑셀 셀 하나하나. "기체번호 = MSN523" |
 | Link | Foreign Key / Association | 명시적 의미와 방향성, 다형성 지원 | 엑셀의 VLOOKUP보다 강력한 양방향 연결. "항공기 → 비행편" 관계에 이름이 있다 |
@@ -44,7 +39,7 @@
 | Function | UDF | ML 모델·LLM 호출 통합, AIP Logic 연동 | 온톨로지의 "계산기". 속성을 읽고 결과를 계산해서 돌려줌 |
 | Interface | 다형성 | 서로 다른 Object Type의 공통 구조 추상화 | 220V 표준 플러그. 노트북이든 냉장고든 같은 규격 |
 
-**[상충점 해결]** R1은 이 구조가 "기존과 근본적으로 다른 설계 철학"이라 평가했고, R3는 Feng(Pigsty 창업자)의 분석을 인용하며 "DB 모델링과 실질적으로 동형"이라 평가했다.
+**\[상충점 해결\]** R1은 이 구조가 "기존과 근본적으로 다른 설계 철학"이라 평가했고, R3는 Feng(Pigsty 창업자)의 분석을 인용하며 "DB 모델링과 실질적으로 동형"이라 평가했다.
 
 **통합 판단**: 양쪽 모두 부분적으로 옳다. 개별 프리미티브 수준에서 팔란티어 온톨로지는 ER 모델(1976), OOP(1990년대), OWL(2001)과 동일한 개념적 계보에 있다. 그러나 **혁신의 소재는 개념이 아니라 통합과 접근성**에 있다:
 
@@ -65,7 +60,7 @@
 **중심 Object를 식별하는 질문**: "우리 조직이 매일 아침 가장 먼저 확인하는 것은 무엇인가?"
 
 | 도메인 | 허브 Object | 이유 |
-|---|---|---|
+| --- | --- | --- |
 | 항공 MRO | `Aircraft`(항공기) | 센서, 정비, 부품이 모두 항공기에 연결 |
 | 병원 | `Patient`(환자) | 처방, 검사, 입원이 모두 환자에 연결 |
 | 제조업 | `WorkOrder`(작업지시서) | 자재, 기계, 작업자가 모두 작업지시서에 연결 |
@@ -80,6 +75,7 @@
 예를 들어, 환자(Patient) Object에 "진료일1, 진료내용1, 진료일2, 진료내용2..."를 Property로 추가하면, 한 환자에 대한 모든 진료 이력이 하나의 거대한 행(row)이 되어버린다. 대신 `MedicalVisit`이라는 별도 Object Type을 만들고 Patient와 1:N으로 연결하면, 각 진료를 독립적으로 조회하고 분석할 수 있다.
 
 **이벤트를 별도 Object로 분리해야 하는 3가지 신호:**
+
 1. "언제 발생했나"가 중요한 정보일 때
 2. 같은 종류의 이벤트가 하나의 엔티티에 여러 번 발생할 수 있을 때
 3. 이벤트 자체에 추가 속성이 붙을 때 (진료 이력에 "담당의사", "처방약", "비용" 등)
@@ -99,7 +95,7 @@
 온톨로지 설계에서 가장 자주 맞닥뜨리는 판단 문제다. 아래 4가지 질문 중 하나라도 "Yes"이면 별도 Object로 분리한다:
 
 | 질문 | Yes → 별도 Object | No → Property |
-|---|---|---|
+| --- | --- | --- |
 | 이 데이터가 여러 오브젝트에서 공유되는가? | ✓ (부서는 여러 직원이 공유) | (이름은 이 직원만의 것) |
 | 이 데이터가 독립적으로 검색될 필요가 있는가? | ✓ (부서별 예산 조회 필요) | (직급은 직원을 통해서만 조회) |
 | 이 데이터 자체에 추가 속성이 붙는가? | ✓ (부서에는 부서장, 위치가 있음) | (생년월일은 단일 값) |
@@ -108,7 +104,7 @@
 ### 1.4 전통적 온톨로지(OWL/RDF)와의 차이
 
 | 비교 항목 | 팔란티어 온톨로지 | OWL/RDF |
-|---|---|---|
+| --- | --- | --- |
 | 주 목적 | 운영 워크플로우, 의사결정 실행 | 형식적 시맨틱, 기계 추론 |
 | 추론 능력 | 없음 (규칙 기반 액션으로 대체) | OWL 추론 엔진으로 새 사실 도출 |
 | 실시간 운영 | 핵심 기능: 실시간 라이트백, 스트리밍 | 일반적으로 정적, 주기적 갱신 |
@@ -152,6 +148,7 @@
 #### Object Type 생성의 두 가지 경로
 
 **경로 A: Ontology Manager에서 직접 생성**
+
 1. Ontology Manager에서 New → Object Type 선택
 2. 백킹 데이터소스 없이 스키마만 먼저 정의하거나, 기존 데이터셋을 선택
 3. 데이터셋 컬럼이 Properties로 자동 매핑
@@ -159,6 +156,7 @@
 5. 메타데이터(아이콘, 설명) 추가
 
 **경로 B: Pipeline Builder에서 파이프라인 출력으로 생성**
+
 1. Pipeline Builder에서 transform 노드 → Add output → New object type
 2. Object type 이름·온톨로지 지정
 3. 데이터 컬럼 → Properties 매핑 자동 처리
@@ -210,15 +208,16 @@ Action과 Writeback은 온톨로지를 "읽기 전용 데이터 레이어"가 �
      → 구독(subscription) 설정된 앱은 즉시 업데이트 이벤트 수신
 ```
 
-**이것이 중요한 이유**: [3]의 Writeback Webhook과 [6]의 Side Effect Webhook은 실패 시 행동이 정반대다. Writeback Webhook이 실패하면 온톨로지 변경 자체가 취소되지만(예: ERP에 기록 못 하면 아예 안 한다), Side Effect Webhook이 실패하면 온톨로지 변경은 유지된다(예: 알림은 못 보냈지만 작업 완료 처리는 됐다). 이 설계 선택이 외부 시스템 연동의 핵심이다.
+**이것이 중요한 이유**: \[3\]의 Writeback Webhook과 \[6\]의 Side Effect Webhook은 실패 시 행동이 정반대다. Writeback Webhook이 실패하면 온톨로지 변경 자체가 취소되지만(예: ERP에 기록 못 하면 아예 안 한다), Side Effect Webhook이 실패하면 온톨로지 변경은 유지된다(예: 알림은 못 보냈지만 작업 완료 처리는 됐다). 이 설계 선택이 외부 시스템 연동의 핵심이다.
 
-**지연 시간**: 트랜잭션 커밋부터 모든 앱 반영까지 스트리밍 기준 **약 6-7초**. 배치 파이프라인은 분~시간 단위 [출처: Palantir 공식 문서].
+**지연 시간**: 트랜잭션 커밋부터 모든 앱 반영까지 스트리밍 기준 **약 6-7초**. 배치 파이프라인은 분\~시간 단위 \[출처: Palantir 공식 문서\].
 
 #### Action의 3요소: 파라미터 → 규칙 → Side Effect
 
 **파라미터(Parameters)**: 사용자가 입력하는 값. GUI 폼의 입력 필드와 같다. 기본 타입(텍스트, 숫자, 날짜), Object 참조("어떤 직원을 대상으로 하는가"), Object Set(여러 오브젝트 한번에 선택), 동적 드롭다운을 지원한다.
 
 **규칙(Rules)**: 두 종류가 있다.
+
 - **Ontology Rules**: 오브젝트 속성 변경, 생성, 삭제, 링크 생성/삭제를 GUI로 설정
 - **Side Effect Rules**: 알림(Notification), Webhook(외부 API 호출)
 
@@ -259,16 +258,18 @@ async closeIncident(incident: Incident): Promise<void> {
 ### 2.4 유지보수와 거버넌스
 
 **스키마 변경 관리 원칙**:
+
 - 버전 명 금지: `Message_v2`, `Customer_old` 대신 속성 추가/deprecated 처리
 - 안정적 ID 전략: 복합 키보다 단일 비즈니스 ID 사용
 - Branch 활용: 운영 환경 영향 없이 변경 테스트
 
 **대규모 온톨로지 운영 리스크**:
+
 - 시스템 경계 충돌: 팀이 많아질수록 동일 비즈니스 개념의 Object Type이 중복 생성
 - DRY 원칙 위반: 유사한 Logic이 여러 Function에 반복 구현
 - 데이터 신선도: 백킹 데이터셋의 업데이트 빈도를 모니터링하지 않으면 "stale ontology" 문제 발생
 
-**Forward-Deployed Engineer(FDE) 모델**: 팔란티어 엔지니어가 고객사에 상주하며 구축을 지원하는 독특한 모델이다. 상위 20개 고객의 평균 연간 계약은 $93.9M, 전체 954개 고객 평균은 $4.7M/년이다 [출처: Palantir 2025 Annual Report].
+**Forward-Deployed Engineer(FDE) 모델**: 팔란티어 엔지니어가 고객사에 상주하며 구축을 지원하는 독특한 모델이다. 상위 20개 고객의 평균 연간 계약은 $93.9M, 전체 954개 고객 평균은 $4.7M/년이다 \[출처: Palantir 2025 Annual Report\].
 
 ---
 
@@ -278,7 +279,7 @@ async closeIncident(incident: Incident): Promise<void> {
 
 ### 3.1 국방/정보기관 — Gotham: Entity Resolution
 
-Gotham의 핵심은 **Entity Resolution**이다. 동일한 실세계 개체가 복수의 데이터 소스에서 서로 다른 식별자로 존재할 때, 유사도 임계값(s_ij > θ) 기반으로 하나의 캐노니컬 객체로 통합한다.
+Gotham의 핵심은 **Entity Resolution**이다. 동일한 실세계 개체가 복수의 데이터 소스에서 서로 다른 식별자로 존재할 때, 유사도 임계값(s_ij &gt; θ) 기반으로 하나의 캐노니컬 객체로 통합한다.
 
 **온톨로지 구조**: Person, Vehicle, Organization, Location, Event, Asset을 핵심 Object Type으로, 이들 사이의 관계 그래프를 통해 위협 네트워크를 탐지한다.
 
@@ -292,7 +293,7 @@ Gotham의 핵심은 **Entity Resolution**이다. 동일한 실세계 개체가 �
 
 구체적으로, 프랑스 툴루즈 공장의 최종 조립 라인에서 A350-900 기체 MSN523번의 남은 작업이 몇 건인지 알려면: SAP ERP를 열어 작업 지시서를 조회하고 → MES를 별도로 열어 실제 진행 상황을 확인하고 → 부품 조달팀의 엑셀 파일을 받아 납품 지연을 확인하고 → 세 시스템을 수동으로 대조해야 했다.
 
-팔란티어의 해결책은 새로운 시스템을 구축하는 것이 아니었다. 기존 시스템들 위에 **공통 언어 레이어(온톨로지)**를 얹는 것이었다.
+팔란티어의 해결책은 새로운 시스템을 구축하는 것이 아니었다. 기존 시스템들 위에 \*\*공통 언어 레이어(온톨로지)\*\*를 얹는 것이었다.
 
 #### 온톨로지 구조: 7개 핵심 Object Type의 인과 체인
 
@@ -301,6 +302,7 @@ Gotham의 핵심은 **Entity Resolution**이다. 동일한 실세계 개체가 �
 Aircraft가 없으면 "특정 항공기에 대한 질문"을 할 수 없다. 센서 판독값, 정비 기록, 비행 이력, 부품 장착 이력 모두 "어느 항공기의 데이터인가"와 연결되어야 한다.
 
 핵심 속성과 그 존재 이유:
+
 - `msn` (기체 일련번호): 이것 없이는 항공기를 구별할 수 없다
 - `aircraftType` (A320neo, A350-900 등): A320과 A350는 동일 온도에 다른 경보 기준을 가진다
 - `operatorAirlineCode`: 보안 필터링의 기준. 에어프랑스는 에어프랑스 항공기만 봐야 한다
@@ -310,7 +312,7 @@ Aircraft가 없으면 "특정 항공기에 대한 질문"을 할 수 없다. 센
 
 **Component(부품)** — 파생 속성의 핵심 사례
 
-Component에서 가장 중요한 설계 포인트는 `remainingLifeHours`(잔여 수명)이다. 이것은 외부 소스에서 가져오는 것이 아니라, 온톨로지 내 Function이 `maxLifeHours - totalFlightHours`를 계산해서 채우는 **파생 속성(Derived Property)**이다. 엑셀의 수식 셀과 같다 — A열과 B열이 바뀌면 C열의 수식도 자동으로 갱신된다. 이것이 가능한 이유는 온톨로지가 단순한 데이터 저장소가 아니라 계산 로직을 포함하기 때문이다.
+Component에서 가장 중요한 설계 포인트는 `remainingLifeHours`(잔여 수명)이다. 이것은 외부 소스에서 가져오는 것이 아니라, 온톨로지 내 Function이 `maxLifeHours - totalFlightHours`를 계산해서 채우는 \*\*파생 속성(Derived Property)\*\*이다. 엑셀의 수식 셀과 같다 — A열과 B열이 바뀌면 C열의 수식도 자동으로 갱신된다. 이것이 가능한 이유는 온톨로지가 단순한 데이터 저장소가 아니라 계산 로직을 포함하기 때문이다.
 
 **SensorReading(센서 판독값)** — 시계열 데이터의 특수 처리
 
@@ -342,6 +344,7 @@ A350-900 MSN523의 엔진 오일 온도 센서 데이터가 비행기 안에서 
 Skywise는 수십 개의 항공사가 같은 플랫폼을 공유하므로 보안이 핵심이다:
 
 **1계층 — Organization 격리 (가장 강한 격벽)**:
+
 ```
 Foundry Enrollment: Skywise
   ├── Organization: Airbus (전체 데이터 접근)
@@ -354,13 +357,13 @@ Foundry Enrollment: Skywise
 
 **3계층 — 열 수준 보안**: Component.manufacturingCost(제조 단가)는 Airbus 내부 직원만, MaintenanceAlert.rawSensorData는 엔지니어링팀만 접근 가능.
 
-**도입 효과**: A350 납품 33% 가속화 [출처: 팔란티어-에어버스 공동 PDF, 2020 — **팔란티어 자체 주장, 독립 검증 없음**]. Skywise는 현재 12,000대 이상 항공기, 50,000명 이상 사용자를 연결 [출처: Airbus 뉴스룸 + Flying Magazine — **독립 확인됨**].
+**도입 효과**: A350 납품 33% 가속화 \[출처: 팔란티어-에어버스 공동 PDF, 2020 — **팔란티어 자체 주장, 독립 검증 없음**\]. Skywise는 현재 12,000대 이상 항공기, 50,000명 이상 사용자를 연결 \[출처: Airbus 뉴스룸 + Flying Magazine — **독립 확인됨**\].
 
 ### 3.3 헬스케어 — N3C: 업계 표준 수용
 
 N3C(National COVID Cohort Collaborative)는 75개 이상 의료 기관의 COVID-19 환자 데이터를 통합했다. 주목할 점은 팔란티어가 자체 온톨로지를 정의하지 않고 **OMOP 5.3.1 공통 데이터 모델**이라는 업계 표준을 수용했다는 것이다. 총 1,300만 명 이상 환자, 50억 건 이상 데이터 행 통합.
 
-**[Critic 지적 반영]** 이 사례는 "팔란티어가 온톨로지를 어떻게 설계하는가"보다 "어떤 온톨로지든 그 위에서 통합·운영·AI 연동을 제공하는 플랫폼 능력"의 사례로 보는 것이 더 정확하다. 이는 팔란티어의 가치가 "온톨로지 설계 능력" 자체보다 **플랫폼 능력**에 있음을 시사한다.
+**\[Critic 지적 반영\]** 이 사례는 "팔란티어가 온톨로지를 어떻게 설계하는가"보다 "어떤 온톨로지든 그 위에서 통합·운영·AI 연동을 제공하는 플랫폼 능력"의 사례로 보는 것이 더 정확하다. 이는 팔란티어의 가치가 "온톨로지 설계 능력" 자체보다 **플랫폼 능력**에 있음을 시사한다.
 
 ### 3.4 에너지 — BP: 자산 디지털 트윈
 
@@ -368,27 +371,27 @@ BP는 200만 개 이상 센서의 실시간 데이터를 통합한 모델 기반
 
 ### 3.5 금융 — AML/사기 탐지: 역설계 수준의 상세 분석
 
-#### 문제 상황: 왜 은행 AML 시스템의 Alert 90~95%가 오탐인가
+#### 문제 상황: 왜 은행 AML 시스템의 Alert 90\~95%가 오탐인가
 
-전세계 금융기관의 AML 경보 중 **90~95%는 오탐(false positive)**이다 [출처: Flagright, Unit21, Retail Banker International — **다수 독립 출처 일치**]. 세 가지 구조적 이유가 있다:
+전세계 금융기관의 AML 경보 중 \*\*90\~95%는 오탐(false positive)\*\*이다 \[출처: Flagright, Unit21, Retail Banker International — **다수 독립 출처 일치**\]. 세 가지 구조적 이유가 있다:
 
 1. **고객 세분화 없는 균일 규칙**: "$9,500 이상 현금 입금 3회 → Alert" 규칙이 월급 9,500달러 간호사에게도, 하루 매출 9,500달러인 편의점 주인에게도 동일하게 적용
 2. **맥락(context) 부재**: 시스템이 "오늘 거래"만 보고, 고객이 10년 전부터 같은 패턴으로 거래하고 있다는 역사적 맥락이 없음
 3. **데이터 사일로**: KYC 팀, 거래감시 팀, 조사 팀이 각각 별도 시스템에서 동일 고객 정보를 따로따로 봄
 
-#### Transaction 하나의 완전한 생애주기: 0단계~6단계
+#### Transaction 하나의 완전한 생애주기: 0단계\~6단계
 
 "고객 A가 고객 B에게 $9,500을 국제 송금"한다. 이 하나의 이벤트가 온톨로지 안에서 어떻게 살아서 움직이는지 추적한다.
 
-**[0단계] 코어뱅킹 원본 데이터**
+**\[0단계\] 코어뱅킹 원본 데이터**
 
 은행 핵심 시스템에서 이 거래는 숫자와 코드들일 뿐이다. "이 사람이 누구인지", "이 패턴이 과거와 비교해 이상한지"를 전혀 모른다.
 
-**[1단계] 파이프라인 처리 — 데이터 정제**
+**\[1단계\] 파이프라인 처리 — 데이터 정제**
 
 통화 변환($9,500 → 단일 통화 기준), 타임스탬프 UTC 통일, 지역 코드 매핑(수취 계좌 `KR-80-...` → 국가 코드 KR 추출 → 고위험 관할권 DB 대조), 데이터 품질 검증.
 
-**[2단계] Transaction Object 생성 및 관계 연결**
+**\[2단계\] Transaction Object 생성 및 관계 연결**
 
 정제된 데이터가 Transaction Object로 온톨로지에 들어오는 순간, 가장 중요한 일이 발생한다 — **기존 Customer, Account Object와의 Link 형성**.
 
@@ -403,7 +406,7 @@ Transaction (신규 생성)
 
 이 순간부터 Transaction은 단순한 숫자 기록이 아니다. 이 고객의 지난 90일 모든 거래, 현재 KYC 위험 점수, 연결된 다른 고객/법인 네트워크, 같은 주소/IP를 공유하는 다른 계좌들 — 모든 맥락이 한번에 보인다.
 
-**[3단계] ML 모델이 위험 점수를 계산 (Function)**
+**\[3단계\] ML 모델이 위험 점수를 계산 (Function)**
 
 Transaction 생성 순간, 위험 점수 계산 Function이 실행된다. 팔란티어는 두 가지 방식을 결합한다:
 
@@ -412,17 +415,17 @@ Transaction 생성 순간, 위험 점수 계산 Function이 실행된다. 팔란
 
 출력: `transaction_risk_score: 42` + score_breakdown(금액 이상도 28, 빈도 패턴 8, 네트워크 위험 6, 관할권 0) + 설명("90일 개인 기준선 4.2배이나 월간 송금 패턴과 일치")
 
-**[4단계] 임계값 판단 → Alert 생성 여부**
+**\[4단계\] 임계값 판단 → Alert 생성 여부**
 
 위험 점수 42점이므로 ML 기반 Alert는 생성 안 됨(임계값 60점). 하지만...
 
-**[5단계] 시나리오 엔진 병렬 실행**
+**\[5단계\] 시나리오 엔진 병렬 실행**
 
-ML과 독립적으로 Foundry Rules가 규칙을 검사한다: "7일 이내 $9,000~$10,000 국제 송금 2회 이상" 규칙에 걸림 (7일 전 $9,200 송금 이력 발견) → Alert 생성: `{type: "POTENTIAL_CTR_AVOIDANCE", score: 75}`
+ML과 독립적으로 Foundry Rules가 규칙을 검사한다: "7일 이내 $9,000\~$10,000 국제 송금 2회 이상" 규칙에 걸림 (7일 전 $9,200 송금 이력 발견) → Alert 생성: `{type: "POTENTIAL_CTR_AVOIDANCE", score: 75}`
 
 **왜 ML과 규칙을 둘 다 쓰는가**: ML은 "이상하다"는 신호를 잡고, 규칙 엔진은 "왜 이상한지"를 설명해준다. AML 분야에서 모델 해석 가능성은 선택이 아닌 **규제 요건**이다.
 
-**[6단계] 분석관 할당 및 검토**
+**\[6단계\] 분석관 할당 및 검토**
 
 Alert가 생성되면 자동 배정 로직이 실행된다: 유형별 전문화 매칭, 부하 분산, 우선순위 결정. 분석관 화면에는 해당 Alert와 연결된 **모든 정보가 한 화면에** 표시된다.
 
@@ -459,13 +462,13 @@ ICE 사례는 온톨로지의 기술적 능력과 윤리적 함의를 동시에 
 ### 3.7 산업 횡단 공통 패턴
 
 | 패턴 | 국방 | 헬스케어 | 항공 | 에너지 | 금융 | 이민 |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| --- | --- | --- | --- | --- | --- | --- |
 | 핵심 엔티티 허브 | 인물 | 환자 | 항공기 | 설비 | 고객 | 대상자 |
 | 이벤트 타임라인 | Event | Encounter | FlightPhase | Reading | Transaction | Encounter |
 | 계층적 소속 관계 | Org→Person | — | Supplier→Part | Well→Asset | Org→Account | Case→Subject |
 | 경보/결과 객체 | — | — | WorkOrder | Alert | Alert/Case | Case |
 
-모든 사례에서 온톨로지는 **"이벤트 → 경보 → 조사 → 해결"**이라는 동일한 4단계 체인으로 작동한다. Airbus의 "센서 이상 → MaintenanceAlert → WorkOrder → 정비 완료"와 AML의 "Transaction → Alert → Case → SAR"가 구조적으로 동형이다. 차이는 도메인별 엔티티와 관계의 구체적 내용이다.
+모든 사례에서 온톨로지는 \*\*"이벤트 → 경보 → 조사 → 해결"\*\*이라는 동일한 4단계 체인으로 작동한다. Airbus의 "센서 이상 → MaintenanceAlert → WorkOrder → 정비 완료"와 AML의 "Transaction → Alert → Case → SAR"가 구조적으로 동형이다. 차이는 도메인별 엔티티와 관계의 구체적 내용이다.
 
 ---
 
@@ -475,7 +478,7 @@ ICE 사례는 온톨로지의 기술적 능력과 윤리적 함의를 동시에 
 
 AIP에서 온톨로지가 LLM의 grounding layer라는 주장의 기술적 메커니즘:
 
-1. **컨텍스트 경계 설정**: LLM은 전체 온톨로지를 스캔하지 않는다. AIP Logic 함수 실행 시 특정 Ontology Object들이 변수처럼 주입된다. "AIP does not magically scan the entire ontology or attempt to understand the full enterprise at once. It reasons inside the boundaries you give it." [출처: Sainath Palla, Towards AI, 2025-11]
+1. **컨텍스트 경계 설정**: LLM은 전체 온톨로지를 스캔하지 않는다. AIP Logic 함수 실행 시 특정 Ontology Object들이 변수처럼 주입된다. "AIP does not magically scan the entire ontology or attempt to understand the full enterprise at once. It reasons inside the boundaries you give it." \[출처: Sainath Palla, Towards AI, 2025-11\]
 
 2. **환각 감소**: LLM이 자체 생성하면 환각이 발생하지만, 온톨로지 쿼리를 통해 실제 데이터를 반환받으면 정확도가 높아진다.
 
@@ -488,12 +491,14 @@ AIP에서 온톨로지가 LLM의 grounding layer라는 주장의 기술적 메�
 팔란티어 AIP Logic은 GUI로 LLM 프롬프트를 작성하고, 온톨로지 오브젝트를 입력으로 받아서 출력을 생성하거나 온톨로지를 수정할 수 있는 인터페이스다.
 
 **등록 과정**:
+
 1. TypeScript Function을 `@Tool` 데코레이터로 표시하면 AIP 에이전트가 호출할 수 있는 도구로 등록된다
 2. LLM 에이전트가 사용자 요청을 처리하면서 "이 작업에는 온톨로지 조회가 필요하다"고 판단하면 등록된 Function을 자동으로 호출
 3. Function의 반환값이 LLM의 응답 생성에 사용된다
 4. **LLM은 자신의 권한 범위를 벗어나는 함수를 호출할 수 없다** — 보안 모델과 완전 통합
 
 **예시**: "내일 비행에 문제가 있는 항공기가 있나요?" 질문에 AIP 에이전트가:
+
 1. `getFlightsByDate("tomorrow")` Function 호출 → Flight 오브젝트 목록 반환
 2. `getAircraftStatus(aircraftId)` Function 호출 → 각 항공기 상태 반환
 3. 결과를 종합해 자연어로 응답 생성
@@ -503,16 +508,16 @@ AIP에서 온톨로지가 LLM의 grounding layer라는 주장의 기술적 메�
 ### 4.3 진화 역사: Gotham → Foundry → AIP
 
 | 시대 | 기간 | 목적 | 온톨로지 역할 |
-|---|---|---|---|
-| Gotham | 2008~2016 | 정보기관 데이터 통합 | 엔티티 관계 그래프 |
-| Foundry | 2016~2023 | 기업 데이터 사일로 해소 | Object/Property/Link/Action 4요소 |
-| AIP | 2023~현재 | LLM + 운영 워크플로우 통합 | LLM의 grounding layer + 에이전트 도구 |
+| --- | --- | --- | --- |
+| Gotham | 2008\~2016 | 정보기관 데이터 통합 | 엔티티 관계 그래프 |
+| Foundry | 2016\~2023 | 기업 데이터 사일로 해소 | Object/Property/Link/Action 4요소 |
+| AIP | 2023\~현재 | LLM + 운영 워크플로우 통합 | LLM의 grounding layer + 에이전트 도구 |
 
 AIP Agent Studio(2024)는 멀티스텝 에이전트를 지원한다: 재고 확인 → 공급업체 평가 → 주문 생성 같은 연속 작업을 온톨로지 기반으로 자동화한다.
 
 ### 4.4 AIP의 한계
 
-온톨로지를 통한 grounding이 환각을 **완전히** 제거한다는 주장에 대해: "LLM generation is still a beautiful semantic wrapper, while combining the algorithmic-based approach of 'classical' software with the probabilistic AI-based approach remains an unsolved problem." [출처: Kiryll Shynharow, Palantir Blog Comments, 2025-01]
+온톨로지를 통한 grounding이 환각을 **완전히** 제거한다는 주장에 대해: "LLM generation is still a beautiful semantic wrapper, while combining the algorithmic-based approach of 'classical' software with the probabilistic AI-based approach remains an unsolved problem." \[출처: Kiryll Shynharow, Palantir Blog Comments, 2025-01\]
 
 ---
 
@@ -521,7 +526,7 @@ AIP Agent Studio(2024)는 멀티스텝 에이전트를 지원한다: 재고 확�
 ### 5.1 실질적 차별점
 
 | 차원 | 팔란티어 Foundry/AIP | Databricks | Snowflake |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 시맨틱 레이어 | 실행 가능한 운영 레이어 | Unity Catalog (메타데이터) | YAML 시맨틱 모델 (분석) |
 | AI 집중 | 운영 워크플로우에 AI 배포 | AI 모델 빌딩·훈련 | AI 기반 분석 |
 | 주요 사용자 | 비즈니스 분석가, 운영팀 | 데이터 엔지니어, 과학자 | 분석가, 데이터 엔지니어 |
@@ -534,7 +539,7 @@ AIP Agent Studio(2024)는 멀티스텝 에이전트를 지원한다: 재고 확�
 팔란티어의 보안은 테이블/파일 수준이 아니라 **행(Row), 열(Column), 심지어 셀(Cell) 수준**까지 내려간다. 그리고 이 정책이 온톨로지 타입에 붙어서 어떤 앱에서 접근해도 동일하게 적용된다.
 
 | 보안 계층 | 구현 | 비유 |
-|---|---|---|
+| --- | --- | --- |
 | 행 수준 (Object Security Policy) | 특정 조건의 오브젝트만 보임 | 건물의 특정 층에만 입장 가능 |
 | 열 수준 (Property Security Policy) | 특정 속성만 보임 (나머지 null) | 특정 방에만 입장 가능 |
 | Action-only Edit | 직접 편집 차단, Action으로만 수정 | 결재를 통해서만 문서 변경 가능 |
@@ -574,9 +579,10 @@ const subscription = client(Aircraft).subscribe({
 
 ### 5.4 벤더 락인
 
-**[Critic 지적 반영]** R3가 "완전 폐쇄 소스"라고 단정한 반면, R1은 OSDK(GitHub 공개), JSON 내보내기, OpenAPI Spec 내보내기를 구체적으로 기술했다. 정확한 표현: **"코어 플랫폼은 폐쇄 소스이나, SDK와 API는 공개"**이다.
+**\[Critic 지적 반영\]** R3가 "완전 폐쇄 소스"라고 단정한 반면, R1은 OSDK(GitHub 공개), JSON 내보내기, OpenAPI Spec 내보내기를 구체적으로 기술했다. 정확한 표현: \*\*"코어 플랫폼은 폐쇄 소스이나, SDK와 API는 공개"\*\*이다.
 
 그럼에도 벤더 락인 우려는 실질적이다:
+
 - 온톨로지 데이터를 CSV/JSON으로 내보낼 수 있지만, 다른 동등한 시스템에서 즉시 사용 불가
 - 온톨로지 위에 워크플로우와 앱이 쌓이면 전환 비용이 기하급수적으로 증가
 - Databricks(Delta Lake), Snowflake(Apache Iceberg)와 달리 자체 호스팅 불가
@@ -603,13 +609,12 @@ Airbus에서는 Aircraft, AML에서는 Transaction/Customer가 허브였다. 허
 
 허브 Object가 공유하는 엔티티는 무엇인가? 이들은 독립적으로 존재하고 독립적으로 검색되는가?
 
-Airbus: Airline(항공사), Component(부품), Supplier(공급업체)
-AML: Account(계좌), Organization(법인), Alert(경보), Case(케이스)
+Airbus: Airline(항공사), Component(부품), Supplier(공급업체) AML: Account(계좌), Organization(법인), Alert(경보), Case(케이스)
 
 ### 단계 4: Link 방향과 카디널리티 결정
 
 | 조건 | 선택 |
-|---|---|
+| --- | --- |
 | 한쪽이 "소유자"이고 다른 쪽이 "소속 항목" | 1:N 직접 Link |
 | 양쪽 모두 "여러 개"와 관계를 맺지만 관계에 속성이 없다 | M:N 직접 Link |
 | 관계 자체에 속성이 있다 (시작일, 역할 등) | 조인 Object |
@@ -622,6 +627,7 @@ AML: Account(계좌), Organization(법인), Alert(경보), Case(케이스)
 **질문**: "사용자가 매일 반복하는 작업은 무엇인가?" 그 작업을 Action으로 정의한다.
 
 각 Action에 대해:
+
 - 파라미터는 무엇인가? (어떤 Object를 대상으로, 어떤 값을 입력)
 - Submission Criteria가 있는가? (누가, 어떤 조건에서 실행 가능)
 - 외부 시스템에 전파되어야 하는가? (Webhook: Writeback vs Side Effect)
@@ -632,6 +638,7 @@ Airbus에서는 `CompleteWorkOrder` Action이, AML에서는 `ConfirmSuspiciousAc
 ### 단계 6: Security 계층 적용 + Interface 검토 + 테스트
 
 **보안 설계 순서**:
+
 1. Organization 격리가 필요한가? (다중 테넌트)
 2. 행 수준 보안(Object Security Policy)이 필요한 Object Type은?
 3. 열 수준 보안(Property Security Policy)이 필요한 속성은?
@@ -655,12 +662,12 @@ Airbus에서는 `CompleteWorkOrder` Action이, AML에서는 `ConfirmSuspiciousAc
 ## 근거 신뢰도 매트릭스
 
 | 핵심 주장 | 출처 | 도메인 일치도 | 확신도 | 독립 검증 |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 온톨로지 4중 통합이 제품 차별점 | R1, 팔란티어 공식 문서 | 직접 | 높음 | 불필요 (기술 구조 사실) |
 | 개별 프리미티브가 DB 모델링과 동형 | R3, Feng(vonng.com) | 인접 (외부 관찰) | 중간 | 기술적으로 유효하나 비사용자 관점 |
 | A350 납품 33% 가속화 | 팔란티어-에어버스 공동 PDF | 직접 | 중간 | **없음 (팔란티어 작성)** |
 | Skywise 12,000대 항공기, 50,000명 사용자 | Airbus 뉴스룸 + Flying Magazine | 직접 | 높음 | **있음 (독립 확인)** |
-| AML Alert 90~95% 오탐 | Flagright, Unit21, Retail Banker Int'l | 직접 | 높음 | **있음 (다수 독립 출처)** |
+| AML Alert 90\~95% 오탐 | Flagright, Unit21, Retail Banker Int'l | 직접 | 높음 | **있음 (다수 독립 출처)** |
 | KYC 10일→10시간, TP 40배 | 팔란티어 AML 브로슈어 | 직접 | 낮음 | **없음 (자체 마케팅)** |
 | 벤더 락인이 심각 | HASH.ai 독립 분석 | 인접 | 높음 | 있음 (구조적 논거) |
 | AIP가 환각을 줄인다 | 팔란티어 블로그 | 직접 | 중간 | **없음 (자체 사례)** |
@@ -674,7 +681,7 @@ Airbus에서는 `CompleteWorkOrder` Action이, AML에서는 `ConfirmSuspiciousAc
 ## 상충점 해결 테이블
 
 | 상충 주제 | R1 입장 | R3 입장 | 통합 판단 | 근거 |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 온톨로지 기술적 독창성 | 근본적으로 다른 설계 철학 | DB 모델링과 동형, 과대포장 | **개념은 동형이나, 통합·접근성에서 제품 레벨 차별점 존재** | Feng 자신이 "가치는 개념 밖에 있다"고 인정 |
 | 벤더 락인 심각도 | OSDK/JSON 내보내기로 일부 완화 | 완전 폐쇄 소스 | **코어 폐쇄, SDK/API 공개; 전환 비용은 실질적으로 높음** | R1의 기술적 사실과 R3의 구조적 분석 결합 |
 | Feng 비판 근거 강도 | (해당 없음) | 높음 | **중간** | 비사용자의 외부 관찰이며 제품 가치를 포함하지 않음 |
@@ -687,7 +694,7 @@ Airbus에서는 `CompleteWorkOrder` Action이, AML에서는 `ConfirmSuspiciousAc
 팔란티어 온톨로지 도입 검토 시:
 
 | 조건(X) | 의사결정(Y) |
-|---|---|
+| --- | --- |
 | 이종 데이터 소스가 10개 미만이고 단일 팀이 관리 | 온톨로지 도입 ROI가 낮을 가능성. ETL + BI 도구로 충분한지 먼저 검토 |
 | 데이터 기반 의사결정이 "분석"이 아닌 **"운영 실행"** 수준 | Action/Writeback 기능이 핵심 차별점. 경쟁사에 없는 기능 |
 | 연간 소프트웨어 예산이 $5M 미만 | 복잡한 온톨로지 구축은 예산 초과 위험. AIP Bootcamp로 소규모 시작 |
@@ -701,7 +708,7 @@ Airbus에서는 `CompleteWorkOrder` Action이, AML에서는 `ConfirmSuspiciousAc
 
 ## 예상 밖 핵심 발견
 
-1. **N3C 사례에서 팔란티어는 자체 온톨로지를 설계하지 않았다**: 팔란티어의 가치가 "온톨로지 설계 능력" 자체보다 **"어떤 온톨로지든 그 위에서 통합·운영·AI 연동을 제공하는 플랫폼 능력"**에 있음을 시사한다.
+1. **N3C 사례에서 팔란티어는 자체 온톨로지를 설계하지 않았다**: 팔란티어의 가치가 "온톨로지 설계 능력" 자체보다 \*\*"어떤 온톨로지든 그 위에서 통합·운영·AI 연동을 제공하는 플랫폼 능력"\*\*에 있음을 시사한다.
 
 2. **ICE 사례는 온톨로지의 도구 비중립성을 보여준다**: 온톨로지 설계가 권력 구조를 결정한다. 기술적 질문이 곧 정치적 질문이다.
 
@@ -709,7 +716,7 @@ Airbus에서는 `CompleteWorkOrder` Action이, AML에서는 `ConfirmSuspiciousAc
 
 4. **Entity Resolution이 AML의 진짜 핵심 기술이다**: 화려한 그래프 분석보다 "같은 사람을 다른 이름으로 등록한 것을 하나로 합치는" 능력이 성능에 가장 큰 영향을 미친다.
 
-5. **MCP(Model Context Protocol)의 부상이 팔란티어 위치를 위협할 수 있다**: OpenAI, Anthropic 등이 표준화한 MCP가 확산되면 팔란티어의 독점적 grounding layer 포지션이 약화될 수 있다. 2025년 Foundry에서 MCP 연동 실험이 시작되었다 [출처: Medium, 2025-10].
+5. **MCP(Model Context Protocol)의 부상이 팔란티어 위치를 위협할 수 있다**: OpenAI, Anthropic 등이 표준화한 MCP가 확산되면 팔란티어의 독점적 grounding layer 포지션이 약화될 수 있다. 2025년 Foundry에서 MCP 연동 실험이 시작되었다 \[출처: Medium, 2025-10\].
 
 6. **Airbus Skywise의 진짜 비즈니스 모델은 집단 지성**: 한 항공사의 비정상 패턴이 익명화되어 전체 A350 함대에 경보로 전파되는 메커니즘이 진짜 가치. 개별 데이터가 아니라 패턴과 집계만 공유함으로써 모든 참가자가 혜택을 받는다.
 
@@ -717,7 +724,7 @@ Airbus에서는 `CompleteWorkOrder` Action이, AML에서는 `ConfirmSuspiciousAc
 
 ## 후속 탐색 질문
 
-1. **온톨로지 구축의 실제 ROI**: "ETL + 범용 LLM" 조합 대비 팔란티어 온톨로지 구축의 경제적 타당성을 정량적으로 비교할 수 있는가? 특히 중견기업($50M~$500M 연매출) 규모에서의 손익분기점은 어디인가?
+1. **온톨로지 구축의 실제 ROI**: "ETL + 범용 LLM" 조합 대비 팔란티어 온톨로지 구축의 경제적 타당성을 정량적으로 비교할 수 있는가? 특히 중견기업($50M\~$500M 연매출) 규모에서의 손익분기점은 어디인가?
 
 2. **온톨로지 거버넌스 실무**: 대규모 조직(Object Type 수백 개, 사용자 수천 명)에서 온톨로지 변경 승인 프로세스, 스키마 변경 시 기존 데이터 처리(Property 추가 시 null, 삭제 시 데이터 보존 여부), 팀 간 충돌 해결이 실제로 어떻게 운영되는가?
 
@@ -732,15 +739,16 @@ Airbus에서는 `CompleteWorkOrder` Action이, AML에서는 `ConfirmSuspiciousAc
 ## 출처 통합 목록
 
 ### 1차 출처 (팔란티어 공식)
-1. Palantir Foundry 공식 문서 — The Ontology System: https://palantir.com/docs/foundry/architecture-center/ontology-system/
-2. Palantir Foundry 공식 문서 — Overview Ontology: https://palantir.com/docs/foundry/ontology/overview/
-3. Palantir 공식 문서 — Action Types Overview: https://palantir.com/docs/foundry/action-types/overview/
-4. Palantir 공식 문서 — Object Backend Overview: https://palantir.com/docs/foundry/object-backend/overview/
-5. Palantir 공식 문서 — OSDK Overview: https://palantir.com/docs/foundry/ontology-sdk/overview/
-6. Palantir Blog — Reducing Hallucinations with the Ontology in AIP (2024-07)
-7. Palantir Blog — Ontology-Oriented Software Development (2024-01)
-8. Palantir Interoperability PDF (2022)
-9. Palantir-Airbus Partnership Overview PDF (2020)
+
+ 1. Palantir Foundry 공식 문서 — The Ontology System: https://palantir.com/docs/foundry/architecture-center/ontology-system/
+ 2. Palantir Foundry 공식 문서 — Overview Ontology: https://palantir.com/docs/foundry/ontology/overview/
+ 3. Palantir 공식 문서 — Action Types Overview: https://palantir.com/docs/foundry/action-types/overview/
+ 4. Palantir 공식 문서 — Object Backend Overview: https://palantir.com/docs/foundry/object-backend/overview/
+ 5. Palantir 공식 문서 — OSDK Overview: https://palantir.com/docs/foundry/ontology-sdk/overview/
+ 6. Palantir Blog — Reducing Hallucinations with the Ontology in AIP (2024-07)
+ 7. Palantir Blog — Ontology-Oriented Software Development (2024-01)
+ 8. Palantir Interoperability PDF (2022)
+ 9. Palantir-Airbus Partnership Overview PDF (2020)
 10. Palantir Foundry for AML PDF (2021)
 11. Palantir Foundry for Transaction Monitoring WP (2022)
 12. Palantir Foundry for AML — Case Management PDF (2021)
@@ -748,6 +756,7 @@ Airbus에서는 `CompleteWorkOrder` Action이, AML에서는 `ConfirmSuspiciousAc
 14. Palantir 공식 문서 — Webhooks, Submission Criteria, Function-backed Actions, AIP Logic, Object/Property Security Policies, OSDK TypeScript/Python, Interfaces, Streaming Performance
 
 ### 독립 출처
+
 15. PMC 학술 논문 — N3C OMOP (PMID 32761549, PMC7454687)
 16. HASH.ai — "The Problem with Palantir" (2025-04)
 17. Ruohang Feng (vonng.com) — "Palantir's Ontology Narrative" (2025)
@@ -762,6 +771,7 @@ Airbus에서는 `CompleteWorkOrder` Action이, AML에서는 `ConfirmSuspiciousAc
 26. Palantir Community — Ontology and Pipeline Design Principles
 
 ### 인접 출처
+
 27. Sainath Palla — Towards AI (2025-11)
 28. Latentview — "Databricks vs Palantir" (2026-01)
 29. Wikipedia — Palantir

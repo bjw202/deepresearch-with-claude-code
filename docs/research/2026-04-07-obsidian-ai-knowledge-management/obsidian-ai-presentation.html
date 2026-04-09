@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Obsidian + AI: 당신의 노트가 AI의 뇌와 연결됩니다</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg-primary:#FFFFFF;--bg-secondary:#F5F7FA;--bg-dark:#1A1F36;
+  --text-primary:#1A1F36;--text-secondary:#4A5568;--text-tertiary:#718096;--text-on-dark:#FFFFFF;
+  --accent-blue:#4A7BF7;--accent-cyan:#00D4AA;--accent-yellow:#FFB020;--accent-red:#FF6B6B;--accent-purple:#8B5CF6;
+  --light-blue:#EBF0FF;--light-cyan:#E6FAF5;--light-yellow:#FFF8E6;--light-red:#FFF0F0;--light-purple:#F3EEFF;
+  --border-light:#E2E8F0;
+  --font-sans:'Pretendard',-apple-system,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+  --font-serif:'조선일보명조','Nanum Myeongjo',Georgia,serif;
+  --sw:1280;--sh:720;--scale:1;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#111;font-family:var(--font-sans);}
+.deck{position:relative;width:100%;height:100%;}
+.slide{
+  position:absolute;width:1280px;height:720px;left:50%;top:50%;
+  transform:translate(-50%,-50%) scale(var(--scale));transform-origin:center center;
+  background:var(--bg-primary);opacity:0;pointer-events:none;transition:opacity .3s ease;overflow:hidden;
+}
+.slide.active{opacity:1;pointer-events:auto;}
+.slide.slide-out-left{animation:slideOutLeft .3s ease forwards;}
+.slide.slide-in-right{animation:slideInRight .3s ease forwards;}
+@keyframes slideOutLeft{to{opacity:0;transform:translate(calc(-50% - 60px),-50%) scale(var(--scale));}}
+@keyframes slideInRight{from{opacity:0;transform:translate(calc(-50% + 60px),-50%) scale(var(--scale));}to{opacity:1;transform:translate(-50%,-50%) scale(var(--scale));}}
+.slide-counter{position:fixed;bottom:16px;right:24px;font-family:var(--font-sans);font-size:13px;color:rgba(255,255,255,.5);z-index:100;}
+@media print{
+  html,body{width:auto;height:auto;overflow:visible;background:#fff;}
+  .deck{position:static;width:auto;height:auto;}
+  .slide{position:relative;opacity:1!important;pointer-events:auto;page-break-after:always;transform:none!important;width:100%;height:auto;aspect-ratio:16/9;}
+  .slide-counter{display:none;}
+}
+/* Common components */
+.title-bar{margin-bottom:24px;}
+.title-bar-accent{height:4px;width:48px;background:var(--accent-blue);border-radius:2px;margin-bottom:12px;}
+.title-bar-text{font-size:32px;font-weight:700;color:var(--text-primary);line-height:1.2;}
+.bullet-item{display:flex;gap:12px;margin-bottom:12px;}
+.bullet-dot{width:8px;height:8px;background:var(--accent-blue);border-radius:4px;margin-top:8px;flex-shrink:0;}
+.bullet-text{font-size:20px;color:var(--text-secondary);line-height:1.5;}
+.card{background:var(--bg-primary);border:1px solid var(--border-light);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;}
+.card-accent-bar{height:4px;background:var(--accent-blue);}
+.card-body{padding:20px;flex:1;}
+.card-title{font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:8px;}
+.card-content{font-size:16px;color:var(--text-secondary);line-height:1.5;}
+.kpi-number{font-size:96px;font-weight:900;color:var(--accent-blue);line-height:1;}
+.kpi-label{font-size:18px;font-weight:700;color:var(--text-primary);}
+.kpi-desc{font-size:16px;color:var(--text-secondary);}
+.table-wrapper{width:100%;border-collapse:collapse;}
+.table-wrapper th{background:var(--bg-dark);color:var(--text-on-dark);padding:12px;text-align:left;font-weight:600;font-size:16px;}
+.table-wrapper td{padding:12px;border-bottom:1px solid var(--border-light);font-size:16px;color:var(--text-secondary);}
+.table-wrapper tr:last-child td{border-bottom:none;}
+.step-badge{width:48px;height:48px;border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.step-number{font-size:20px;font-weight:900;color:#fff;}
+.step-title{font-size:16px;font-weight:700;color:var(--text-primary);text-align:center;margin-bottom:4px;}
+.step-desc{font-size:14px;color:var(--text-secondary);text-align:center;}
+.arrow-icon{font-size:24px;color:var(--text-tertiary);}
+.quote-text{font-family:var(--font-serif);font-size:28px;font-style:italic;color:var(--text-primary);text-align:center;line-height:1.5;}
+.quote-source{font-size:16px;font-weight:500;color:var(--text-tertiary);text-align:center;margin-top:16px;}
+.code-block{background:#2D3748;border-radius:8px;padding:16px;font-family:'SF Mono','Monaco','Consolas',monospace;font-size:14px;color:#E2E8F0;overflow-x:auto;line-height:1.5;}
+.caption{font-size:14px;color:var(--text-tertiary);margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- Slide 1: Title -->
+<div class="slide active" id="slide-1" style="background:var(--bg-dark);display:flex;align-items:center;justify-content:center;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;">
+    <span style="font-size:18px;font-weight:500;color:var(--accent-cyan);">기술 세미나 2026</span>
+    <h1 style="font-size:56px;font-weight:900;color:#fff;line-height:1.1;">당신의 노트가 AI의 뇌와 연결됩니다</h1>
+    <p style="font-size:22px;font-weight:300;color:#A0AEC0;">Obsidian + AI로 만드는 에이전틱 지식관리</p>
+    <div style="display:flex;gap:24px;padding-top:32px;">
+      <span style="font-size:14px;color:#718096;">2026년 4월 9일</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: StatHighlight -->
+<div class="slide" id="slide-2" style="background:var(--bg-primary);display:flex;align-items:center;justify-content:center;padding:64px;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+    <div class="kpi-number">65%</div>
+    <p class="kpi-label" style="text-align:center;">지식 노동자가 적은 메모를 다시 찾지 못합니다</p>
+    <p class="kpi-desc" style="text-align:center;">하루 34GB의 정보를 소비하지만,<br/>그 중 65%는 잊혀집니다</p>
+    <p class="caption">McKinsey Global Institute / Workplace Knowledge Management</p>
+  </div>
+</div>
+
+<!-- Slide 3: Section 01 -->
+<div class="slide" id="slide-3" style="display:flex;">
+  <div style="width:40%;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <span style="font-size:72px;font-weight:900;color:var(--accent-cyan);opacity:0.3;">01</span>
+    <h2 style="font-size:36px;font-weight:800;color:#fff;">지식관리의 딜레마</h2>
+    <p style="font-size:16px;color:#A0AEC0;margin-top:16px;">왜 우리의 지식은 사라질까</p>
+  </div>
+  <div style="width:60%;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <p style="font-size:16px;color:var(--text-secondary);">• 정보는 쏟아지지만, 연결은 끊어져 있다</p>
+      <p style="font-size:16px;color:var(--text-secondary);">• 기록은 하지만, 다시 찾지 못한다</p>
+      <p style="font-size:16px;color:var(--text-secondary);">• 도구는 많지만, 서로 대화하지 않는다</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Content - 3 Bottlenecks -->
+<div class="slide" id="slide-4" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">현재 지식관리의 3가지 병목이 생산성을 저하시킵니다</h2>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="bullet-item">
+      <div class="bullet-dot" style="background:var(--accent-red);"></div>
+      <p class="bullet-text"><strong>수집 병목:</strong> 이메일, 메신저, 회의록, 문서… 정보는 분산되고 중복된다</p>
+    </div>
+    <div class="bullet-item">
+      <div class="bullet-dot" style="background:var(--accent-yellow);"></div>
+      <p class="bullet-text"><strong>검색 병목:</strong> "내가 어디에 적었더라?" — 키워드로는 내 의도를 검색할 수 없다</p>
+    </div>
+    <div class="bullet-item">
+      <div class="bullet-dot" style="background:var(--accent-blue);"></div>
+      <p class="bullet-text"><strong>연결 병목:</strong> 비슷한 아이디어가 다른 앱에 갇혀 서로 만나지 못한다</p>
+    </div>
+  </div>
+  <p class="caption">Notion, Evernote, 구글 문서, Apple Notes… 도구는 많지만 데이터는 고립되어 있습니다</p>
+</div>
+
+<!-- Slide 5: Section 02 -->
+<div class="slide" id="slide-5" style="display:flex;">
+  <div style="width:40%;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <span style="font-size:72px;font-weight:900;color:var(--accent-cyan);opacity:0.3;">02</span>
+    <h2 style="font-size:36px;font-weight:800;color:#fff;">Obsidian</h2>
+    <p style="font-size:16px;color:#A0AEC0;margin-top:16px;">다르게 생각하는 노트 앱</p>
+  </div>
+  <div style="width:60%;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <p style="font-size:16px;color:var(--text-secondary);">• <strong>로컬 파일 기반</strong> — 당신의 데이터는 당신 것</p>
+      <p style="font-size:16px;color:var(--text-secondary);">• <strong>링크 네트워크</strong> — 개별 노트가 아니라 관계가 지식이다</p>
+      <p style="font-size:16px;color:var(--text-secondary);">• <strong>플러그인 생태계</strong> — 2,700개 이상의 확장 기능</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: Cards - 3 Principles -->
+<div class="slide" id="slide-6" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">Obsidian을 특별하게 만드는 3가지 원칙</h2>
+  </div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;">
+    <div class="card" style="width:380px;">
+      <div class="card-accent-bar" style="background:var(--accent-blue);"></div>
+      <div class="card-body">
+        <h3 class="card-title">당신의 데이터는 당신 것</h3>
+        <p class="card-content">모든 노트는 내 컴퓨터에 .md 파일로 저장. Obsidian을 지워도 노트는 그대로 남는다. 클라우드 종속 없음, 언제든 다른 도구로 이동 가능.</p>
+      </div>
+    </div>
+    <div class="card" style="width:380px;">
+      <div class="card-accent-bar" style="background:var(--accent-cyan);"></div>
+      <div class="card-body">
+        <h3 class="card-title">링크가 지식을 만든다</h3>
+        <p class="card-content">[[다른 노트]]로 연결하면 지식 그래프가 형성된다. 백링크: 누가 이 노트를 링크했는지 자동 추적. 그래프 뷰: 전체 지식 네트워크를 시각화.</p>
+      </div>
+    </div>
+    <div class="card" style="width:380px;">
+      <div class="card-accent-bar" style="background:var(--accent-purple);"></div>
+      <div class="card-body">
+        <h3 class="card-title">플러그인으로 무한 확장</h3>
+        <p class="card-content">커뮤니티 플러그인 2,700개 이상. Dataview, Templater, Canvas, Bases 등. 도구를 워크플로우에 맞추는 것이지, 반대가 아니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: Content - Vault Structure -->
+<div class="slide" id="slide-7" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">Vault는 그냥 폴더입니다. 그것이 핵심입니다.</h2>
+  </div>
+  <div style="display:flex;gap:48px;align-items:flex-start;">
+    <div style="flex:1;">
+      <div class="bullet-item">
+        <div class="bullet-dot"></div>
+        <p class="bullet-text"><strong>Vault = 특정 폴더</strong>를 통째로 작업공간으로 지정한 것</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot"></div>
+        <p class="bullet-text">별도 데이터베이스 없음, <strong>표준 마크다운 파일</strong> 집합</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot"></div>
+        <p class="bullet-text">VS Code, 메모장으로도 열 수 있다</p>
+      </div>
+      <div style="margin-top:24px;">
+        <p style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:12px;">핵심 기능 요약</p>
+        <table class="table-wrapper">
+          <tr><th>기능</th><th>설명</th></tr>
+          <tr><td>백링크</td><td>"이 노트를 누가 링크했는지" 자동 추적</td></tr>
+          <tr><td>그래프 뷰</td><td>노트 연결 관계를 네트워크로 시각화</td></tr>
+          <tr><td>Canvas</td><td>무한 화이트보드 (노트/이미지/PDF 자유 배치)</td></tr>
+          <tr><td>Bases (2025)</td><td>노트를 DB 테이블처럼 보는 공식 기능</td></tr>
+          <tr><td>CLI (2026)</td><td>명령줄에서 Obsidian 조작 — 자동화 가능</td></tr>
+        </table>
+      </div>
+    </div>
+    <div style="width:360px;">
+      <div class="code-block">~/my-vault/
+  .obsidian/     ← 설정 (숨김)
+  Projects/      ← 프로젝트
+  Journal/       ← 일일 노트
+  Resources/     ← 참고 자료</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: Section 03 -->
+<div class="slide" id="slide-8" style="display:flex;">
+  <div style="width:40%;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <span style="font-size:72px;font-weight:900;color:var(--accent-cyan);opacity:0.3;">03</span>
+    <h2 style="font-size:36px;font-weight:800;color:#fff;">AI와의 만남</h2>
+    <p style="font-size:16px;color:#A0AEC0;margin-top:16px;">Obsidian + AI: 왜 찰떡궁합인가</p>
+  </div>
+  <div style="width:60%;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:48px;">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <p style="font-size:16px;color:var(--text-secondary);">• 파일과 폴더: AI가 바로 읽을 수 있는 구조</p>
+      <p style="font-size:16px;color:var(--text-secondary);">• 세 가지 연결 방식: CLI / 플러그인 / MCP</p>
+      <p style="font-size:16px;color:var(--text-secondary);">• 실제 워크플로우 사례 4가지</p>
+      <p style="font-size:16px;color:var(--text-secondary);">• 경쟁 도구와의 비교</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: Quote -->
+<div class="slide" id="slide-9" style="background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;padding:96px;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:24px;">
+    <p style="font-family:var(--font-serif);font-size:48px;color:var(--text-tertiary);opacity:0.3;">"</p>
+    <p class="quote-text">Obsidian이 files and folders에 기반하고,<br/>Claude Code도 files and folders에서 동작하기 때문에<br/>둘은 완벽하게 맞물린다</p>
+    <p class="quote-source">— Nick Milo, Linking Your Thinking (YouTube, 2025, 조회수 10.4만)</p>
+  </div>
+</div>
+
+<!-- Slide 10: BeforeAfter -->
+<div class="slide" id="slide-10" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">클라우드 vs 로컬: AI가 데이터에 접근하는 방식이 다릅니다</h2>
+  </div>
+  <div style="display:flex;gap:24px;height:480px;">
+    <div style="flex:1;background:var(--light-red);border:1px solid var(--accent-red);border-radius:8px;padding:24px;">
+      <p style="font-size:14px;font-weight:700;color:var(--accent-red);margin-bottom:16px;">BEFORE — Notion</p>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-red);"></div>
+        <p class="bullet-text" style="font-size:16px;">데이터가 Notion 서버에 저장</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-red);"></div>
+        <p class="bullet-text" style="font-size:16px;">AI가 접근하려면 API 호출 필요</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-red);"></div>
+        <p class="bullet-text" style="font-size:16px;">독점 JSON 포맷 (LLM 친화적이지 않음)</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-red);"></div>
+        <p class="bullet-text" style="font-size:16px;">AI 기능이 Business 플랜에 종속 ($20/월)</p>
+      </div>
+      <p style="margin-top:auto;font-size:14px;color:var(--text-secondary);font-style:italic;">"AI를 쉽게 쓰는 대신 데이터와 비용을 지불"</p>
+    </div>
+    <div style="flex:1;background:var(--light-cyan);border:1px solid var(--accent-cyan);border-radius:8px;padding:24px;">
+      <p style="font-size:14px;font-weight:700;color:var(--accent-cyan);margin-bottom:16px;">AFTER — Obsidian</p>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-cyan);"></div>
+        <p class="bullet-text" style="font-size:16px;">데이터가 내 컴퓨터에 마크다운 파일로 저장</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-cyan);"></div>
+        <p class="bullet-text" style="font-size:16px;">AI가 파일을 직접 읽고 쓴다 (API 불필요)</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-cyan);"></div>
+        <p class="bullet-text" style="font-size:16px;">마크다운은 LLM이 가장 잘 이해하는 포맷</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-cyan);"></div>
+        <p class="bullet-text" style="font-size:16px;">AI 공급자를 자유롭게 선택 (OpenAI, Anthropic, 로컬 LLM)</p>
+      </div>
+      <p style="margin-top:auto;font-size:14px;color:var(--text-secondary);font-style:italic;">"AI를 직접 연결하는 대신 데이터와 제어권을 보유"</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11: ProcessFlow - 3 Methods -->
+<div class="slide" id="slide-11" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">Obsidian과 AI를 연결하는 3가지 방법</h2>
+  </div>
+  <div style="display:flex;align-items:center;gap:0;margin-top:48px;">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div class="step-badge" style="background:var(--accent-blue);"><span class="step-number">1</span></div>
+      <h3 class="step-title">Claude Code 직접 실행</h3>
+      <p class="step-desc">터미널에서 claude 실행<br/>CLAUDE.md로 vault 규칙 전달<br/>가장 강력하고 유연한 방식</p>
+    </div>
+    <span class="arrow-icon">→</span>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div class="step-badge" style="background:var(--accent-cyan);"><span class="step-number">2</span></div>
+      <h3 class="step-title">AI 플러그인 사용</h3>
+      <p class="step-desc">Smart Composer<br/>Smart Connections<br/>Copilot</p>
+    </div>
+    <span class="arrow-icon">→</span>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div class="step-badge" style="background:var(--accent-purple);"><span class="step-number">3</span></div>
+      <h3 class="step-title">MCP로 연결</h3>
+      <p class="step-desc">Claude Desktop 등 AI 도구가<br/>vault에 자동 연결<br/>24개 이상의 MCP 서버</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: Content - CLAUDE.md -->
+<div class="slide" id="slide-12" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">CLAUDE.md: AI에게 vault 사용 설명서를 줍니다</h2>
+  </div>
+  <div style="display:flex;gap:48px;align-items:flex-start;">
+    <div style="flex:1;">
+      <div class="bullet-item">
+        <div class="bullet-dot"></div>
+        <p class="bullet-text">vault 루트에 <strong>CLAUDE.md</strong> 파일을 두면 Claude Code가 매 세션마다 자동 읽음</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot"></div>
+        <p class="bullet-text">vault 구조, 명명 규칙, 현재 작업을 AI가 파악</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot"></div>
+        <p class="bullet-text"><strong>컨텍스트 엔지니어링</strong>: "AI가 최대한 유용하게 작동하도록 컨텍스트를 설계하는 것"</p>
+      </div>
+    </div>
+    <div style="width:480px;">
+      <div class="code-block"># Vault Context
+
+## Structure
+- Projects/ — 진행 중인 프로젝트
+- Areas/ — 지속적인 관심 영역
+- Resources/ — 참고 자료
+- Archive/ — 완료된 것들
+
+## 지금 하고 있는 일
+- [이곳에 오늘의 작업을 적습니다]</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 13: Cards - 4 Use Cases -->
+<div class="slide" id="slide-13" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">실제로 이렇게 활용하고 있습니다: 4가지 사례</h2>
+  </div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;">
+    <div class="card" style="width:280px;">
+      <div class="card-accent-bar" style="background:var(--accent-blue);"></div>
+      <div class="card-body">
+        <h3 class="card-title">일일 노트 + 주간 리뷰</h3>
+        <p class="card-content">매일 Daily Note → 주말에 Claude Code가 주간 요약. 몇 달 후 시간 사용 패턴 아카이브 완성.</p>
+      </div>
+    </div>
+    <div class="card" style="width:280px;">
+      <div class="card-accent-bar" style="background:var(--accent-cyan);"></div>
+      <div class="card-body">
+        <h3 class="card-title">연구 노트 자동 정리</h3>
+        <p class="card-content">논문→원자 노트 추출→Smart Connections가 연결 제안. PKM Weekly 작성자 200,000단어 집필.</p>
+      </div>
+    </div>
+    <div class="card" style="width:280px;">
+      <div class="card-accent-bar" style="background:var(--accent-purple);"></div>
+      <div class="card-body">
+        <h3 class="card-title">개발자 컨텍스트</h3>
+        <p class="card-content">Linear → Obsidian → Claude Code. 노트가 쌓일수록 AI가 더 정확해짐 (컨텍스트 복리 효과).</p>
+      </div>
+    </div>
+    <div class="card" style="width:280px;">
+      <div class="card-accent-bar" style="background:var(--accent-yellow);"></div>
+      <div class="card-body">
+        <h3 class="card-title">완전 로컬 AI</h3>
+        <p class="card-content">Copilot + Ollama → 외부 서버 전송 없음. 의사, 변호사 등 기밀 유지 직군에 적합.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 14: Content - 4 Structural Reasons -->
+<div class="slide" id="slide-14" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">Obsidian + AI가 강력한 4가지 구조적 이유</h2>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="bullet-item">
+      <div class="bullet-dot" style="background:var(--accent-blue);"></div>
+      <p class="bullet-text"><strong>로컬 파일 = AI가 직접 접근:</strong> API 없이 파일 시스템을 바로 인덱싱, RAG 최적 환경</p>
+    </div>
+    <div class="bullet-item">
+      <div class="bullet-dot" style="background:var(--accent-cyan);"></div>
+      <p class="bullet-text"><strong>마크다운 = LLM 최적 포맷:</strong> 헤딩/리스트/코드 블록이 토큰 효율적 인코딩. Notion 독점 JSON보다 LLM 친화적</p>
+    </div>
+    <div class="bullet-item">
+      <div class="bullet-dot" style="background:var(--accent-purple);"></div>
+      <p class="bullet-text"><strong>오픈 생태계 = AI 공급자 자유 선택:</strong> OpenAI, Anthropic, 로컬 LLM 중 선택. Notion AI는 모델 선택 불가</p>
+    </div>
+    <div class="bullet-item">
+      <div class="bullet-dot" style="background:var(--accent-yellow);"></div>
+      <p class="bullet-text"><strong>프라이버시 = 민감 정보도 AI 활용 가능:</strong> 데이터가 내 PC를 떠나지 않음. 의료/법무/연구 기밀에도 적용</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 15: Table - Comparison -->
+<div class="slide" id="slide-15" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">경쟁 도구 비교: 어느 것이 당신에게 맞을까</h2>
+  </div>
+  <table class="table-wrapper" style="margin-top:32px;">
+    <tr>
+      <th>항목</th>
+      <th>Obsidian + AI</th>
+      <th>Notion AI</th>
+      <th>Logseq</th>
+      <th>Roam</th>
+      <th>Apple Notes</th>
+    </tr>
+    <tr>
+      <td><strong>데이터</strong></td>
+      <td>내 PC</td>
+      <td>클라우드</td>
+      <td>내 PC</td>
+      <td>클라우드</td>
+      <td>클라우드</td>
+    </tr>
+    <tr>
+      <td><strong>AI 연결</strong></td>
+      <td>자유 선택</td>
+      <td>내장 (유료)</td>
+      <td>제한적</td>
+      <td>제한적</td>
+      <td>없음</td>
+    </tr>
+    <tr>
+      <td><strong>AI 비용</strong></td>
+      <td>무료~가변</td>
+      <td>$20/월</td>
+      <td>무료</td>
+      <td>없음</td>
+      <td>없음</td>
+    </tr>
+    <tr>
+      <td><strong>프라이버시</strong></td>
+      <td>높음</td>
+      <td>낮음</td>
+      <td>높음</td>
+      <td>낮음</td>
+      <td>중간</td>
+    </tr>
+    <tr>
+      <td><strong>협업</strong></td>
+      <td>약함</td>
+      <td>강함</td>
+      <td>제한적</td>
+      <td>약함</td>
+      <td>기본</td>
+    </tr>
+    <tr>
+      <td><strong>학습 곡선</strong></td>
+      <td>높음</td>
+      <td>낮음</td>
+      <td>중간</td>
+      <td>높음</td>
+      <td>없음</td>
+    </tr>
+    <tr>
+      <td><strong>가격</strong></td>
+      <td>무료</td>
+      <td>유료 AI</td>
+      <td>무료</td>
+      <td>$15/월</td>
+      <td>무료</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Slide 16: Content - Evolution -->
+<div class="slide" id="slide-16" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">지식관리의 진화: 메모장에서 에이전틱 PKM까지</h2>
+  </div>
+  <div style="margin-top:32px;">
+    <div class="code-block" style="text-align:center;font-size:18px;">메모장 → Evernote(클라우드) → Notion(DB) → Obsidian(그래프) → Agentic PKM(AI 에이전트)</div>
+    <div style="margin-top:32px;padding:24px;background:var(--light-cyan);border-radius:8px;border-left:4px solid var(--accent-cyan);">
+      <p style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:12px;">2025~2026년 핵심 명제</p>
+      <p style="font-size:20px;color:var(--text-secondary);">"지식 베이스는 나의 제2의 뇌일 뿐 아니라, <strong>AI의 뇌이기도 해야 한다</strong>"</p>
+    </div>
+    <div style="margin-top:24px;">
+      <p style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">에이전틱 PKM이란?</p>
+      <p style="font-size:16px;color:var(--text-secondary);">• AI 에이전트가 읽고, 쓰고, 수정할 수 있는 공유 작업 공간<br/>• Obsidian의 로컬 마크다운 vault가 이 역할을 수행<br/>• 클라우드 기반 도구는 API 레이턴시와 비용 때문에 한계</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 17: Content - Context Engineering -->
+<div class="slide" id="slide-17" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">컨텍스트 엔지니어링: 프롬프트 엔지니어링의 다음 단계</h2>
+  </div>
+  <div style="margin-top:32px;">
+    <p style="font-size:20px;color:var(--text-primary);margin-bottom:16px;">더 중요한 질문:</p>
+    <p style="font-size:16px;color:var(--text-tertiary);margin-bottom:8px;">"어떤 AI 기능을 쓸 것인가?"</p>
+    <p style="font-size:24px;color:var(--accent-blue);font-weight:600;margin-bottom:24px;">→ "AI가 최대한 유용하게 작동하도록 <strong>vault를 어떻게 설계할 것인가</strong>?"</p>
+
+    <p style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:12px;">컨텍스트 엔지니어링의 3가지 핵심:</p>
+    <div class="bullet-item">
+      <div class="bullet-dot" style="background:var(--accent-blue);"></div>
+      <p class="bullet-text"><strong>CLAUDE.md:</strong> vault의 구조와 규칙을 AI에게 전달</p>
+    </div>
+    <div class="bullet-item">
+      <div class="bullet-dot" style="background:var(--accent-cyan);"></div>
+      <p class="bullet-text"><strong>구조화된 프론트매터:</strong> YAML 태그, 날짜, 프로젝트 ID로 검색 품질 향상</p>
+    </div>
+    <div class="bullet-item">
+      <div class="bullet-dot" style="background:var(--accent-purple);"></div>
+      <p class="bullet-text"><strong>일관된 폴더 구조:</strong> 2~3단계 이내, 너무 깊으면 AI 탐색 비효율적</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 18: Content - Limitations -->
+<div class="slide" id="slide-18" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent" style="background:var(--accent-red);"></div>
+    <h2 class="title-bar-text">시작하기 전: 현실적인 한계와 주의점을 알아야 합니다</h2>
+  </div>
+  <div style="display:flex;gap:32px;margin-top:32px;">
+    <div style="flex:1;">
+      <table class="table-wrapper" style="font-size:14px;">
+        <tr>
+          <th>한계</th>
+          <th>심각도</th>
+        </tr>
+        <tr>
+          <td>학습 곡선</td>
+          <td>높음</td>
+        </tr>
+        <tr>
+          <td>설정 늪</td>
+          <td>높음</td>
+        </tr>
+        <tr>
+          <td>팀 협업</td>
+          <td>높음</td>
+        </tr>
+        <tr>
+          <td>플러그인 리스크</td>
+          <td>중간</td>
+        </tr>
+        <tr>
+          <td>모바일</td>
+          <td>중간</td>
+        </tr>
+        <tr>
+          <td>비용 불확실성</td>
+          <td>중간</td>
+        </tr>
+      </table>
+    </div>
+    <div style="flex:1;">
+      <p style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:12px;">실패 패턴:</p>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-red);"></div>
+        <p class="bullet-text" style="font-size:14px;">CLAUDE.md를 대충 쓰면 AI가 vault를 제대로 이해 못 함</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-red);"></div>
+        <p class="bullet-text" style="font-size:14px;">한 번에 모든 것을 자동화하려 하면 실패 — "일일 노트 하나부터"</p>
+      </div>
+      <div class="bullet-item">
+        <div class="bullet-dot" style="background:var(--accent-red);"></div>
+        <p class="bullet-text" style="font-size:14px;">폴더가 너무 깊으면 AI 탐색 비효율적 — 2~3단계 이내 권장</p>
+      </div>
+      <p style="font-size:14px;font-weight:700;color:var(--text-primary);margin:16px 0 8px 0;">비용 시나리오:</p>
+      <p style="font-size:14px;color:var(--text-secondary);">• Obsidian + Claude API: $20~50/월<br/>• Obsidian + 로컬 LLM: $0 (GPU 투자 별도)<br/>• Notion AI Business: $20/사용자 (고정)</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 19: ProcessFlow - 5 Steps -->
+<div class="slide" id="slide-19" style="background:var(--bg-primary);padding:64px;">
+  <div class="title-bar">
+    <div class="title-bar-accent"></div>
+    <h2 class="title-bar-text">오늘부터 시작하는 5단계</h2>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:48px;justify-content:center;">
+    <div style="width:220px;background:var(--light-blue);border-radius:8px;padding:16px;">
+      <div class="step-badge" style="background:var(--accent-blue);width:40px;height:40px;"><span class="step-number" style="font-size:16px;">1</span></div>
+      <h3 class="step-title" style="font-size:14px;">Obsidian 설치 + Vault 생성</h3>
+      <p class="step-desc" style="font-size:12px;">obsidian.md 무료 다운로드<br/>새 vault 생성</p>
+    </div>
+    <span style="align-self:center;font-size:24px;color:var(--text-tertiary);">→</span>
+    <div style="width:220px;background:var(--light-cyan);border-radius:8px;padding:16px;">
+      <div class="step-badge" style="background:var(--accent-cyan);width:40px;height:40px;"><span class="step-number" style="font-size:16px;">2</span></div>
+      <h3 class="step-title" style="font-size:14px;">CLAUDE.md 작성</h3>
+      <p class="step-desc" style="font-size:12px;">vault 루트에 생성<br/>구조, 규칙, 현재 작업 명시</p>
+    </div>
+    <span style="align-self:center;font-size:24px;color:var(--text-tertiary);">→</span>
+    <div style="width:220px;background:var(--light-purple);border-radius:8px;padding:16px;">
+      <div class="step-badge" style="background:var(--accent-purple);width:40px;height:40px;"><span class="step-number" style="font-size:16px;">3</span></div>
+      <h3 class="step-title" style="font-size:14px;">Daily Note 활성화</h3>
+      <p class="step-desc" style="font-size:12px;">설정 > 코어 플러그인<br/>Daily Notes 켜기</p>
+    </div>
+    <span style="align-self:center;font-size:24px;color:var(--text-tertiary);">→</span>
+    <div style="width:220px;background:var(--light-yellow);border-radius:8px;padding:16px;">
+      <div class="step-badge" style="background:var(--accent-yellow);width:40px;height:40px;"><span class="step-number" style="font-size:16px;">4</span></div>
+      <h3 class="step-title" style="font-size:14px;">Claude Code에서 vault 열기</h3>
+      <p class="step-desc" style="font-size:12px;">터미널: cd ~/my-vault && claude<br/>CLAUDE.md 자동 읽기</p>
+    </div>
+    <span style="align-self:center;font-size:24px;color:var(--text-tertiary);">→</span>
+    <div style="width:220px;background:var(--light-blue);border-radius:8px;padding:16px;">
+      <div class="step-badge" style="background:var(--accent-blue);width:40px;height:40px;"><span class="step-number" style="font-size:16px;">5</span></div>
+      <h3 class="step-title" style="font-size:14px;">이번 주 Daily Notes 요약</h3>
+      <p class="step-desc" style="font-size:12px;">"이번 주 Daily Notes를<br/>검토해서 핵심 요약해줘"</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 20: Closing -->
+<div class="slide" id="slide-20" style="background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:64px;">
+  <h1 style="font-size:48px;font-weight:900;color:#fff;text-align:center;margin-bottom:32px;">당신의 지식이 AI의 장기 메모리가 됩니다</h1>
+  <div style="display:flex;flex-direction:column;gap:16px;max-width:800px;margin:0 auto;">
+    <div style="display:flex;gap:12px;align-items:center;">
+      <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:3px;"></div>
+      <p style="font-size:20px;font-weight:500;color:#E2E8F0;">Obsidian은 로컬 마크다운 파일이라는 단순함으로 AI와 자연스럽게 통합됩니다</p>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:3px;"></div>
+      <p style="font-size:20px;font-weight:500;color:#E2E8F0;">CLAUDE.md와 컨텍스트 엔지니어링이 프롬프트 엔지니어링의 다음 단계입니다</p>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:3px;"></div>
+      <p style="font-size:20px;font-weight:500;color:#E2E8F0;">오늘 Daily Note 하나부터 시작하면 됩니다</p>
+    </div>
+  </div>
+  <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.1);">
+    <p style="font-size:18px;font-weight:700;color:var(--accent-cyan);text-align:center;">지금 Obsidian을 설치하고, 내일의 Daily Note를 AI와 함께 작성해보세요</p>
+    <p style="font-size:14px;color:#718096;text-align:center;margin-top:16px;">
+      <strong>추천:</strong> 개인 지식관리에 진심인 분 / 프라이버시 중요 직군 / 마크다운 익숙한 분<br/>
+      <strong>비추천:</strong> 팀 협업 핵심 → Notion / 설정 없이 바로 쓰고 싶으면 Apple Notes
+    </p>
+    <p style="font-size:12px;color:#718096;text-align:center;margin-top:12px;">참고자료: obsidian.md / 이 리서치 전체 보고서 (docs/research/2026-04-07-obsidian-ai-knowledge-management/)</p>
+  </div>
+</div>
+
+</div>
+<div class="slide-counter"><span id="cur">1</span> / <span id="tot">20</span></div>
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide');
+  var cur=0,tot=slides.length;
+  document.getElementById('tot').textContent=tot;
+  function scale(){
+    var sx=window.innerWidth/1280,sy=window.innerHeight/720;
+    var s=Math.min(sx,sy);
+    document.documentElement.style.setProperty('--scale',s);
+  }
+  function go(n){
+    if(n<0||n>=tot)return;
+    slides[cur].classList.remove('active');
+    cur=n;
+    slides[cur].classList.add('active');
+    document.getElementById('cur').textContent=cur+1;
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter')go(cur+1);
+    else if(e.key==='ArrowLeft')go(cur-1);
+    else if(e.key==='Home')go(0);
+    else if(e.key==='End')go(tot-1);
+  });
+  document.addEventListener('click',function(e){
+    if(e.clientX>window.innerWidth/2)go(cur+1);
+    else go(cur-1);
+  });
+  slides[0].classList.add('active');
+  window.addEventListener('resize',scale);
+  scale();
+})();
+</script>
+</body>
+</html>

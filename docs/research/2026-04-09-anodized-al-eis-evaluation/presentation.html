@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>양극산화 알루미늄 피막 EIS 평가법</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg-primary:#FFFFFF;--bg-secondary:#F5F7FA;--bg-dark:#1A1F36;
+  --text-primary:#1A1F36;--text-secondary:#4A5568;--text-tertiary:#718096;--text-on-dark:#FFFFFF;
+  --accent-blue:#4A7BF7;--accent-cyan:#00D4AA;--accent-yellow:#FFB020;--accent-red:#FF6B6B;--accent-purple:#8B5CF6;
+  --light-blue:#EBF0FF;--light-cyan:#E6FAF5;--light-yellow:#FFF8E6;--light-red:#FFF0F0;--light-purple:#F3F0FF;
+  --border-light:#E2E8F0;
+  --font-sans:'Pretendard',-apple-system,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+  --font-serif:'Nanum Myeongjo',Georgia,serif;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#111;font-family:var(--font-sans);}
+.deck{position:relative;width:100%;height:100%;}
+.slide{
+  position:absolute;
+  width:1280px;height:720px;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%) scale(var(--scale,1));
+  transform-origin:center center;
+  background:var(--bg-primary);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease;
+  overflow:hidden;
+}
+.slide.active{opacity:1;pointer-events:auto;}
+.slide-counter{
+  position:fixed;bottom:16px;right:24px;
+  font-family:var(--font-sans);font-size:13px;color:rgba(255,255,255,.5);
+  z-index:100;letter-spacing:0.05em;
+}
+.title-bar{margin-bottom:28px;}
+.accent-line{width:48px;height:4px;border-radius:2px;margin-bottom:12px;}
+@media print{
+  html,body{width:auto;height:auto;overflow:visible;background:#fff;}
+  .deck{position:static;width:auto;height:auto;}
+  .slide{position:relative;opacity:1!important;pointer-events:auto;page-break-after:always;transform:none!important;width:100%;height:auto;aspect-ratio:16/9;}
+  .slide-counter{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ===== SLIDE 1: TITLE ===== -->
+<div class="slide" id="slide-1" style="background:var(--bg-dark);display:flex;align-items:center;justify-content:center;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;max-width:900px;padding:64px;">
+    <span style="font-size:16px;font-weight:500;color:var(--accent-cyan);letter-spacing:0.12em;text-transform:uppercase;">스마트폰 알루미늄 프레임 품질 평가</span>
+    <h1 style="font-size:52px;font-weight:900;color:#fff;line-height:1.15;margin-top:8px;">양극산화 알루미늄 피막,<br>EIS로 보이지 않는 방어선을 측정하다</h1>
+    <p style="font-size:20px;font-weight:300;color:#A0AEC0;margin-top:8px;line-height:1.6;">전기화학 임피던스 분광법의 원리부터 실무 해석까지<br>비전공자를 위한 완전 가이드</p>
+    <div style="display:flex;gap:32px;margin-top:36px;padding-top:28px;border-top:1px solid rgba(255,255,255,0.1);">
+      <span style="font-size:14px;color:#718096;">2026-04-09</span>
+      <span style="font-size:14px;color:#718096;">·</span>
+      <span style="font-size:14px;color:#718096;">리서치 팀: Researcher 4명 + Critic + Journal</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 2: STAT HIGHLIGHT ===== -->
+<div class="slide" id="slide-2" style="display:flex;align-items:center;justify-content:center;padding:64px;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;max-width:900px;">
+    <div style="font-size:96px;font-weight:900;color:var(--accent-red);line-height:1;">❌</div>
+    <div style="font-size:42px;font-weight:900;color:var(--text-primary);line-height:1.2;margin-top:8px;">출하 시 멀쩡했던 스마트폰 프레임이<br><span style="color:var(--accent-red);">6개월 후 박리·변색으로 터진다</span></div>
+    <p style="font-size:20px;color:var(--text-secondary);line-height:1.7;max-width:780px;margin-top:8px;">양극산화 피막의 결함은 <strong style="color:var(--text-primary);">처음에는 육안으로 절대 보이지 않는다.</strong><br>수개월~수년 후에야 변색·박리·부식 형태로 드러난다.<br>그래서 출하 전에 "보이지 않는 것"을 측정하는 도구가 필요하다.</p>
+    <div style="display:flex;gap:48px;margin-top:24px;padding:24px 48px;background:var(--bg-secondary);border-radius:12px;">
+      <div style="text-align:center;">
+        <div style="font-size:28px;font-weight:900;color:var(--accent-blue);">기공 미봉공</div>
+        <div style="font-size:14px;color:var(--text-tertiary);margin-top:4px;">수분·염화물 침투 통로</div>
+      </div>
+      <div style="width:1px;background:var(--border-light);"></div>
+      <div style="text-align:center;">
+        <div style="font-size:28px;font-weight:900;color:var(--accent-yellow);">미세 균열</div>
+        <div style="font-size:14px;color:var(--text-tertiary);margin-top:4px;">응력 집중 → 박리 진행</div>
+      </div>
+      <div style="width:1px;background:var(--border-light);"></div>
+      <div style="text-align:center;">
+        <div style="font-size:28px;font-weight:900;color:var(--accent-red);">갈바닉 공격</div>
+        <div style="font-size:14px;color:var(--text-tertiary);margin-top:4px;">Cu 입자 → 부식 시드</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 3: SECTION 01 ===== -->
+<div class="slide" id="slide-3" style="display:flex;flex-direction:row;">
+  <div style="width:480px;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:56px;">
+    <div style="font-size:80px;font-weight:900;color:var(--accent-cyan);opacity:0.25;line-height:1;">01</div>
+    <div style="font-size:34px;font-weight:800;color:#fff;margin-top:8px;line-height:1.25;">왜 양극산화 피막<br>평가가 어려운가</div>
+    <div style="font-size:16px;color:#A0AEC0;margin-top:16px;line-height:1.65;">눈에 보이지 않는 결함의 본질,<br>그리고 우리가 무엇을 측정해야 하는지</div>
+  </div>
+  <div style="flex:1;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:56px;gap:20px;">
+    <div style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">이 섹션에서 다루는 내용</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-blue);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">스마트폰 프레임의 Al2O3 피막 구조</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-blue);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">3가지 숨겨진 결함 유형</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-blue);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">미봉공 vs 완전봉공 — 저항값 10만 배 차이</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 4: CONTENT — 피막 구조와 결함 ===== -->
+<div class="slide" id="slide-4" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-blue);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">Al2O3 피막의 이중 구조가 3가지 치명적 결함을 숨긴다</h2>
+  </div>
+  <div style="flex:1;display:flex;gap:32px;align-items:stretch;">
+    <!-- 피막 구조 다이어그램 -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:0;border:2px solid var(--border-light);border-radius:12px;overflow:hidden;">
+      <div style="background:#EBF0FF;padding:20px 24px;border-bottom:2px dashed var(--border-light);">
+        <div style="font-size:15px;font-weight:700;color:var(--accent-blue);margin-bottom:4px;">다공층 (Porous Layer) — 두께 10~25 µm</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">바깥쪽 · 색소 흡착 · 기능층<br>기공 직경 10~100 nm의 세포-기공 구조</div>
+      </div>
+      <div style="background:#E6FAF5;padding:20px 24px;border-bottom:2px solid var(--border-light);">
+        <div style="font-size:15px;font-weight:700;color:var(--accent-cyan);margin-bottom:4px;">장벽층 (Barrier Layer) — 두께 10~100 nm</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">안쪽 · 치밀한 비결정질 Al2O3<br><strong>부식 보호의 핵심</strong> · 두께 ∝ 양극산화 전압</div>
+      </div>
+      <div style="background:#F5F7FA;padding:16px 24px;flex:1;display:flex;align-items:center;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-tertiary);">알루미늄 모재 (AA6063 / 6061 / 7075)</div>
+      </div>
+      <div style="padding:16px 24px;background:var(--bg-secondary);border-top:1px solid var(--border-light);">
+        <div style="font-size:13px;color:var(--text-tertiary);">💡 메타포: 다층 우산 — 바깥층이 큰 빗방울을 막고, 안층이 모재까지 새지 않게 한다</div>
+      </div>
+    </div>
+    <!-- 3가지 결함 -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:16px;justify-content:center;">
+      <div style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">숨겨진 3가지 결함</div>
+      <div style="background:var(--light-red);border-left:4px solid var(--accent-red);border-radius:8px;padding:16px 20px;">
+        <div style="font-size:16px;font-weight:700;color:var(--accent-red);margin-bottom:4px;">① 기공 미봉공</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">봉공이 덜 되면 기공이 열린 채로 남아 수분·염화물이 모재까지 침투하는 통로가 된다</div>
+      </div>
+      <div style="background:var(--light-yellow);border-left:4px solid var(--accent-yellow);border-radius:8px;padding:16px 20px;">
+        <div style="font-size:16px;font-weight:700;color:var(--accent-yellow);margin-bottom:4px;">② 미세 균열 (crack)</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">열사이클·기계 충격으로 미세 균열 발생 → 응력 집중 → 박리 진행. 초기에는 육안 불가</div>
+      </div>
+      <div style="background:var(--light-purple);border-left:4px solid var(--accent-purple);border-radius:8px;padding:16px 20px;">
+        <div style="font-size:16px;font-weight:700;color:var(--accent-purple);margin-bottom:4px;">③ 갈바닉 부식 개시</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">AA7075의 Cu 함유 인터메탈릭 입자가 부식 시드로 작용 → 국소 R_ct 급락</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 5: BEFORE/AFTER — 미봉공 vs 완전봉공 ===== -->
+<div class="slide" id="slide-5" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-red);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">미봉공 vs 완전봉공: 저항값이 최대 10만 배 차이난다</h2>
+  </div>
+  <div style="flex:1;display:flex;gap:24px;align-items:stretch;">
+    <div style="flex:1;background:var(--light-red);border:2px solid var(--accent-red);border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:16px;">
+      <div style="font-size:13px;font-weight:700;color:var(--accent-red);letter-spacing:0.1em;">BEFORE — 미봉공 상태</div>
+      <div style="font-size:44px;font-weight:900;color:var(--accent-red);">수백 Ω·cm²</div>
+      <div style="font-size:15px;color:var(--text-secondary);">R_pore (기공 저항)</div>
+      <div style="height:1px;background:rgba(255,107,107,0.2);"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="color:var(--accent-red);font-size:16px;flex-shrink:0;">✗</span>
+          <span style="font-size:15px;color:var(--text-secondary);">기공이 열려 있어 이온 침투 자유로움</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="color:var(--accent-red);font-size:16px;flex-shrink:0;">✗</span>
+          <span style="font-size:15px;color:var(--text-secondary);">Nyquist: 작은 단일 반원 → 보호 능력 거의 없음</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="color:var(--accent-red);font-size:16px;flex-shrink:0;">✗</span>
+          <span style="font-size:15px;color:var(--text-secondary);">Breakpoint frequency f_b &gt; 100 Hz</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="color:var(--accent-red);font-size:16px;flex-shrink:0;">✗</span>
+          <span style="font-size:15px;color:var(--text-secondary);">수개월 내 부식 개시 위험</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;width:48px;">
+      <div style="font-size:28px;color:var(--text-tertiary);">→</div>
+    </div>
+    <div style="flex:1;background:var(--light-cyan);border:2px solid var(--accent-cyan);border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:16px;">
+      <div style="font-size:13px;font-weight:700;color:var(--accent-cyan);letter-spacing:0.1em;">AFTER — 완전봉공 (Nickel Acetate)</div>
+      <div style="font-size:44px;font-weight:900;color:var(--accent-cyan);">10<sup style="font-size:28px;">7</sup> Ω·cm²</div>
+      <div style="font-size:15px;color:var(--text-secondary);">R_pore (기공 저항)</div>
+      <div style="height:1px;background:rgba(0,212,170,0.2);"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="color:var(--accent-cyan);font-size:16px;flex-shrink:0;">✓</span>
+          <span style="font-size:15px;color:var(--text-secondary);">Ni(OH)₂ 침착으로 기공 완전 폐색</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="color:var(--accent-cyan);font-size:16px;flex-shrink:0;">✓</span>
+          <span style="font-size:15px;color:var(--text-secondary);">Nyquist: 이중 대형 반원 → 우수한 보호</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="color:var(--accent-cyan);font-size:16px;flex-shrink:0;">✓</span>
+          <span style="font-size:15px;color:var(--text-secondary);">Breakpoint frequency f_b &lt; 0.1 Hz</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="color:var(--accent-cyan);font-size:16px;flex-shrink:0;">✓</span>
+          <span style="font-size:15px;color:var(--text-secondary);">365일 NaCl 침지 후에도 R_barrier 안정 유지</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 6: SECTION 02 ===== -->
+<div class="slide" id="slide-6" style="display:flex;flex-direction:row;">
+  <div style="width:480px;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:56px;">
+    <div style="font-size:80px;font-weight:900;color:var(--accent-cyan);opacity:0.25;line-height:1;">02</div>
+    <div style="font-size:34px;font-weight:800;color:#fff;margin-top:8px;line-height:1.25;">EIS란<br>무엇인가</div>
+    <div style="font-size:16px;color:#A0AEC0;margin-top:16px;line-height:1.65;">교류 신호로 피막을 읽는<br>비파괴 전기 청진기의 원리</div>
+  </div>
+  <div style="flex:1;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:56px;gap:20px;">
+    <div style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">이 섹션에서 다루는 내용</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">임피던스 — DC 저항과 무엇이 다른가</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">왜 작은 교류 신호를 쓰는가 (비파괴 원리)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">주파수별로 다른 층이 보이는 이유</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">Nyquist plot vs Bode plot 비교</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 7: CONTENT — EIS 원리 ===== -->
+<div class="slide" id="slide-7" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-cyan);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">EIS는 교류 신호로 피막을 비파괴 진단하는 전기 청진기다</h2>
+  </div>
+  <div style="flex:1;display:flex;gap:28px;align-items:stretch;">
+    <div style="flex:1;display:flex;flex-direction:column;gap:16px;justify-content:center;">
+      <div style="background:var(--bg-secondary);border-radius:10px;padding:20px;">
+        <div style="font-size:15px;font-weight:700;color:var(--accent-blue);margin-bottom:8px;">📐 임피던스(Z) = 주파수에 따라 달라지는 AC 저항</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.6;">DC 저항은 숫자 하나. 임피던스는 두 정보를 동시에 담는다:<br>
+        <strong>|Z| (크기)</strong> = 신호가 얼마나 막히는가 (Ω·cm²)<br>
+        <strong>φ (위상각)</strong> = 전압과 전류의 시간차 (°)</div>
+        <div style="margin-top:10px;font-size:13px;color:var(--text-tertiary);font-style:italic;">💡 신분증 비유: |Z|는 "얼마나 까다로운가", φ는 "얼마나 늦게 반응하는가"</div>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:10px;padding:20px;">
+        <div style="font-size:15px;font-weight:700;color:var(--accent-cyan);margin-bottom:8px;">🔬 왜 작은 AC 신호인가 (±10~20 mV)</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.6;">①  <strong>비파괴</strong>: 큰 전압을 걸면 피막이 변형됨. 26 mV 미만에서는 피막이 평형 유지<br>
+        ②  <strong>층 분리</strong>: 빠른 신호 → 다공층만 반응, 느린 신호 → 장벽층까지 반응</div>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:10px;padding:20px;">
+        <div style="font-size:15px;font-weight:700;color:var(--accent-purple);margin-bottom:8px;">📡 주파수 0.01 Hz ~ 100 kHz 스위프</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.6;">💡 셔터 속도 비유: 고주파 = 빠른 셔터(빠른 과정만), 저주파 = 느린 셔터(느린 과정까지)</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:0;border:2px solid var(--border-light);border-radius:12px;overflow:hidden;">
+      <div style="background:var(--bg-dark);padding:14px 20px;">
+        <div style="font-size:14px;font-weight:700;color:#fff;">주파수 영역별로 보이는 것</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0;flex:1;">
+        <div style="display:flex;align-items:stretch;border-bottom:1px solid var(--border-light);">
+          <div style="width:160px;padding:14px 16px;background:var(--light-blue);display:flex;align-items:center;border-right:1px solid var(--border-light);">
+            <div style="font-size:13px;font-weight:700;color:var(--accent-blue);">&gt; 100 kHz</div>
+          </div>
+          <div style="flex:1;padding:14px 16px;display:flex;align-items:center;">
+            <div style="font-size:14px;color:var(--text-secondary);">용액 저항 R_s만 보임 (전해질 고유 저항)</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:stretch;border-bottom:1px solid var(--border-light);">
+          <div style="width:160px;padding:14px 16px;background:var(--light-cyan);display:flex;align-items:center;border-right:1px solid var(--border-light);">
+            <div style="font-size:13px;font-weight:700;color:var(--accent-cyan);">1 kHz ~ 100 kHz</div>
+          </div>
+          <div style="flex:1;padding:14px 16px;display:flex;align-items:center;">
+            <div style="font-size:14px;color:var(--text-secondary);"><strong>다공층</strong> (porous layer) 응답</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:stretch;border-bottom:1px solid var(--border-light);">
+          <div style="width:160px;padding:14px 16px;background:var(--light-yellow);display:flex;align-items:center;border-right:1px solid var(--border-light);">
+            <div style="font-size:13px;font-weight:700;color:var(--accent-yellow);">1 Hz ~ 1 kHz</div>
+          </div>
+          <div style="flex:1;padding:14px 16px;display:flex;align-items:center;">
+            <div style="font-size:14px;color:var(--text-secondary);"><strong>장벽층</strong> (barrier layer) 응답</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:stretch;">
+          <div style="width:160px;padding:14px 16px;background:var(--light-red);display:flex;align-items:center;border-right:1px solid var(--border-light);">
+            <div style="font-size:13px;font-weight:700;color:var(--accent-red);">&lt; 0.1 Hz</div>
+          </div>
+          <div style="flex:1;padding:14px 16px;display:flex;align-items:center;">
+            <div style="font-size:14px;color:var(--text-secondary);">확산 과정, <strong>피막 열화 신호</strong> 포착</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:14px 20px;background:var(--bg-secondary);border-top:1px solid var(--border-light);">
+        <div style="font-size:13px;color:var(--text-tertiary);">장벽층 깊은 정보를 보려면 반드시 0.01 Hz까지 측정해야 한다</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 8: TWO COLUMN — Nyquist vs Bode ===== -->
+<div class="slide" id="slide-8" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-purple);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">Nyquist vs Bode: 같은 데이터를 두 가지 시각으로 읽는다</h2>
+  </div>
+  <div style="flex:1;display:flex;gap:24px;align-items:stretch;">
+    <div style="flex:1;background:var(--light-blue);border:2px solid var(--accent-blue);border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:14px;">
+      <div style="font-size:15px;font-weight:700;color:var(--accent-blue);">Nyquist Plot (복소평면 도형)</div>
+      <div style="background:#fff;border-radius:8px;padding:16px;font-family:monospace;font-size:13px;color:var(--text-secondary);line-height:1.7;">
+        -Z''<br>
+        &nbsp;↑<br>
+        &nbsp;│&nbsp;&nbsp;&nbsp;╭──────────╮<br>
+        &nbsp;│&nbsp;&nbsp;╭──╮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+        &nbsp;│&nbsp;&nbsp;│&nbsp;&nbsp;│(다공층)&nbsp;&nbsp;│<br>
+        &nbsp;│&nbsp;&nbsp;╰──╯&nbsp;&nbsp;(장벽층)&nbsp;│<br>
+        &nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+        &nbsp;└─────────────────→ Z'
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">강점</div>
+        <div style="font-size:14px;color:var(--text-secondary);">• 반원 개수로 시정수(층) 수 즉시 파악<br>• 반원 지름 = 그 층의 저항<br>• 등가회로 구조를 직관적으로 선택 가능</div>
+        <div style="font-size:14px;font-weight:700;color:var(--accent-red);margin-top:4px;">약점</div>
+        <div style="font-size:14px;color:var(--text-secondary);">• 각 점의 주파수 정보가 숨겨짐</div>
+      </div>
+    </div>
+    <div style="flex:1;background:var(--light-cyan);border:2px solid var(--accent-cyan);border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:14px;">
+      <div style="font-size:15px;font-weight:700;color:var(--accent-cyan);">Bode Plot (주파수 응답 도형)</div>
+      <div style="background:#fff;border-radius:8px;padding:16px;font-family:monospace;font-size:13px;color:var(--text-secondary);line-height:1.7;">
+        log|Z|<br>
+        &nbsp;↑ ╲────────────<br>
+        &nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;╲<br>
+        &nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;╲───────────<br>
+        &nbsp;└──────────────→ log(f)<br><br>
+        φ(°)<br>
+        &nbsp;↑ ──╮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;╭──<br>
+        &nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;╰──────╯<br>
+        &nbsp;└──────────────→ log(f)
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">강점</div>
+        <div style="font-size:14px;color:var(--text-secondary);">• 각 점의 주파수를 직접 읽을 수 있음<br>• 넓은 주파수 범위 거동 한눈에 파악<br>• 저주파 |Z| = 부식 보호력 직접 지표</div>
+        <div style="font-size:14px;font-weight:700;color:var(--accent-red);margin-top:4px;">약점</div>
+        <div style="font-size:14px;color:var(--text-secondary);">• 등가회로 구조를 직관적으로 읽기 어려움</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px;padding:14px 20px;background:var(--bg-secondary);border-radius:8px;text-align:center;">
+    <span style="font-size:15px;font-weight:600;color:var(--text-primary);">실무에서는 항상 두 플롯을 같이 본다</span>
+    <span style="font-size:14px;color:var(--text-secondary);"> — Nyquist로 구조 파악, Bode로 주파수 위치 확인</span>
+  </div>
+</div>
+
+<!-- ===== SLIDE 9: SECTION 03 ===== -->
+<div class="slide" id="slide-9" style="display:flex;flex-direction:row;">
+  <div style="width:480px;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:56px;">
+    <div style="font-size:80px;font-weight:900;color:var(--accent-yellow);opacity:0.25;line-height:1;">03</div>
+    <div style="font-size:34px;font-weight:800;color:#fff;margin-top:8px;line-height:1.25;">피막을 회로<br>모델로 이해한다</div>
+    <div style="font-size:16px;color:#A0AEC0;margin-top:16px;line-height:1.65;">양극산화 피막을 전기 부품으로<br>분해하면 무엇이 보이는가</div>
+  </div>
+  <div style="flex:1;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:56px;gap:20px;">
+    <div style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">이 섹션에서 다루는 내용</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-yellow);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">Hitzig 이중층 등가회로 (학계 표준)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-yellow);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">각 회로 요소의 물리적 의미</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-yellow);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">CPE (Constant Phase Element) 왜 쓰는가</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-yellow);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">봉공 방법별 R_pore 비교</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 10: CONTENT — 피막 이중 구조 ===== -->
+<div class="slide" id="slide-10" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-yellow);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">양극산화 피막은 이중 방어선(다공층+장벽층)으로 구성된다</h2>
+  </div>
+  <div style="flex:1;display:flex;gap:28px;align-items:center;">
+    <div style="flex:1.2;display:flex;flex-direction:column;gap:16px;">
+      <div style="background:var(--light-blue);border-radius:10px;padding:20px;">
+        <div style="font-size:16px;font-weight:700;color:var(--accent-blue);margin-bottom:8px;">외성: 다공층 (Porous Layer)</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.6;">두께 10~25 µm | 기공 직경 10~100 nm<br>색소·윤활을 담당하지만 기공이 열리면 부식 통로<br><strong>R_pore</strong>: 기공 내 이온이 통과하기 어려운 정도</div>
+      </div>
+      <div style="background:var(--light-cyan);border-radius:10px;padding:20px;">
+        <div style="font-size:16px;font-weight:700;color:var(--accent-cyan);margin-bottom:8px;">내성: 장벽층 (Barrier Layer)</div>
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.6;">두께 10~100 nm (약 1~1.5 nm/V) | 치밀한 Al2O3<br>부식 보호의 핵심 — 이온 침투를 근본적으로 차단<br><strong>R_barrier</strong>: 황산 표준 양극산화+봉공 시 10⁵~10⁸ Ω·cm²</div>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:10px;padding:16px;">
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">💡 <strong>CPE (Constant Phase Element)</strong>: 실제 피막은 두께·거칠기가 불균일해 이상적 커패시터(C)로 표현 불가. CPE 지수 <strong>n=1이면 완벽한 커패시터</strong>, n이 낮을수록 결함 의심. 장벽층 n: 0.85~0.98 / 다공층 n: 0.7~0.9</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <div style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Hitzig 이중층 등가회로</div>
+      <div style="background:var(--bg-dark);border-radius:12px;padding:28px;width:100%;font-family:monospace;font-size:14px;color:#A0AEC0;line-height:2;">
+        <div style="color:var(--accent-cyan);font-size:13px;margin-bottom:8px;">/* 피막을 전기 부품으로 분해 */</div>
+        R_s ──┬── R_pore ──┬── R_barrier ──┬<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── CPE_pore ──┘── CPE_barrier┘<br>
+        <div style="margin-top:12px;font-size:13px;color:#718096;">R_s: 전해질 저항 (1~50 Ω·cm²)<br>R_pore: 다공층 저항<br>R_barrier: 장벽층 저항 ← 가장 중요</div>
+      </div>
+      <div style="background:var(--light-yellow);border-radius:8px;padding:14px 16px;width:100%;text-align:center;">
+        <div style="font-size:13px;font-weight:700;color:var(--accent-yellow);">학계 합의: Hitzig 모델 (1984)</div>
+        <div style="font-size:13px;color:var(--text-secondary);">R1~R4 Researcher 모두 독립 확인 + Critic 검증</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 11: PROCESS FLOW — Hitzig 회로 단계 ===== -->
+<div class="slide" id="slide-11" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-blue);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">등가회로 5개 요소가 각각 피막의 한 특성을 담당한다</h2>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+    <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;width:100%;">
+      <!-- R_s -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--accent-blue);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;text-align:center;line-height:1.2;">R_s</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text-primary);text-align:center;">용액 저항</div>
+        <div style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.5;">전해질 고유<br>저항<br>1~50 Ω·cm²<br><span style="color:var(--text-tertiary);">측정 보정용</span></div>
+      </div>
+      <div style="display:flex;align-items:center;padding-top:28px;color:var(--text-tertiary);font-size:20px;padding-left:4px;padding-right:4px;">→</div>
+      <!-- R_pore -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--accent-cyan);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;text-align:center;line-height:1.2;">R_pore</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text-primary);text-align:center;">다공층 저항</div>
+        <div style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.5;">기공 내 이온<br>이동 저항<br>봉공 전: 수 kΩ<br><span style="color:var(--accent-cyan);">봉공 후: 수 MΩ</span></div>
+      </div>
+      <div style="display:flex;align-items:center;padding-top:28px;color:var(--text-tertiary);font-size:20px;padding-left:4px;padding-right:4px;">→</div>
+      <!-- CPE_pore -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--accent-purple);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;text-align:center;line-height:1.2;">CPE<br>pore</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text-primary);text-align:center;">다공층 커패시턴스</div>
+        <div style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.5;">기공 벽의<br>용량성 거동<br>n: 0.7~0.9<br><span style="color:var(--text-tertiary);">분산 거동 반영</span></div>
+      </div>
+      <div style="display:flex;align-items:center;padding-top:28px;color:var(--text-tertiary);font-size:20px;padding-left:4px;padding-right:4px;">→</div>
+      <!-- R_barrier -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--accent-yellow);display:flex;align-items:center;justify-content:center;color:#1A1F36;font-size:12px;font-weight:700;text-align:center;line-height:1.2;">R_bar</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text-primary);text-align:center;">장벽층 저항 ⭐</div>
+        <div style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.5;">부식 보호<br>핵심 파라미터<br><span style="color:var(--accent-yellow);">10⁵~10⁸ Ω·cm²</span><br>(황산+봉공)</div>
+      </div>
+      <div style="display:flex;align-items:center;padding-top:28px;color:var(--text-tertiary);font-size:20px;padding-left:4px;padding-right:4px;">→</div>
+      <!-- CPE_barrier -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--accent-red);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;text-align:center;line-height:1.2;">CPE<br>bar</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text-primary);text-align:center;">장벽층 커패시턴스</div>
+        <div style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.5;">장벽층 유전체<br>거동<br>n: 0.85~0.98<br><span style="color:var(--accent-cyan);">두께 계산 가능</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:20px;padding:12px 20px;background:var(--bg-secondary);border-radius:8px;text-align:center;">
+    <span style="font-size:14px;color:var(--text-tertiary);">피팅 주의: R이 음수, n&gt;1이면 모델이 과도하게 복잡한 것. 가장 단순한 3요소 모델부터 시도하라</span>
+  </div>
+</div>
+
+<!-- ===== SLIDE 12: TABLE — 봉공 방법별 R_pore ===== -->
+<div class="slide" id="slide-12" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-cyan);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">봉공 방법별 R_pore: 봉공 품질이 저항값을 최대 10만 배 높인다</h2>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+    <table style="width:100%;border-collapse:collapse;font-size:15px;">
+      <thead>
+        <tr style="background:var(--bg-dark);">
+          <th style="padding:14px 18px;text-align:left;color:#fff;font-weight:700;border-radius:0;">봉공 방법</th>
+          <th style="padding:14px 18px;text-align:center;color:#fff;font-weight:700;">R_pore 범위</th>
+          <th style="padding:14px 18px;text-align:center;color:#fff;font-weight:700;">f_b (Breakpoint freq)</th>
+          <th style="padding:14px 18px;text-align:center;color:#fff;font-weight:700;">평가</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--light-red);border-bottom:1px solid var(--border-light);">
+          <td style="padding:14px 18px;font-weight:600;color:var(--text-primary);">미봉공 (Unsealed)</td>
+          <td style="padding:14px 18px;text-align:center;color:var(--accent-red);font-weight:700;">수백 Ω·cm²</td>
+          <td style="padding:14px 18px;text-align:center;color:var(--accent-red);">&gt; 100 Hz</td>
+          <td style="padding:14px 18px;text-align:center;"><span style="background:var(--accent-red);color:#fff;padding:3px 10px;border-radius:4px;font-size:13px;font-weight:700;">불량</span></td>
+        </tr>
+        <tr style="background:#fff;border-bottom:1px solid var(--border-light);">
+          <td style="padding:14px 18px;font-weight:600;color:var(--text-primary);">Boiling Water (일반)</td>
+          <td style="padding:14px 18px;text-align:center;color:var(--text-secondary);">10 ~ 100 kΩ·cm²</td>
+          <td style="padding:14px 18px;text-align:center;color:var(--text-secondary);">1 ~ 10 Hz</td>
+          <td style="padding:14px 18px;text-align:center;"><span style="background:var(--accent-yellow);color:#1A1F36;padding:3px 10px;border-radius:4px;font-size:13px;font-weight:700;">보통</span></td>
+        </tr>
+        <tr style="background:var(--light-cyan);border-bottom:1px solid var(--border-light);">
+          <td style="padding:14px 18px;font-weight:600;color:var(--text-primary);">Boiling Water (우수, &gt;200 kΩ 임계점)</td>
+          <td style="padding:14px 18px;text-align:center;color:var(--accent-cyan);font-weight:700;">500 kΩ ~ 10 MΩ·cm²</td>
+          <td style="padding:14px 18px;text-align:center;color:var(--accent-cyan);">&lt; 1 Hz</td>
+          <td style="padding:14px 18px;text-align:center;"><span style="background:var(--accent-cyan);color:#fff;padding:3px 10px;border-radius:4px;font-size:13px;font-weight:700;">우수</span></td>
+        </tr>
+        <tr style="background:#fff;border-bottom:1px solid var(--border-light);">
+          <td style="padding:14px 18px;font-weight:600;color:var(--text-primary);">Nickel Acetate (Hot)</td>
+          <td style="padding:14px 18px;text-align:center;color:var(--accent-blue);font-weight:700;">1 ~ 10 MΩ·cm²</td>
+          <td style="padding:14px 18px;text-align:center;color:var(--accent-blue);">&lt; 0.1 Hz</td>
+          <td style="padding:14px 18px;text-align:center;"><span style="background:var(--accent-blue);color:#fff;padding:3px 10px;border-radius:4px;font-size:13px;font-weight:700;">최고</span></td>
+        </tr>
+        <tr style="background:var(--light-blue);">
+          <td style="padding:14px 18px;font-weight:600;color:var(--text-primary);">Cold Seal (장기 숙성 후)</td>
+          <td style="padding:14px 18px;text-align:center;color:var(--accent-purple);font-weight:700;">&gt; 10 MΩ·cm²</td>
+          <td style="padding:14px 18px;text-align:center;color:var(--accent-purple);">&lt; 0.01 Hz</td>
+          <td style="padding:14px 18px;text-align:center;"><span style="background:var(--accent-purple);color:#fff;padding:3px 10px;border-radius:4px;font-size:13px;font-weight:700;">최고(장기)</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:16px;padding:12px 20px;background:var(--bg-secondary);border-radius:8px;">
+      <span style="font-size:14px;color:var(--text-secondary);">⭐ <strong>완전봉공 기준</strong>: R_pore &gt; 2×10⁵ Ω·cm² (200 kΩ·cm²) 임계점 통과 &amp; f_b &lt; 1 Hz — [Mansfeld 그룹, Corrosion Science 2008]</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 13: SECTION 04 ===== -->
+<div class="slide" id="slide-13" style="display:flex;flex-direction:row;">
+  <div style="width:480px;background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:56px;">
+    <div style="font-size:80px;font-weight:900;color:var(--accent-blue);opacity:0.25;line-height:1;">04</div>
+    <div style="font-size:34px;font-weight:800;color:#fff;margin-top:8px;line-height:1.25;">EIS 결과를<br>읽는 법</div>
+    <div style="font-size:16px;color:#A0AEC0;margin-top:16px;line-height:1.65;">그래프 패턴에서 피막 상태를<br>즉시 진단하는 실무 가이드</div>
+  </div>
+  <div style="flex:1;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;padding:56px;gap:20px;">
+    <div style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">이 섹션에서 다루는 내용</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-blue);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">Nyquist 반원 패턴 4가지 진단법</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-blue);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">우수한 피막의 핵심 수치 기준</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:8px;height:8px;background:var(--accent-blue);border-radius:50%;flex-shrink:0;"></div>
+        <span style="font-size:18px;color:var(--text-secondary);">EIS vs ISO 2931 vs Salt Spray 비교</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 14: CARDS — Nyquist 패턴 4가지 ===== -->
+<div class="slide" id="slide-14" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-blue);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">Nyquist 반원 패턴 4가지로 피막 상태를 즉시 진단한다</h2>
+  </div>
+  <div style="display:flex;gap:20px;flex:1;align-content:center;flex-wrap:wrap;">
+    <!-- 카드 1 -->
+    <div style="width:calc((100% - 60px) / 4);display:flex;flex-direction:column;border:2px solid var(--accent-cyan);border-radius:10px;overflow:hidden;">
+      <div style="height:5px;background:var(--accent-cyan);"></div>
+      <div style="padding:20px;flex:1;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-family:monospace;font-size:12px;color:var(--text-tertiary);background:var(--bg-secondary);padding:10px;border-radius:6px;line-height:1.8;">-Z''<br>&nbsp;↑&nbsp;╭──╮<br>&nbsp;│&nbsp;&nbsp;│&nbsp;&nbsp;│╭────────╮<br>&nbsp;│&nbsp;&nbsp;╰──╯│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>&nbsp;└──────╰────────╯→Z'</div>
+        <div style="font-size:15px;font-weight:700;color:var(--accent-cyan);">이중 대형 반원</div>
+        <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">작은 반원(다공층) + 큰 반원(장벽층). 정상. 두 층 분리 잘 됨. 우수한 봉공 피막의 표준 패턴</div>
+        <div style="margin-top:auto;padding:6px 10px;background:var(--light-cyan);border-radius:4px;font-size:12px;font-weight:700;color:var(--accent-cyan);">✓ 우수</div>
+      </div>
+    </div>
+    <!-- 카드 2 -->
+    <div style="width:calc((100% - 60px) / 4);display:flex;flex-direction:column;border:2px solid var(--accent-yellow);border-radius:10px;overflow:hidden;">
+      <div style="height:5px;background:var(--accent-yellow);"></div>
+      <div style="padding:20px;flex:1;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-family:monospace;font-size:12px;color:var(--text-tertiary);background:var(--bg-secondary);padding:10px;border-radius:6px;line-height:1.8;">-Z''<br>&nbsp;↑&nbsp;╭────────╮<br>&nbsp;│&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>&nbsp;│&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>&nbsp;└──╰────────╯→Z'</div>
+        <div style="font-size:15px;font-weight:700;color:var(--accent-yellow);">단일 큰 반원</div>
+        <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">두 시정수가 가까워 겹침. 봉공 불충분 의심. 층 구분이 어려운 상태</div>
+        <div style="margin-top:auto;padding:6px 10px;background:var(--light-yellow);border-radius:4px;font-size:12px;font-weight:700;color:var(--accent-yellow);">△ 주의</div>
+      </div>
+    </div>
+    <!-- 카드 3 -->
+    <div style="width:calc((100% - 60px) / 4);display:flex;flex-direction:column;border:2px solid var(--accent-red);border-radius:10px;overflow:hidden;">
+      <div style="height:5px;background:var(--accent-red);"></div>
+      <div style="padding:20px;flex:1;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-family:monospace;font-size:12px;color:var(--text-tertiary);background:var(--bg-secondary);padding:10px;border-radius:6px;line-height:1.8;">-Z''<br>&nbsp;↑ ╭──╮<br>&nbsp;│ │&nbsp;&nbsp;│<br>&nbsp;│ ╰──╯<br>&nbsp;└─────→Z'</div>
+        <div style="font-size:15px;font-weight:700;color:var(--accent-red);">단일 소반원</div>
+        <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">부식 보호 능력 거의 없음. 반원 지름(=저항)이 매우 작아 이온이 자유롭게 통과하는 상태</div>
+        <div style="margin-top:auto;padding:6px 10px;background:var(--light-red);border-radius:4px;font-size:12px;font-weight:700;color:var(--accent-red);">✗ 불량</div>
+      </div>
+    </div>
+    <!-- 카드 4 -->
+    <div style="width:calc((100% - 60px) / 4);display:flex;flex-direction:column;border:2px solid var(--accent-purple);border-radius:10px;overflow:hidden;">
+      <div style="height:5px;background:var(--accent-purple);"></div>
+      <div style="padding:20px;flex:1;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-family:monospace;font-size:12px;color:var(--text-tertiary);background:var(--bg-secondary);padding:10px;border-radius:6px;line-height:1.8;">-Z''<br>&nbsp;↑ ╭──╮<br>&nbsp;│ │&nbsp;&nbsp;│╲<br>&nbsp;│ ╰──╯&nbsp;╲ 45°<br>&nbsp;└─────────╲→Z'</div>
+        <div style="font-size:15px;font-weight:700;color:var(--accent-purple);">반원 + Warburg 직선</div>
+        <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">45° 직선 = 확산 지배. 양극산화 맥락에서는 <strong>부식 진행 중</strong> 신호. 즉시 SEM 단면 확인 필요</div>
+        <div style="margin-top:auto;padding:6px 10px;background:var(--light-purple);border-radius:4px;font-size:12px;font-weight:700;color:var(--accent-purple);">⚠ 경보</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 15: KPI — 핵심 수치 3가지 ===== -->
+<div class="slide" id="slide-15" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-blue);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">우수한 피막의 핵심 수치 기준 3가지</h2>
+  </div>
+  <div style="flex:1;display:flex;gap:24px;align-items:stretch;">
+    <div style="flex:1;background:var(--bg-secondary);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;gap:12px;">
+      <div style="font-size:14px;font-weight:700;color:var(--text-tertiary);letter-spacing:0.08em;">저주파 임피던스</div>
+      <div style="font-size:52px;font-weight:900;color:var(--accent-blue);line-height:1;">10<sup style="font-size:32px;">6</sup></div>
+      <div style="font-size:16px;color:var(--text-secondary);">Ω·cm² 이상</div>
+      <div style="font-size:13px;font-weight:700;color:var(--accent-blue);">|Z| at 0.01 Hz</div>
+      <div style="height:1px;background:var(--border-light);width:100%;margin:4px 0;"></div>
+      <div style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.5;">저주파 임피던스 크기 = 피막의 총 저항<br>= 부식 보호력의 직접 지표</div>
+      <div style="background:var(--light-blue);border-radius:8px;padding:8px 12px;width:100%;margin-top:4px;">
+        <div style="font-size:12px;color:var(--text-secondary);text-align:center;">&lt;10³: 불량 | 10⁴~10⁵: 보통 | &gt;10⁶: 우수</div>
+      </div>
+    </div>
+    <div style="flex:1;background:var(--bg-secondary);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;gap:12px;">
+      <div style="font-size:14px;font-weight:700;color:var(--text-tertiary);letter-spacing:0.08em;">저주파 위상각</div>
+      <div style="font-size:52px;font-weight:900;color:var(--accent-cyan);line-height:1;">-80°</div>
+      <div style="font-size:16px;color:var(--text-secondary);">이상 (넓은 구간)</div>
+      <div style="font-size:13px;font-weight:700;color:var(--accent-cyan);">Phase Angle φ</div>
+      <div style="height:1px;background:var(--border-light);width:100%;margin:4px 0;"></div>
+      <div style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.5;">-90°에 가까울수록 완벽한 절연체<br>💡 댐 비유: 전류가 들어가서 쌓이기만 함</div>
+      <div style="background:var(--light-cyan);border-radius:8px;padding:8px 12px;width:100%;margin-top:4px;">
+        <div style="font-size:12px;color:var(--text-secondary);text-align:center;">0° 근접 = 댐에 구멍 → 전류 통과 = 부식</div>
+      </div>
+    </div>
+    <div style="flex:1;background:var(--bg-secondary);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;gap:12px;">
+      <div style="font-size:14px;font-weight:700;color:var(--text-tertiary);letter-spacing:0.08em;">장벽층 저항 (황산+봉공)</div>
+      <div style="font-size:52px;font-weight:900;color:var(--accent-yellow);line-height:1;">10<sup style="font-size:32px;">5~8</sup></div>
+      <div style="font-size:16px;color:var(--text-secondary);">Ω·cm²</div>
+      <div style="font-size:13px;font-weight:700;color:var(--accent-yellow);">R_barrier</div>
+      <div style="height:1px;background:var(--border-light);width:100%;margin:4px 0;"></div>
+      <div style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.5;">부식 보호 능력과 직결되는 핵심 파라미터<br>하드 아노다이징+봉공: 10⁷~10⁹</div>
+      <div style="background:var(--light-yellow);border-radius:8px;padding:8px 12px;width:100%;margin-top:4px;">
+        <div style="font-size:12px;color:var(--text-secondary);text-align:center;">합금·공정 동일 조건 내에서만 비교할 것</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 16: COMPARISON TABLE — EIS vs 다른 방법 ===== -->
+<div class="slide" id="slide-16" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-purple);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">EIS vs ISO 2931 vs Salt Spray: 각 도구의 역할이 다르다</h2>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+    <table style="width:100%;border-collapse:collapse;font-size:14px;">
+      <thead>
+        <tr style="background:var(--bg-dark);">
+          <th style="padding:12px 14px;text-align:left;color:#fff;font-weight:700;">평가법</th>
+          <th style="padding:12px 14px;text-align:center;color:#fff;font-weight:700;">비파괴</th>
+          <th style="padding:12px 14px;text-align:center;color:#fff;font-weight:700;">측정시간</th>
+          <th style="padding:12px 14px;text-align:center;color:#fff;font-weight:700;">층 분리</th>
+          <th style="padding:12px 14px;text-align:center;color:#fff;font-weight:700;">비용</th>
+          <th style="padding:12px 14px;text-align:center;color:#fff;font-weight:700;">산업 표준</th>
+          <th style="padding:12px 14px;text-align:center;color:#fff;font-weight:700;">주요 용도</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--light-blue);border-bottom:1px solid var(--border-light);">
+          <td style="padding:12px 14px;font-weight:700;color:var(--accent-blue);">EIS</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-cyan);">✓</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--text-secondary);">30분~2시간</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-cyan);">✓ (다공/장벽)</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-red);">높음 ($10K~)</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--text-tertiary);">—</td>
+          <td style="padding:12px 14px;text-align:center;font-weight:700;color:var(--accent-blue);">R&amp;D / 공정 최적화</td>
+        </tr>
+        <tr style="background:#fff;border-bottom:1px solid var(--border-light);">
+          <td style="padding:12px 14px;font-weight:700;color:var(--accent-cyan);">ISO 2931 어드미턴스</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-cyan);">✓</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-cyan);">&lt; 5분</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-red);">✗</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-cyan);">낮음 ($500~)</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-cyan);">ISO 2931:2017</td>
+          <td style="padding:12px 14px;text-align:center;font-weight:700;color:var(--accent-cyan);">양산 QC</td>
+        </tr>
+        <tr style="background:var(--bg-secondary);border-bottom:1px solid var(--border-light);">
+          <td style="padding:12px 14px;font-weight:700;color:var(--text-primary);">Salt Spray (NSS)</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-red);">✗ (소모)</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--text-secondary);">96~2000시간</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-red);">✗</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--text-secondary);">중간</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--text-primary);">ASTM B117</td>
+          <td style="padding:12px 14px;text-align:center;font-weight:700;color:var(--text-primary);">품질 인증</td>
+        </tr>
+        <tr style="background:#fff;">
+          <td style="padding:12px 14px;font-weight:700;color:var(--text-secondary);">SEM 단면</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-red);">✗ (파괴)</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--text-secondary);">2~8시간</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-cyan);">✓ (형태)</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--accent-red);">높음</td>
+          <td style="padding:12px 14px;text-align:center;color:var(--text-tertiary);">ASTM E986</td>
+          <td style="padding:12px 14px;text-align:center;font-weight:700;color:var(--text-secondary);">결함 위치 확인</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:16px;display:flex;gap:16px;">
+      <div style="flex:1;background:var(--light-red);border-radius:8px;padding:12px 16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--accent-red);margin-bottom:4px;">⚠ AASS 경고</div>
+        <div style="font-size:13px;color:var(--text-secondary);">산성 초산 염무(AASS) 합격 여부를 EIS로만 예측하면 부식 저항성을 과대 평가할 위험. AASS는 별도 실시 필수</div>
+      </div>
+      <div style="flex:1;background:var(--light-cyan);border-radius:8px;padding:12px 16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--accent-cyan);margin-bottom:4px;">✓ 최고 조합</div>
+        <div style="font-size:13px;color:var(--text-secondary);">EIS + SEM (가장 보편적): EIS로 이상 감지 → SEM 단면으로 손상 위치 시각 확인</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 17: CARDS — 4가지 함정 ===== -->
+<div class="slide" id="slide-17" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-red);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">EIS 측정 시 반드시 피해야 할 4가지 함정</h2>
+  </div>
+  <div style="display:flex;gap:20px;flex:1;align-content:center;flex-wrap:wrap;">
+    <div style="width:calc((100% - 60px) / 4);background:var(--light-red);border-top:4px solid var(--accent-red);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:28px;">⚗️</div>
+      <div style="font-size:16px;font-weight:700;color:var(--accent-red);">함정 1<br>참조 전극 오염</div>
+      <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">참조 전극의 frit(액락)이 오염되면 측정 임피던스에 아티팩트 추가. 참조 전극 임피던스가 정상의 2~3배 이상이면 신뢰도 급락</div>
+      <div style="margin-top:auto;font-size:13px;font-weight:700;color:var(--accent-red);">→ 사용 전 임피던스 확인 필수</div>
+    </div>
+    <div style="width:calc((100% - 60px) / 4);background:var(--light-yellow);border-top:4px solid var(--accent-yellow);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:28px;">🧹</div>
+      <div style="font-size:16px;font-weight:700;color:var(--accent-yellow);">함정 2<br>시편 표면 오염</div>
+      <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">염화물·기름·지문이 국소 저항을 변화시켜 Nyquist 반원이 비대칭으로 일그러짐. 작은 지문 하나가 결과를 오염시킨다</div>
+      <div style="margin-top:auto;font-size:13px;font-weight:700;color:var(--accent-yellow);">→ 아세톤 → IPA 순차 세정 필수</div>
+    </div>
+    <div style="width:calc((100% - 60px) / 4);background:var(--light-blue);border-top:4px solid var(--accent-blue);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:28px;">⏱️</div>
+      <div style="font-size:16px;font-weight:700;color:var(--accent-blue);">함정 3<br>OCP 미안정</div>
+      <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">침지 후 바로 측정하면 안 된다. 전극 전위가 안정될 때까지 대기 필요. OCP 변동이 크면 측정 중 시스템이 변화</div>
+      <div style="margin-top:auto;font-size:13px;font-weight:700;color:var(--accent-blue);">→ 30분 이상 대기, 변동 &lt;2 mV/min 확인</div>
+    </div>
+    <div style="width:calc((100% - 60px) / 4);background:var(--light-purple);border-top:4px solid var(--accent-purple);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:28px;">🎯</div>
+      <div style="font-size:16px;font-weight:700;color:var(--accent-purple);">함정 4<br>면적 정규화 누락</div>
+      <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">1 cm² vs 100 cm² 시편의 임피던스를 면적 보정 없이 비교하면 오더 단위 오류. 반드시 Ω·cm²로 정규화 보고</div>
+      <div style="margin-top:auto;font-size:13px;font-weight:700;color:var(--accent-purple);">→ 항상 측정 면적 마스킹 &amp; Ω·cm² 단위 사용</div>
+    </div>
+  </div>
+  <div style="margin-top:16px;padding:12px 20px;background:var(--bg-secondary);border-radius:8px;">
+    <span style="font-size:14px;color:var(--text-secondary);">💡 <strong>KK 검증 필수</strong>: 등가회로 피팅 전에 반드시 Kramers-Kronig 변환 잔차(residual) &lt; 1~2% 확인. 데이터가 부실하면 어떤 해석도 무의미하다</span>
+  </div>
+</div>
+
+<!-- ===== SLIDE 18: PROCESS FLOW — 측정 절차 ===== -->
+<div class="slide" id="slide-18" style="display:flex;flex-direction:column;padding:56px;">
+  <div class="title-bar">
+    <div class="accent-line" style="background:var(--accent-cyan);"></div>
+    <h2 style="font-size:30px;font-weight:700;color:var(--text-primary);">표준 EIS 측정 절차 8단계 — 이 순서를 반드시 지켜라</h2>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:24px;">
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;">
+      <!-- 1~4단계 -->
+      <div style="display:flex;align-items:flex-start;gap:0;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:150px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-blue);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;">1</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);text-align:center;">표면 세정</div>
+          <div style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;">아세톤→IPA→건조</div>
+        </div>
+        <div style="padding-top:22px;color:var(--text-tertiary);font-size:18px;padding-left:2px;padding-right:2px;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:150px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-cyan);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;">2</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);text-align:center;">면적 마스킹</div>
+          <div style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;">1 cm² 노출 권장</div>
+        </div>
+        <div style="padding-top:22px;color:var(--text-tertiary);font-size:18px;padding-left:2px;padding-right:2px;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:150px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-purple);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;">3</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);text-align:center;">전해질 준비</div>
+          <div style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;">3.5 wt% NaCl</div>
+        </div>
+        <div style="padding-top:22px;color:var(--text-tertiary);font-size:18px;padding-left:2px;padding-right:2px;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:150px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-yellow);display:flex;align-items:center;justify-content:center;color:#1A1F36;font-size:18px;font-weight:900;">4</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);text-align:center;">OCP 안정화</div>
+          <div style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;">30분+, &lt;2mV/min</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;">
+      <!-- 5~8단계 -->
+      <div style="display:flex;align-items:flex-start;gap:0;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:150px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-red);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;">5</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);text-align:center;">EIS 측정</div>
+          <div style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;">100kHz~0.01Hz<br>진폭 10~20 mV</div>
+        </div>
+        <div style="padding-top:22px;color:var(--text-tertiary);font-size:18px;padding-left:2px;padding-right:2px;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:150px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-blue);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;">6</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);text-align:center;">KK 검증</div>
+          <div style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;">잔차 &lt;1~2%<br>데이터 신뢰성 확인</div>
+        </div>
+        <div style="padding-top:22px;color:var(--text-tertiary);font-size:18px;padding-left:2px;padding-right:2px;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:150px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-cyan);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;">7</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);text-align:center;">등가회로 피팅</div>
+          <div style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;">Hitzig 3요소 시작<br>χ² &lt;10⁻³ 목표</div>
+        </div>
+        <div style="padding-top:22px;color:var(--text-tertiary);font-size:18px;padding-left:2px;padding-right:2px;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:150px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-purple);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;">8</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);text-align:center;">시계열 추적</div>
+          <div style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;">1h·24h·72h·168h<br>반복 측정</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:12px 20px;background:var(--bg-secondary);border-radius:8px;">
+    <span style="font-size:14px;color:var(--text-secondary);">💡 수명 예측 핵심: 단순 |Z| 값보다 <strong>dR_barrier/dt (장벽층 저항의 시간 미분 감소율)</strong>이 피막 수명을 더 잘 예측한다. 같은 |Z|라도 빠르게 떨어지는 피막은 곧 망가진다</span>
+  </div>
+</div>
+
+<!-- ===== SLIDE 19: CLOSING ===== -->
+<div class="slide" id="slide-19" style="background:var(--bg-dark);display:flex;flex-direction:column;justify-content:center;padding:72px;">
+  <div style="display:flex;flex-direction:column;gap:28px;max-width:900px;">
+    <h2 style="font-size:44px;font-weight:900;color:#fff;line-height:1.2;">EIS는 R&D의 무기<br>피막의 보이지 않는 방어선을 수치로 증명하라</h2>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;margin-top:9px;"></div>
+        <div style="font-size:19px;color:#E2E8F0;line-height:1.5;">EIS는 다공층과 장벽층을 <strong style="color:var(--accent-cyan);">한 번의 비파괴 측정</strong>으로 분리 수치화할 수 있는 유일한 도구다</div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;margin-top:9px;"></div>
+        <div style="font-size:19px;color:#E2E8F0;line-height:1.5;">양산 QC는 <strong style="color:var(--accent-yellow);">ISO 2931 어드미턴스</strong>, 인증은 <strong style="color:var(--accent-yellow);">Salt Spray</strong>가 표준 — EIS는 신규 공정·봉공 최적화·열화 메커니즘 분석에 활용</div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;flex-shrink:0;margin-top:9px;"></div>
+        <div style="font-size:19px;color:#E2E8F0;line-height:1.5;"><strong style="color:var(--accent-red);">가장 큰 함정</strong>: 등가회로 비유일성 — 항상 물리적 근거를 명시하고, KK 검증 후 피팅하라</div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:24px;display:flex;gap:32px;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <div style="font-size:13px;color:#718096;font-weight:700;letter-spacing:0.08em;">상황별 도구 선택</div>
+        <div style="font-size:15px;color:var(--accent-cyan);">신규 전해질 평가 → EIS</div>
+        <div style="font-size:15px;color:var(--accent-cyan);">봉공 방법 비교 → EIS + 시계열</div>
+        <div style="font-size:15px;color:var(--accent-cyan);">양산 라인 QC → ISO 2931</div>
+        <div style="font-size:15px;color:var(--accent-cyan);">출하 인증 → Salt Spray (NSS 우선)</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <div style="font-size:13px;color:#718096;font-weight:700;letter-spacing:0.08em;">핵심 수치 요약</div>
+        <div style="font-size:15px;color:#A0AEC0;">|Z|@0.01Hz &gt; 10⁶ Ω·cm² → 우수</div>
+        <div style="font-size:15px;color:#A0AEC0;">위상각 -80° ~ -90° → 이상적 절연</div>
+        <div style="font-size:15px;color:#A0AEC0;">R_barrier 10⁵~10⁸ Ω·cm² (황산+봉공)</div>
+        <div style="font-size:15px;color:#A0AEC0;">f_b &lt; 1 Hz → 완전 봉공</div>
+      </div>
+    </div>
+    <div style="margin-top:4px;">
+      <div style="font-size:13px;color:#4A5568;">리서치: 2026-04-09 | Researcher 4명 + Critic + Journal | 출처: Hitzig 1984, Mansfeld 2008, MDPI Coatings 2021/2024, J. Electrochem. Soc. 2024</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .deck -->
+
+<div class="slide-counter"><span id="cur">1</span> / <span id="tot">19</span></div>
+
+<script>
+(function(){
+  var slides=document.querySelectorAll('.slide');
+  var cur=0,tot=slides.length;
+  document.getElementById('tot').textContent=tot;
+
+  function scale(){
+    var sx=window.innerWidth/1280,sy=window.innerHeight/720;
+    var s=Math.min(sx,sy);
+    document.documentElement.style.setProperty('--scale',s);
+  }
+
+  function go(n){
+    if(n<0||n>=tot)return;
+    slides[cur].classList.remove('active');
+    cur=n;
+    slides[cur].classList.add('active');
+    document.getElementById('cur').textContent=cur+1;
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();go(cur+1);}
+    else if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1);}
+    else if(e.key==='Home'){e.preventDefault();go(0);}
+    else if(e.key==='End'){e.preventDefault();go(tot-1);}
+  });
+
+  document.addEventListener('click',function(e){
+    if(e.clientX>window.innerWidth/2)go(cur+1);
+    else go(cur-1);
+  });
+
+  slides[0].classList.add('active');
+  window.addEventListener('resize',scale);
+  scale();
+})();
+</script>
+</body>
+</html>

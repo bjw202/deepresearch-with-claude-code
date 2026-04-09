@@ -1,49 +1,84 @@
 ---
 
-## name: create-presentation description: "프레젠테이션 생성 스킬. PPT/프레젠테이션을 디자인하고 생성한다. 주제/파일/텍스트를 입력받아 한국형 디자인 시스템(Pretendard + 6:3:1 색상)으로 프로페셔널한 .pptx를 생성한다. PptxGenJS 기반 코드 생성 시 네이티브 요소(테이블/차트/이미지/도형/텍스트)를 목적에 맞게 매핑하여 최적 품질의 PPTX를 생성한다. 소규모(15장 이하)부터 대규모(16장+, 병렬 에이전트 파이프라인)까지 단일 스킬로 처리한다. MANDATORY TRIGGERS: PPT 만들어, PPT 생성, 프레젠테이션 만들어, 슬라이드 만들어, 발표자료 만들어, 발표 자료, 보고서 PPT, 결과 보고 PPT, 요약 PPT, 피치덱, pitch deck, presentation, PPT 디자인, 슬라이드 디자인, 프레젠테이션 디자인, PPT 템플릿, PPT 폰트, 슬라이드 레이아웃, 프레젠테이션을 생성할까요"
+## name: create-presentation description: &gt; Presentation creation skill. Designs slides via Pencil MCP and outputs a single self-contained HTML file with keyboard navigation and CSS transitions. Pretendard font + Midnight Executive color system. MANDATORY TRIGGERS: PPT, presentation, slides, pitch deck allowed-tools: Read, Write, Edit, Bash, Glob, Grep, mcp__pencil__get_editor_state, mcp__pencil__open_document, mcp__pencil__batch_design, mcp__pencil__batch_get, mcp__pencil__get_screenshot, mcp__pencil__get_guidelines, mcp__pencil__snapshot_layout metadata: version: "2.0.0" category: "workflow" status: "active" updated: "2026-04-09"
 
-# 프레젠테이션 생성 스킬
+# Presentation Creator (HTML Slides)
 
-## Step 0: 규모 판단 (분기)
+MANDATORY TRIGGERS: PPT 만들어, PPT 생성, 프레젠테이션 만들어, 슬라이드 만들어, 발표자료 만들어, 발표 자료, 보고서 PPT, 결과 보고 PPT, 요약 PPT, 피치덱, pitch deck, presentation, 슬라이드 디자인, 프레젠테이션 디자인
+
+## Step 0: 분기 판단
+
+### 규모 분기
 
 아래 조건 중 하나라도 해당하면 **에이전트 파이프라인**으로 전환한다:
 
-- 슬라이드 수가 16장 이상
+- 슬라이드 수 16장 이상
 - 리서치 폴더(`docs/research/`)가 입력 소스
 - 사용자가 "방대한", "교육자료", "전체 내용" 등 대규모를 암시
 
-**에이전트 파이프라인 전환 시**, 아래 3개 phase 파일을 순서대로 Read하여 따른다:
+**에이전트 파이프라인 전환 시**, 아래 phase 파일을 순서대로 Read하여 따른다:
 
-1. Read `phases/01-content-strategy.md` → Content Strategist (opus) 발사 + 사용자 승인
-2. Read `phases/02-slide-build.md` → Slide Builders (sonnet x N, 병렬) 발사
-3. Read `phases/03-assemble.md` → 합치기 + `scripts/validate-pptx-code.js` 검증 + 실행
+1. Read `${CLAUDE_SKILL_DIR}/phases/01-content-strategy.md`
+2. (Pencil 비주얼 슬라이드가 아웃라인에 포함된 경우) Read `${CLAUDE_SKILL_DIR}/phases/02-pencil-design.md`
+3. Read `${CLAUDE_SKILL_DIR}/phases/03-html-assembly.md`
 
-**에이전트 파이프라인 핵심 원칙:**
+**15장 이하 소규모**는 아래 Step 1\~5를 직접 실행한다.
 
-- 첫 번째 파트만 상수/헬퍼를 정의한다. 후속 파트는 슬라이드 함수만 작성한다.
-- 모든 파트(Part 1 포함)에서 함수 호출문(`slideNN_name();`)과 `pptx.writeFile()` 금지. 합치기 단계에서 자동 생성한다.
-- 헬퍼 프로퍼티명 주의: addProcessFlow/addLayeredStack/addCard/addIconGrid는 `{title, body}`, addFunnel은 `{label, value}`, addPyramid는 `{label, description}`. 잘못된 프로퍼티명은 빈 슬라이드의 원인이다.
-- Slide Builder 프롬프트에 이 SKILL.md의 "시각적 품질 가드레일" + "OOXML 호환성" + "네이티브 요소 매핑" 섹션을 삽입한다 (단일 소스 원칙).
+### 렌더링 경로 자동 판단 (Step 2 아웃라인 확정 후 적용)
 
-**15장 이하 소규모 프레젠테이션**은 아래 기존 Step 1\~5를 그대로 사용한다.
+아웃라인의 각 슬라이드 타입을 보고 **슬라이드별로** 렌더링 경로를 자동 결정한다:
+
+**HTML 직접 생성** (기본 경로):
+
+- 텍스트/표/글머리 중심: Title, Content, Table, KPI, StatHighlight, Quote, Closing
+- 비교/나열 레이아웃: TwoColumn, Cards, BeforeAfter, ComparisonTable
+- 단순 시각화: ProcessFlow, Timeline, Roadmap, Funnel, Pyramid, IconGrid
+
+**Pencil MCP -&gt; PNG -&gt; HTML 삽입** (비주얼 경로):
+
+- 아키텍처 도식: \[Architecture\], \[SystemDiagram\]
+- 데이터 플로우: \[DataFlow\], \[NetworkTopology\]
+- 커스텀 인포그래픽: \[CustomVisual\], \[Infographic\]
+- 복잡한 관계도: 노드 3개 이상의 Venn, 계층이 4단 이상인 LayeredStack
+
+**Pencil 경유 강제 트리거**:
+
+- 사용자가 .pen 파일을 입력으로 제공한 경우
+- 사용자가 "디자인 시안", "Pencil에서", "다이어그램 그려줘" 등 명시한 경우
+
+Pencil 비주얼 경로 사용 시:
+
+1. `mcp__pencil__open_document("new")` 또는 기존 .pen 열기
+2. `mcp__pencil__batch_design`으로 해당 슬라이드만 디자인
+3. `mcp__pencil__get_screenshot`으로 시각 검증
+4. `mcp__pencil__export_nodes`로 PNG 내보내기
+5. HTML에 `<img src="data:image/png;base64,...">` 또는 외부 파일로 삽입
+
+아웃라인 표시 시 각 슬라이드에 경로를 표기한다:
+
+```
+[Content] "현재 프로세스의 3가지 병목" - [problem] 글머리 3개          -> HTML
+[Architecture] "시스템 전체 아키텍처" - [framework] 구성도             -> Pencil
+```
 
 ---
 
 ## Step 1: 입력 분석
 
-파일 경로 제공 시 → 파일 읽고 분석 후 Step 2로. 텍스트/주제만 제공 시 → 누락 정보만 확인:
+파일 경로 제공 시 -&gt; 파일 읽고 분석 후 Step 2로. 텍스트/주제만 제공 시 -&gt; 누락 정보 확인:
 
 - 대상 청중 (미입력 시 비즈니스 전문가 가정)
 - 슬라이드 수 (미입력 시 기본값: 10\~15장)
 - 스타일 (미입력 시 기본값: 비즈니스)
 - 색상 팔레트 (미입력 시 기본값: Midnight Executive)
+- 출력 파일명 (미입력 시 `presentation.html`)
 
 ### 프레젠테이션 구조 자동 선택
 
-사용자의 목적에 따라 구조 패턴을 선택한다. **반드시 아래 2개 파일을 Read한 후** 아웃라인을 작성한다:
+**반드시 아래 2개 파일을 Read한 후** 아웃라인을 작성한다:
 
-1. `references/content-strategy.md` — 구조 패턴(SCQA/피치덱/교육/학술), 피라미드 원칙(MECE), 콘텐츠 밀도 제어(6x6 규칙), 슬라이드별 콘텐츠 가이드
-2. `references/narrative-beats.md` — 7가지 서사 비트(hook/problem/insight/comparison/framework/proof/close), 청중별 비트 순서
+1. `${CLAUDE_SKILL_DIR}/references/content-strategy.md`
+2. `${CLAUDE_SKILL_DIR}/references/narrative-beats.md`
 
 ## Step 2: 아웃라인 생성 및 승인
 
@@ -52,134 +87,89 @@
 ```
 [슬라이드 타입] "액션 타이틀" - [비트] 콘텐츠 형식
 예: [Title] "AI가 바꾸는 비즈니스의 미래" - [hook] 표지
-    [Stat Highlight] "매출의 40%가 이 단계에서 사라진다" - [hook] 충격 통계
+    [StatHighlight] "매출의 40%가 이 단계에서 사라진다" - [hook] 충격 통계
     [Content] "현재 프로세스의 3가지 병목" - [problem] 글머리 3개
-    [Before/After] "수동 vs 자동: 처리 시간 80% 단축" - [comparison] 전후 대비
-    [Process Flow] "3단계 자동화 프로세스" - [framework] 5단계
+    [BeforeAfter] "수동 vs 자동: 처리 시간 80% 단축" - [comparison] 전후 대비
+    [ProcessFlow] "3단계 자동화 프로세스" - [framework] 5단계
     [KPI] "파일럿 결과: ROI 320%" - [proof] KPI 3개
     [Closing] "다음 분기 도입을 제안합니다" - [close] 요약 3가지 + CTA
 ```
 
-사용자 승인 → Step 3. 수정 요청 → 수정 후 재표시.
+사용자 승인 -&gt; Step 3. 수정 요청 -&gt; 수정 후 재표시.
 
-## Step 3: PptxGenJS 코드 생성
+## Step 3: HTML 생성 (+ 선택적 Pencil 비주얼)
 
-단일 완성 Node.js 스크립트 생성. 참조 문서를 아래 순서로 활용:
+**반드시 먼저** `${CLAUDE_SKILL_DIR}/references/pencil-to-html.md`를 Read하여 노드-&gt;CSS 매핑 규칙과 HTML 슬라이드 엔진 템플릿을 로드한다.
 
-1. **먼저** `references/pptxgenjs-patterns.md` — 헬퍼 함수(addTitleBar, addStyledTable 등)와 스타일 상수(COLORS, FONTS, TABLE_STYLE). 이 파일의 헬퍼를 코드 상단에 그대로 복사하여 사용.
-2. **필요한 레이아웃만** `references/slide-layouts.md` — 아웃라인에 포함된 슬라이드 타입의 레이아웃만 참조. 전체를 읽지 않아도 된다.
-3. **색상 변경 시에만** `references/design-system.md` — 기본 팔레트(Midnight Executive) 외 다른 팔레트 요청 시.
+### 3-1. HTML 직접 생성 (기본 경로)
 
-### 코드 구조화 규칙
+pencil-to-html.md의 슬라이드 타입별 HTML 변환 규칙을 따라 HTML을 직접 작성한다.
 
-슬라이드 수에 따라 코드 구조를 달리한다:
+슬라이드 크기: 1280x720px (16:9). CSS flexbox로 레이아웃 구성.
 
-**15장 이하**: 단일 파일에 순차적으로 작성해도 무방.
+### 3-2. Pencil 비주얼 생성 (해당 슬라이드만)
 
-**16장 이상 (에이전트 파이프라인)**: Step 0에서 `phases/` 파일로 자동 분기.
+Step 0에서 Pencil 경로로 판단된 슬라이드가 있을 때만 실행:
 
-파트 분할 시 역할:
+1. `mcp__pencil__open_document("new")` -&gt; 새 .pen 생성
+2. `mcp__pencil__batch_design` -&gt; 다이어그램/도식 디자인 (25 ops/call)
+3. `mcp__pencil__get_screenshot` -&gt; 시각 검증
+4. `mcp__pencil__export_nodes` -&gt; PNG로 내보내기
+5. 내보낸 PNG를 HTML 슬라이드에 base64 인라인 또는 외부 파일로 삽입
 
-| 파트 | 포함 내용 | 금지 사항 |
-| --- | --- | --- |
-| 첫 번째 파트 | PptxGenJS 초기화 + 상수 + 헬퍼 + 슬라이드 함수 | 없음 |
-| 후속 파트 (2\~N) | 슬라이드 함수만 | 상수/헬퍼 재정의, 축약 상수명, 함수 호출문, writeFile |
+Pencil 비주얼은 **해당 슬라이드의 메인 콘텐츠 영역에 이미지로 배치**하고, 타이틀바는 HTML로 유지한다.
 
-합치기는 메인이 수행: 마커 주석 기반 추출 + grep으로 함수명 자동 추출 + writeFile 추가. 상세: `phases/03-assemble.md`
+## Step 4: HTML/CSS 파일 조립
 
-## Step 4: 실행 및 전달
+### 4-1. 파일 구조
 
-```bash
-npm list pptxgenjs 2>/dev/null || npm install pptxgenjs
-node generate-presentation.js
+단일 `.html` 파일로 출력 (self-contained):
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>/* 인라인 CSS: 슬라이드 엔진 + 개별 슬라이드 스타일 */</style>
+</head>
+<body>
+  <div class="deck">
+    <div class="slide active" id="slide-1">...</div>
+  </div>
+  <div class="slide-counter"><span id="cur">1</span> / <span id="tot">N</span></div>
+  <script>/* 키보드 네비게이션 인라인 */</script>
+</body>
+</html>
 ```
 
-### 에러 대응
+### 4-2. HTML 슬라이드 엔진 (인라인 JS/CSS)
 
-| 에러 | 원인 | 해결 |
-| --- | --- | --- |
-| `Cannot find module 'pptxgenjs'` | 미설치 | `npm install pptxgenjs` 재실행 |
-| `TypeError: ... is not a function` | 헬퍼 함수 누락 또는 오타 | 헬퍼 함수가 코드 상단에 정의되어 있는지 확인 |
-| `Invalid chart type` | pptx.charts.XXX 참조 오류 | `pptx.charts.BAR` 등 정확한 상수 사용 확인 |
-| PowerPoint 복구 다이얼로그 | 8자리 hex 색상 사용 | 모든 color를 6자리 hex로 변경 (투명도는 `transparency` 속성으로 분리) |
+**네비게이션**: 좌우 화살표 키 또는 Space/Enter로 전환. 클릭도 지원.
+
+**전환 효과**: CSS `transition: opacity 0.3s ease, transform 0.3s ease`
+
+**인쇄**: `@media print` 쿼리로 각 슬라이드를 별도 페이지로 출력.
+
+**16:9 고정 비율**: `aspect-ratio: 16/9` + `width: 100vw`
+
+---
 
 ## Step 5: 수정 지원
 
-- 특정 슬라이드 수정: `slideNN_이름()` 함수를 찾아 해당 함수만 교체
+- 특정 슬라이드 수정: `#slide-N` 요소 내 CSS/HTML만 수정
 - 전체 재생성: Step 2로 돌아가 아웃라인 재작성
-- 디자인 변경: COLORS 상수만 교체 (팔레트 변경 방법은 `references/design-system.md` 참조)
+- 색상 변경: CSS 변수 `--accent`, `--bg-dark` 등만 교체
 
 ---
 
 ## 콘텐츠 구조화 핵심 규칙
 
-**액션 타이틀 원칙** — 모든 슬라이드 제목은 결론 문장:
+**액션 타이틀 원칙** -- 모든 슬라이드 제목은 결론 문장:
 
-- ❌ "매출 분석" → ✅ "Q3 매출이 전년 대비 23% 성장했습니다"
-- ❌ "경쟁사 비교" → ✅ "품질과 서비스에서 경쟁사 대비 우위를 확보했습니다"
+- X "매출 분석" -&gt; O "Q3 매출이 전년 대비 23% 성장했습니다"
+- X "경쟁사 비교" -&gt; O "품질과 서비스에서 경쟁사 대비 우위를 확보했습니다"
 
-한국어 기준 30자 이내를 목표로 하되, 핵심 메시지 전달이 우선이므로 길어져도 괜찮다. addTitleBar가 autoFit으로 자동 축소 처리한다.
-
-**밀도 제어**: 글머리 3\~5개, 슬라이드당 1 메시지, 초과 시 분할. 상세 전략: `references/content-strategy.md`
-
----
-
-## ★ 시각적 품질 가드레일 (절대 규칙)
-
-**상세 규칙은** `references/design-system.md` **"디자인 가드레일" 섹션 참조. 아래는 핵심 요약:**
-
- 1. **bg_dark 사용 제한**: 표지/섹션디바이더/테이블 헤더에만. 카드·도형 배경 사용 금지
- 2. **콘텐츠 폭 12.13" 필수**: w &lt; 11.0 절대 금지
- 3. **color 속성 필수**: 모든 addText에 color 명시. 빈 문자열('') 금지
- 4. **카드 = 흰 배경 + accent 상단 바**: bg_dark fill 카드 금지
- 5. **Funnel/Pyramid = CHART_STYLE.colors**: bg_dark tier 금지
- 6. **fontSize ≥ 9pt**: 9 미만 금지
- 7. **연속 동일 타입 3장 금지**: 시각적 다양성 확보
- 8. **대면적 accent fill 금지**: w&gt;3 AND h&gt;1인 도형에 accent 색상 fill 금지. accent는 accent 바(h&lt;=0.06), 뱃지(w&lt;=0.5), KPI 숫자에만
- 9. **도형 일러스트 금지**: addShape로 장비/공정/물리현상 그림 그리기 금지. 텍스트+표+헬퍼로 대체
-10. **섹션 디바이더 우측은 흰 배경**: 좌측만 dark, 우측은 반드시 흰색
-11. **번호 뱃지는 accent 색상**: bg_dark 뱃지 금지 → accent_blue 등 사용
-12. **테이블 교대 행**: 흰색/F5F7FA만 교대. bg_dark 행 금지
-13. **부드러운 톤**: 정보 박스에 연한 accent (EBF0FF, E6FAF5, FFF8E6, FFF0F0) 활용
-14. **경고 슬라이드**: 배경 흰색 + 연분홍(FFF0F0) 경고 배너. 전체 다크 배경 금지
-15. **조색 레시피**: `references/design-system.md`의 "조색 레시피(Color Recipe)" 참조
-
----
-
-## ★ 네이티브 요소 매핑 (절대 규칙)
-
-```
-콘텐츠 유형 판별
-├─ 행×열 구조의 데이터 ──────────→ addTable()
-│   (매출표, 일정표, 비교표, 예산표)
-├─ 수치의 추이/비교/비율 ─────────→ addChart()
-│   (매출 추이, 점유율, KPI 변화)
-├─ 외부 이미지/로고/사진 ─────────→ addImage()
-├─ 단순 텍스트 블록 ──────────────→ addText()
-│   (제목, 본문, 글머리 기호, 인용문)
-├─ 장식/배경/구분선 ──────────────→ addShape()
-└─ 발표자 노트 ───────────────────→ addNotes()
-```
-
-**BAD** (절대 금지):
-
-```javascript
-// 표를 도형으로 시뮬레이션 - 금지!
-slide.addShape('rect', { x:1, y:1, w:3, h:0.4, fill:'1A1F36' });
-slide.addText('항목', { x:1, y:1, w:1, h:0.4, color:'FFFFFF' });
-// ... 수십 줄 반복
-```
-
-**GOOD** (올바른 사용):
-
-```javascript
-// 네이티브 테이블로 처리
-const rows = [
-  [{ text:'항목', options: TABLE_STYLE.header }, { text:'값', options: TABLE_STYLE.header }],
-  [{ text:'매출', options: TABLE_STYLE.cell }, { text:'100M', options: TABLE_STYLE.cellRight }]
-];
-slide.addTable(rows, TABLE_OPTIONS);
-```
+**밀도 제어**: 글머리 3\~5개, 슬라이드당 1 메시지.
 
 ---
 
@@ -188,118 +178,116 @@ slide.addTable(rows, TABLE_OPTIONS);
 | 조건 | 레이아웃 타입 |
 | --- | --- |
 | 첫 슬라이드 | Title (다크 전체 배경) |
-| 새 섹션 시작 | Section Divider (좌 40% 다크 + 우 60% 밝음) |
-| KPI 숫자 2\~4개 | KPI Dashboard |
-| 행×열 데이터 | Data Table (addTable) |
-| 수치 추이/비교 | Chart+Insight (좌 60% 차트 + 우 40% 텍스트) |
-| 두 옵션 비교 | Two Column (50/50) |
-| 독립 항목 3\~6개 | Card Grid (2x2 또는 2x3) |
+| 새 섹션 시작 | Section (좌 40% 다크 + 우 60% 밝음) |
+| KPI 숫자 2\~4개 | KPI |
+| 행x열 데이터 | Table |
+| 수치 추이/비교 | ChartInsight (좌 60% 차트 + 우 40% 인사이트) |
+| 두 옵션 비교 | TwoColumn (50/50) |
+| 독립 항목 3\~6개 | Cards (2x2 또는 2x3) |
 | 순차적 단계 | Timeline |
 | 일반 글머리 목록 | Content (기본) |
 | 인용구 | Quote (명조체) |
-| 순차적 프로세스 3\~7단계 | Process Flow (수평 단계) |
-| 단계별 수렴/전환율 | Funnel (깔때기) |
-| 2차원 분류/전략 매트릭스 | Matrix (2x2 사분면) |
-| 계층 구조/우선순위 | Pyramid (피라미드) |
-| 관계/교집합 표현 | Venn (벤 다이어그램) |
-| 전후 비교/변화 대조 | Before/After (좌우 대비) |
-| 수평 마일스톤 로드맵 | Roadmap (수평 타임라인) |
-| 단일 핵심 통계 강조 | Stat Highlight (대형 숫자) |
-| 독립 항목 6\~9개 (아이콘형) | Icon Grid (아이콘 그리드) |
-| 기술 스택/계층 아키텍처 | Layered Stack (레이어 스택) |
-| 기능별 비교 체크리스트 | Comparison Table (✓/✗ 비교표) |
-| 마지막 슬라이드 | Closing (요약 + CTA) |
-
-레이아웃 상세 좌표: `references/slide-layouts.md`
+| 순차적 프로세스 3\~7단계 | ProcessFlow |
+| 단계별 수렴/전환율 | Funnel |
+| 2차원 분류 | Matrix (2x2 사분면) |
+| 계층 구조/우선순위 | Pyramid |
+| 관계/교집합 | Venn |
+| 전후 비교 | BeforeAfter |
+| 수평 마일스톤 | Roadmap |
+| 단일 핵심 통계 | StatHighlight |
+| 독립 항목 6\~9개 | IconGrid |
+| 기술 스택/계층 | LayeredStack |
+| 기능별 비교 체크리스트 | ComparisonTable |
+| 마지막 슬라이드 | Closing |
 
 ---
 
 ## 디자인 시스템 요약
 
-**슬라이드 크기**: 16:9 = 13.33" × 7.5" **콘텐츠 영역**: x=0.6, y=0.5 시작, w=12.13, h=6.5 **페이지 번호**: x=12.0, y=7.05, w=1.0, h=0.3
+**슬라이드 크기**: 1280x720px (16:9)
 
-**핵심 색상** (Midnight Executive 팔레트):
+**폰트**: Pretendard (CDN) + 시스템 폴백 ('Pretendard', -apple-system, 'Malgun Gothic', sans-serif)
 
-- 배경/다크: `FFFFFF` / `1A1F36`
-- 제목/본문: `1A1F36` / `4A5568`
-- 강조: `4A7BF7` (블루), `00D4AA` (시안), `FFB020` (골드)
+**명조체**: 'Nanum Myeongjo', Georgia, serif (인용구 전용)
 
-**폰트 크기 기준**:
+**핵심 색상 (Midnight Executive 팔레트)**:
 
-- 메인 타이틀(표지): Pretendard ExtraBold 36\~44pt
-- 콘텐츠 제목(TitleBar): Pretendard SemiBold 24\~28pt (autoFit 적용)
-- 본문: Pretendard Regular 16\~20pt
-- KPI 숫자: Pretendard Black 36\~72pt
+```css
+:root {
+  --bg-primary:   #FFFFFF;
+  --bg-secondary: #F5F7FA;
+  --bg-dark:      #1A1F36;
+  --text-primary:   #1A1F36;
+  --text-secondary: #4A5568;
+  --text-tertiary:  #718096;
+  --text-on-dark:   #FFFFFF;
+  --accent-blue:   #4A7BF7;
+  --accent-cyan:   #00D4AA;
+  --accent-yellow: #FFB020;
+  --accent-red:    #FF6B6B;
+  --accent-purple: #8B5CF6;
+}
+```
 
-전체 상수/팔레트/자간: `references/design-system.md`
+**폰트 크기 기준** (발표 시인성 우선, px 단위):
+
+- 메인 타이틀(표지): 48-56px
+- 콘텐츠 제목(TitleBar): 30-36px
+- 본문/글머리: 20-24px
+- 카드/컬럼 본문: 18-20px
+- ProcessFlow/Timeline 설명: 16-18px
+- 테이블 본문: 16-18px
+- KPI 숫자: 64-96px
+- 캡션/출처: 14px (절대 최소)
+- [HARD] 14px 미만 사용 금지 (발표 환경에서 읽기 불가)
+
+전체 시스템: `references/design-system-html.md`
 
 ---
 
-## 의존성 & 폰트
+## HTML 슬라이드 디자인 가드레일
 
-```bash
-npm install pptxgenjs
-```
-
-폰트 위치: `fonts/` 디렉토리 (스킬 내장)
-
-- Pretendard-{Thin|ExtraLight|Light|Regular|Medium|SemiBold|Bold|ExtraBold|Black}.otf
-- ChosunNm.ttf
-
-폰트 폴백: 시스템에 Pretendard 미설치 시 `'Pretendard'` 지정은 유지하되 사용자에게 폰트 설치 안내. macOS의 경우 OTF 파일 더블클릭으로 설치.
-
-PptxGenJS 패턴/헬퍼: `references/pptxgenjs-patterns.md`
+1. **bg-dark 사용 제한**: 표지/섹션디바이더 좌측/테이블 헤더에만
+2. **accent 대면적 금지**: 넓은 배경 fill에 accent 색상 사용 금지 (타이틀바/뱃지만 허용)
+3. **폰트 크기 최소**: 14px 미만 사용 금지 (발표 환경 시인성 기준)
+4. **연속 동일 타입 3장 금지**: 시각적 다양성 확보
+5. **액션 타이틀 필수**: 모든 슬라이드 제목은 결론 문장
+6. **1슬라이드 1메시지**: 초과 시 분할
 
 ---
 
 ## QA 체크리스트
 
-**구조 검증**:
+**구조**:
 
-- [ ] 모든 슬라이드 제목이 결론 문장인가?
+- [ ] 모든 슬라이드 제목이 결론 문장?
 
-- [ ] 슬라이드당 메시지 1개 원칙 준수?
+- [ ] 슬라이드당 메시지 1개 원칙?
 
 - [ ] 글머리 기호 6개 이하?
 
-**디자인 검증**:
+**HTML 품질**:
 
-- [ ] 여백 좌우 0.6" / 상하 0.5" 이상?
+- [ ] 단일 .html 파일로 브라우저에서 직접 열림?
+
+- [ ] 좌우 화살표 키 및 Space로 슬라이드 전환됨?
+
+- [ ] 16:9 비율 고정?
+
+- [ ] Pretendard 폰트 로드 (CDN 또는 폴백)?
+
+**디자인**:
 
 - [ ] 색상 6:3:1 비율?
 
-- [ ] 메인 타이틀(표지) 36\~44pt?
+- [ ] bg-dark는 허용 영역에만?
 
-- [ ] 콘텐츠 제목(addTitleBar) 24\~28pt?
+- [ ] 연속 동일 타입 3장 이하?
 
-- [ ] 본문 16\~20pt?
+**오프라인 호환**:
 
-- [ ] 테이블 행 수 8행 이하? (초과 시 슬라이드 분할)
+- [ ] CSS/JS 완전 인라인?
 
-**OOXML 호환성**:
+- [ ] 폰트 CDN 실패 시 시스템 폰트 폴백 동작?
 
-- [ ] 모든 color 속성이 6자리 hex인가? (8자리 사용 시 PowerPoint 복구 다이얼로그 발생)
-
-- [ ] 투명도가 필요하면 transparency 속성으로 분리했는가? (예: `color: 'FFFFFF', transparency: 30`)
-
-- [ ] shadow의 투명도는 opacity 속성으로 분리했는가? (예: `color: '000000', opacity: 0.08`)
-
-**네이티브 요소 검증**:
-
-- [ ] 표 데이터 → addTable() 사용?
-
-- [ ] 수치 비교 → addChart() 사용?
-
-- [ ] 이미지/로고 → addImage() 사용?
-
-- [ ] addShape()로 표/차트 시뮬레이션 없음?
-
-**코드 검증**:
-
-- [ ] 단일 Node.js 파일로 실행 가능?
-
-- [ ] 16장 이상이면 slideNN\_이름() 함수 패턴 사용?
-
-- [ ] `node generate-presentation.js` 오류 없이 실행?
-
-- [ ] .pptx 파일 생성 확인?
+- [ ] 외부 이미지 의존성 없음 (또는 base64 인라인)?
